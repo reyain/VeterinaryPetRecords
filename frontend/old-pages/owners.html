@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Owners - Veterinary Pet Records System</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/owners.css">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-icon">
+                    🐾
+                </div>
+
+                <div class="brand-text">
+                    <h2>VetPet Records</h2>
+                    <span>Veterinary System</span>
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="navigation-title">MAIN</p>
+
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="owners.html" class="nav-item active">
+                    <span class="nav-icon">👤</span>
+                    <span>Owners</span>
+                </a>
+
+                <a href="pets.html" class="nav-item">
+                    <span class="nav-icon">🐕</span>
+                    <span>Pets</span>
+                </a>
+
+                <a href="medical-records.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Medical Records</span>
+                </a>
+
+                <a href="vaccinations.html" class="nav-item">
+                    <span class="nav-icon">💉</span>
+                    <span>Vaccinations</span>
+                </a>
+
+                <p class="navigation-title">SYSTEM</p>
+
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+
+                <a href="audit-logs.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span>Audit Logs</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button
+                    class="logout-button"
+                    type="button"
+                    onclick="logout()"
+                >
+                    <span>↪</span>
+                    <span>Logout</span>
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN CONTENT
+        ========================== -->
+
+        <main class="main-content">
+
+            <!-- Header -->
+
+            <header class="dashboard-header">
+
+                <div class="header-left">
+
+                    <button
+                        class="menu-button"
+                        id="menuButton"
+                        type="button"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+                        <h1>Owner Management</h1>
+
+                        <p>
+                            Manage pet owner information and records
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <div class="user-profile">
+
+                        <div class="user-avatar">
+                            A
+                        </div>
+
+                        <div class="user-details">
+                            <strong>Administrator</strong>
+                            <span>System User</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 PAGE CONTENT
+            ========================== -->
+
+            <section class="page-content">
+
+                <!-- Page Header -->
+
+                <div class="page-heading">
+
+                    <div>
+                        <p class="page-label">RECORDS</p>
+
+                        <h2>Pet Owners</h2>
+
+                        <p class="page-description">
+                            View and manage registered pet owners.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="add-owner-button"
+                        id="openOwnerForm"
+                    >
+                        <span>＋</span>
+                        Add New Owner
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     SEARCH / TOOLBAR
+                ========================== -->
+
+                <div class="owners-toolbar">
+
+                    <div class="search-wrapper">
+
+                        <span class="search-icon">⌕</span>
+
+                        <input
+                            type="text"
+                            id="ownerSearch"
+                            placeholder="Search owner by name, contact, or email..."
+                        >
+
+                    </div>
+
+                    <div class="owner-count">
+                        <span>Total Owners</span>
+                        <strong id="ownerCount">0</strong>
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     OWNER TABLE
+                ========================== -->
+
+                <section class="owner-table-panel">
+
+                    <div class="table-header">
+
+                        <div>
+                            <h3>Owner Records</h3>
+
+                            <p>
+                                Registered pet owners in the system
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="table-container">
+
+                        <table class="owner-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Owner ID</th>
+                                    <th>Full Name</th>
+                                    <th>Contact Number</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="ownerTableBody">
+
+                                <!-- Temporary sample record -->
+
+                                <tr>
+                                    <td>OWN-0001</td>
+
+                                    <td>
+                                        <div class="owner-name-cell">
+                                            <div class="table-avatar">
+                                                JD
+                                            </div>
+
+                                            <div>
+                                                <strong>
+                                                    Juan Dela Cruz
+                                                </strong>
+
+                                                <small>
+                                                    Registered Owner
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>09123456789</td>
+
+                                    <td>
+                                        juan@example.com
+                                    </td>
+
+                                    <td>
+                                        Tacloban City
+                                    </td>
+
+                                    <td>
+                                        <span class="status-badge active-status">
+                                            Active
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <button
+                                                type="button"
+                                                class="table-action edit-action"
+                                                title="Edit owner"
+                                            >
+                                                ✎
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="table-action delete-action"
+                                                title="Delete owner"
+                                            >
+                                                🗑
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- Empty State -->
+
+                    <div
+                        class="table-empty"
+                        id="tableEmpty"
+                        style="display: none;"
+                    >
+
+                        <div class="empty-record-icon">
+                            👤
+                        </div>
+
+                        <h4>No Owner Records Found</h4>
+
+                        <p>
+                            Owner records matching your search will
+                            appear here.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =========================
+                 ADD OWNER MODAL
+            ========================== -->
+
+            <div
+                class="modal-overlay"
+                id="ownerModal"
+            >
+
+                <div class="owner-modal">
+
+                    <div class="modal-header">
+
+                        <div>
+                            <p class="page-label">NEW RECORD</p>
+
+                            <h2>Add New Owner</h2>
+
+                            <p>
+                                Enter the owner's information below.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="closeOwnerForm"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <form id="ownerForm">
+
+                        <!-- Name -->
+
+                        <div class="form-section">
+
+                            <h3>Owner Information</h3>
+
+                            <div class="form-grid">
+
+                                <div class="input-group">
+
+                                    <label for="firstName">
+                                        First Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        name="firstName"
+                                        placeholder="Enter first name"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="middleName">
+                                        Middle Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="middleName"
+                                        name="middleName"
+                                        placeholder="Enter middle name"
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="lastName">
+                                        Last Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="lastName"
+                                        name="lastName"
+                                        placeholder="Enter last name"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="nameExtension">
+                                        Name Extension
+                                    </label>
+
+                                    <select
+                                        id="nameExtension"
+                                        name="nameExtension"
+                                    >
+                                        <option value="">
+                                            None
+                                        </option>
+
+                                        <option value="Jr.">
+                                            Jr.
+                                        </option>
+
+                                        <option value="Sr.">
+                                            Sr.
+                                        </option>
+
+                                        <option value="II">
+                                            II
+                                        </option>
+
+                                        <option value="III">
+                                            III
+                                        </option>
+
+                                        <option value="IV">
+                                            IV
+                                        </option>
+
+                                        <option value="V">
+                                            V
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Contact -->
+
+                        <div class="form-section">
+
+                            <h3>Contact Information</h3>
+
+                            <div class="form-grid">
+
+                                <div class="input-group">
+
+                                    <label for="contactNumber">
+                                        Contact Number
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        id="contactNumber"
+                                        name="contactNumber"
+                                        placeholder="09XXXXXXXXX"
+                                        maxlength="11"
+                                        inputmode="numeric"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="email">
+                                        Email Address
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        placeholder="Enter email address"
+                                    >
+
+                                </div>
+
+                                <div class="input-group full-width">
+
+                                    <label for="address">
+                                        Address
+                                    </label>
+
+                                    <textarea
+                                        id="address"
+                                        name="address"
+                                        rows="3"
+                                        placeholder="Enter complete address"
+                                        required
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Form Buttons -->
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="cancel-button"
+                                id="cancelOwnerForm"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="save-owner-button"
+                            >
+                                Save Owner
+                            </button>
+
+                        </div>
+
+                        <p
+                            id="ownerFormMessage"
+                            class="owner-form-message"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <footer class="dashboard-footer">
+                <p>
+                    Veterinary Pet Records System
+                </p>
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/owners.js"></script>
+
+</body>
+</html>

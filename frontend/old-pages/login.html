@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Veterinary Pet Records System</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <div class="login-card">
+
+            <!-- Logo / Icon -->
+            <div class="login-icon">
+                🐾
+            </div>
+
+            <!-- Title -->
+            <h1>Welcome Back</h1>
+
+            <p class="login-subtitle">
+                Sign in to access the Veterinary Pet Records System
+            </p>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="password-toggle"
+                        >
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-options">
+
+                    <label class="remember-option">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    Login
+                </button>
+
+                <p id="loginMessage" class="login-message"></p>
+
+            </form>
+
+            <!-- Back Button -->
+            <button
+                type="button"
+                class="back-button"
+                onclick="goBack()"
+            >
+                ← Back to Welcome Page
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/login.js"></script>
+
+</body>
+</html>

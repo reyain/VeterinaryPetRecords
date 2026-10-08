@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Staff Accounts - Veterinary Pet Records System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-dashboard.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-staff-accounts.css"
+    >
+
+</head>
+
+
+<body class="server-page">
+
+    <div class="server-layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="server-sidebar">
+
+            <div class="server-brand">
+
+                <div class="server-brand-icon">
+                    🐾
+                </div>
+
+                <div class="server-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <nav class="server-navigation">
+
+                <p class="server-navigation-title">
+                    ADMINISTRATION
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="staff-accounts.html"
+                    class="server-nav-item active"
+                >
+
+                    <span class="server-nav-icon">
+                        👥
+                    </span>
+
+                    <span>
+                        Staff Accounts
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="online-users.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        🟢
+                    </span>
+
+                    <span>
+                        Online Users
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="audit-logs.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="server-configuration.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Server Configuration
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <div class="server-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="server-logout-button"
+                    id="logoutButton"
+                >
+
+                    ↪
+                    &nbsp;
+                    Logout
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main class="server-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="server-header">
+
+                <div class="server-header-left">
+
+                    <div>
+
+                        <h1>
+                            Staff Accounts
+                        </h1>
+
+                        <p>
+                            Manage user accounts and access status.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="server-user-area">
+
+                    <div
+                        class="server-user-avatar"
+                        id="userAvatar"
+                    >
+                        A
+                    </div>
+
+
+                    <div class="server-user-details">
+
+                        <strong id="userName">
+                            Administrator
+                        </strong>
+
+                        <span id="userRole">
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="staff-content">
+
+
+                <!-- =================================================
+                     PAGE INTRO
+                ================================================== -->
+
+                <section class="staff-page-heading">
+
+                    <div>
+
+                        <p class="staff-page-label">
+                            USER ACCOUNT MANAGEMENT
+                        </p>
+
+                        <h2>
+                            Staff Account Management
+                        </h2>
+
+                        <p>
+                            Create, review, update, and control
+                            staff access to the Client System.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="staff-add-button"
+                        id="addStaffButton"
+                    >
+                        + Add Staff Account
+                    </button>
+
+                </section>
+
+
+                <!-- =================================================
+                     SUMMARY
+                ================================================== -->
+
+                <section class="staff-summary-grid">
+
+
+                    <div class="staff-summary-card">
+
+                        <div class="staff-summary-icon">
+                            👥
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Accounts
+                            </span>
+
+                            <strong id="totalStaffCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="staff-summary-card">
+
+                        <div class="staff-summary-icon">
+                            🟢
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Active Accounts
+                            </span>
+
+                            <strong id="activeStaffCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="staff-summary-card">
+
+                        <div class="staff-summary-icon">
+                            ⚫
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Inactive Accounts
+                            </span>
+
+                            <strong id="inactiveStaffCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     TOOLBAR
+                ================================================== -->
+
+                <section class="staff-toolbar">
+
+                    <div class="staff-search">
+
+                        <input
+                            type="search"
+                            id="staffSearch"
+                            placeholder="Search by name, username, role, or ID..."
+                        >
+
+                    </div>
+
+
+                    <div
+                        class="staff-record-count"
+                        id="staffRecordCount"
+                    >
+                        Showing
+                        <strong id="visibleStaffCount">
+                            0
+                        </strong>
+                        accounts
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     MESSAGE
+                ================================================== -->
+
+                <p
+                    id="staffMessage"
+                    class="staff-message"
+                ></p>
+
+
+                <!-- =================================================
+                     STAFF TABLE
+                ================================================== -->
+
+                <section class="staff-table-panel">
+
+                    <div class="staff-table-wrapper">
+
+                        <table class="staff-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        User ID
+                                    </th>
+
+                                    <th>
+                                        Full Name
+                                    </th>
+
+                                    <th>
+                                        Username
+                                    </th>
+
+                                    <th>
+                                        Role
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Created
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="staffTableBody">
+                            </tbody>
+
+                        </table>
+
+
+                        <div
+                            class="staff-empty-state"
+                            id="staffEmptyState"
+                        >
+
+                            <div class="staff-empty-icon">
+                                👥
+                            </div>
+
+                            <h3>
+                                No Staff Accounts Found
+                            </h3>
+
+                            <p>
+                                Add a staff account to begin managing
+                                system users.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- =================================================
+         STAFF ACCOUNT MODAL
+    ================================================== -->
+
+    <div
+        class="staff-modal-overlay"
+        id="staffModal"
+    >
+
+        <div class="staff-modal">
+
+            <div class="staff-modal-header">
+
+                <div>
+
+                    <p class="staff-page-label">
+                        STAFF ACCOUNT
+                    </p>
+
+                    <h2 id="modalTitle">
+                        Add Staff Account
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="staff-close-button"
+                    id="closeStaffModal"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="staffForm">
+
+
+                <!-- USER ID -->
+
+                <div class="staff-form-group">
+
+                    <label for="staffUserId">
+                        User ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="staffUserId"
+                        readonly
+                        placeholder="Automatically generated"
+                    >
+
+                </div>
+
+
+                <!-- FULL NAME -->
+
+                <div class="staff-form-group">
+
+                    <label for="staffFullName">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="staffFullName"
+                        maxlength="100"
+                        placeholder="Enter full name"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- USERNAME -->
+
+                <div class="staff-form-group">
+
+                    <label for="staffUsername">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        id="staffUsername"
+                        maxlength="50"
+                        placeholder="Enter username"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div
+                    class="staff-form-group"
+                    id="passwordGroup"
+                >
+
+                    <label for="staffPassword">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="staffPassword"
+                        minlength="6"
+                        placeholder="Enter password"
+                    >
+
+                    <small>
+                        Minimum of 6 characters.
+                    </small>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="staff-form-group">
+
+                    <label for="staffRole">
+                        Role
+                    </label>
+
+                    <select
+                        id="staffRole"
+                        required
+                    >
+
+                        <option value="">
+                            Select role
+                        </option>
+
+                        <option value="Front Desk">
+                            Front Desk
+                        </option>
+
+                        <option value="Veterinarian">
+                            Veterinarian
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="staff-form-group">
+
+                    <label for="staffStatus">
+                        Status
+                    </label>
+
+                    <select
+                        id="staffStatus"
+                        required
+                    >
+
+                        <option value="Active">
+                            Active
+                        </option>
+
+                        <option value="Inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <p
+                    id="staffFormMessage"
+                    class="staff-form-message"
+                ></p>
+
+
+                <!-- FORM ACTIONS -->
+
+                <div class="staff-form-actions">
+
+                    <button
+                        type="button"
+                        class="staff-cancel-button"
+                        id="cancelStaffButton"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="staff-save-button"
+                        id="saveStaffButton"
+                    >
+                        Save Account
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="../../js/server-staff-accounts.js"></script>
+
+</body>
+
+</html>

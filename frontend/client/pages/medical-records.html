@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Medical Records - Veterinary Pet Records System
+    </title>
+
+
+    <!-- Global Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <!-- Client Dashboard Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-dashboard.css"
+    >
+
+    <!-- Medical Records Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-medical-records.css"
+    >
+
+    <!-- Claymorphism Theme -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-clay.css"
+    >
+
+</head>
+
+
+<body class="client-page">
+
+    <div class="client-layout">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside
+            class="client-sidebar clay"
+            id="clientSidebar"
+        >
+
+            <!-- BRAND -->
+
+            <div class="client-brand clay-small">
+
+                <div class="client-brand-icon clay-icon">
+                    🐾
+                </div>
+
+                <div class="client-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Client System
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="client-navigation">
+
+                <p class="navigation-title">
+                    MAIN
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="dashboard.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- OWNERS -->
+
+                <a
+                    href="owners.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        👤
+                    </span>
+
+                    <span>
+                        Owners
+                    </span>
+
+                </a>
+
+
+                <!-- PETS -->
+
+                <a
+                    href="pets.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        🐕
+                    </span>
+
+                    <span>
+                        Pets
+                    </span>
+
+                </a>
+
+
+                <!-- MEDICAL RECORDS - ACTIVE -->
+
+                <a
+                    href="medical-records.html"
+                    class="client-nav-item active clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Medical Records
+                    </span>
+
+                </a>
+
+
+                <!-- VACCINATIONS -->
+
+                <a
+                    href="vaccinations.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        💉
+                    </span>
+
+                    <span>
+                        Vaccinations
+                    </span>
+
+                </a>
+
+
+                <!-- REPORTS -->
+
+                <a
+                    href="reports.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR BOTTOM -->
+
+            <div class="client-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="client-logout-button clay-btn"
+                    id="logoutButton"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="client-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="client-header clay-small">
+
+                <div class="client-header-left">
+
+                    <button
+                        type="button"
+                        class="client-menu-button clay-btn"
+                        id="menuButton"
+                    >
+                        ☰
+                    </button>
+
+
+                    <div>
+
+                        <h1>
+                            Medical Records
+                        </h1>
+
+                        <p>
+                            Record and manage pet medical history
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER -->
+
+                <div class="client-header-user">
+
+                    <div
+                        class="client-user-avatar clay-small"
+                        id="userAvatar"
+                    >
+                        U
+                    </div>
+
+
+                    <div class="client-user-details">
+
+                        <strong id="userName">
+                            User
+                        </strong>
+
+                        <span id="userRole">
+                            Staff
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="client-content">
+
+
+                <!-- =================================================
+                     PAGE HEADING
+                ================================================== -->
+
+                <div class="medical-page-heading clay-card">
+
+                    <div>
+
+                        <p class="medical-page-label">
+                            CLIENT RECORDS
+                        </p>
+
+                        <h2>
+                            Pet Medical Records
+                        </h2>
+
+                        <p>
+                            Create, view, update, and delete medical
+                            records for registered pets.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ADD MEDICAL RECORD -->
+
+                    <button
+                        type="button"
+                        class="medical-primary-button clay-btn clay-btn-primary"
+                        id="addMedicalButton"
+                    >
+
+                        <span>
+                            ＋
+                        </span>
+
+                        Add Medical Record
+
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     SUMMARY CARDS
+                ================================================== -->
+
+                <div class="medical-summary-grid">
+
+
+                    <!-- TOTAL RECORDS -->
+
+                    <div class="medical-summary-card clay-card">
+
+                        <div class="medical-summary-icon clay-icon">
+
+                            📋
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Records
+                            </span>
+
+                            <strong id="totalMedicalCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONSULTATIONS -->
+
+                    <div class="medical-summary-card clay-card">
+
+                        <div
+                            class="medical-summary-icon consultation-icon clay-icon"
+                        >
+                            🩺
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Consultations
+                            </span>
+
+                            <strong id="consultationCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TREATMENTS -->
+
+                    <div class="medical-summary-card clay-card">
+
+                        <div
+                            class="medical-summary-icon treatment-icon clay-icon"
+                        >
+                            💊
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Treatments
+                            </span>
+
+                            <strong id="treatmentCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     TOOLBAR
+                ================================================== -->
+
+                <div class="medical-toolbar clay-small">
+
+
+                    <!-- SEARCH -->
+
+                    <div class="medical-search">
+
+                        <span>
+                            ⌕
+                        </span>
+
+                        <input
+                            type="text"
+                            id="medicalSearch"
+                            class="clay-input"
+                            placeholder="Search by pet, owner, veterinarian, diagnosis, or treatment..."
+                        >
+
+                    </div>
+
+
+                    <!-- RECORD COUNT -->
+
+                    <div class="medical-record-count clay-small">
+
+                        <span>
+                            Showing
+                        </span>
+
+                        <strong id="visibleMedicalCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     MEDICAL TABLE
+                ================================================== -->
+
+                <section class="medical-table-panel clay-card">
+
+                    <div class="medical-table-header">
+
+                        <div>
+
+                            <h3>
+                                Medical Record History
+                            </h3>
+
+                            <p>
+                                Recorded consultations, diagnoses,
+                                and treatments
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="medical-table-wrapper clay-table">
+
+                        <table class="medical-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Record ID
+                                    </th>
+
+                                    <th>
+                                        Date
+                                    </th>
+
+                                    <th>
+                                        Pet
+                                    </th>
+
+                                    <th>
+                                        Owner
+                                    </th>
+
+                                    <th>
+                                        Veterinarian
+                                    </th>
+
+                                    <th>
+                                        Record Type
+                                    </th>
+
+                                    <th>
+                                        Diagnosis
+                                    </th>
+
+                                    <th>
+                                        Treatment
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="medicalTableBody"
+                            >
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         EMPTY STATE
+                    ================================================== -->
+
+                    <div
+                        class="medical-empty-state clay-small"
+                        id="medicalEmptyState"
+                    >
+
+                        <div class="medical-empty-icon clay-icon">
+
+                            📋
+
+                        </div>
+
+                        <h4>
+                            No Medical Records Found
+                        </h4>
+
+                        <p>
+                            Add a medical record or change your search.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 MEDICAL MODAL
+            ================================================== -->
+
+            <div
+                class="medical-modal-overlay"
+                id="medicalModal"
+            >
+
+                <div class="medical-modal clay-modal">
+
+
+                    <!-- MODAL HEADER -->
+
+                    <div class="medical-modal-header">
+
+                        <div>
+
+                            <p class="medical-page-label">
+                                MEDICAL RECORD
+                            </p>
+
+                            <h2 id="modalTitle">
+                                Add Medical Record
+                            </h2>
+
+                            <p>
+                                Enter the pet's medical information below.
+                            </p>
+
+                        </div>
+
+
+                        <!-- CLOSE -->
+
+                        <button
+                            type="button"
+                            class="medical-modal-close clay-btn"
+                            id="closeMedicalModal"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         FORM
+                    ================================================== -->
+
+                    <form
+                        id="medicalForm"
+                        novalidate
+                    >
+
+
+                        <!-- =================================================
+                             PATIENT INFORMATION
+                        ================================================== -->
+
+                        <div class="medical-form-section">
+
+                            <h3>
+                                Patient Information
+                            </h3>
+
+
+                            <div class="medical-form-grid">
+
+
+                                <!-- PET -->
+
+                                <div class="medical-input-group">
+
+                                    <label for="medicalPet">
+                                        Pet
+                                    </label>
+
+                                    <select
+                                        id="medicalPet"
+                                        class="clay-select"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Pet
+                                        </option>
+
+                                    </select>
+
+                                    <small>
+                                        Select a registered pet
+                                    </small>
+
+                                </div>
+
+
+                                <!-- DATE -->
+
+                                <div class="medical-input-group">
+
+                                    <label for="medicalDate">
+                                        Record Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="medicalDate"
+                                        class="clay-input"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             CONSULTATION INFORMATION
+                        ================================================== -->
+
+                        <div class="medical-form-section">
+
+                            <h3>
+                                Consultation Information
+                            </h3>
+
+
+                            <div class="medical-form-grid">
+
+
+                                <!-- VETERINARIAN -->
+
+                                <div class="medical-input-group">
+
+                                    <label for="veterinarian">
+                                        Veterinarian
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="veterinarian"
+                                        class="clay-input"
+                                        placeholder="Enter veterinarian name"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <!-- RECORD TYPE -->
+
+                                <div class="medical-input-group">
+
+                                    <label for="recordType">
+                                        Record Type
+                                    </label>
+
+                                    <select
+                                        id="recordType"
+                                        class="clay-select"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Record Type
+                                        </option>
+
+                                        <option value="Consultation">
+                                            Consultation
+                                        </option>
+
+                                        <option value="General Checkup">
+                                            General Checkup
+                                        </option>
+
+                                        <option value="Treatment">
+                                            Treatment
+                                        </option>
+
+                                        <option value="Follow-up">
+                                            Follow-up
+                                        </option>
+
+                                        <option value="Emergency">
+                                            Emergency
+                                        </option>
+
+                                        <option value="Surgery">
+                                            Surgery
+                                        </option>
+
+                                        <option value="Other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <!-- DIAGNOSIS -->
+
+                                <div
+                                    class="medical-input-group medical-full-width"
+                                >
+
+                                    <label for="diagnosis">
+                                        Diagnosis
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="diagnosis"
+                                        class="clay-input"
+                                        placeholder="Enter diagnosis"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <!-- TREATMENT -->
+
+                                <div
+                                    class="medical-input-group medical-full-width"
+                                >
+
+                                    <label for="treatment">
+                                        Treatment / Procedure
+                                    </label>
+
+                                    <textarea
+                                        id="treatment"
+                                        class="clay-input"
+                                        rows="3"
+                                        placeholder="Enter treatment or procedure performed"
+                                        required
+                                    ></textarea>
+
+                                </div>
+
+
+                                <!-- NOTES -->
+
+                                <div
+                                    class="medical-input-group medical-full-width"
+                                >
+
+                                    <label for="medicalNotes">
+                                        Notes
+                                    </label>
+
+                                    <textarea
+                                        id="medicalNotes"
+                                        class="clay-input"
+                                        rows="3"
+                                        placeholder="Enter additional medical notes"
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             ACTIONS
+                        ================================================== -->
+
+                        <div class="medical-modal-actions">
+
+
+                            <!-- CANCEL -->
+
+                            <button
+                                type="button"
+                                class="medical-cancel-button clay-btn"
+                                id="cancelMedicalButton"
+                            >
+                                Cancel
+                            </button>
+
+
+                            <!-- SAVE -->
+
+                            <button
+                                type="submit"
+                                class="medical-save-button clay-btn clay-btn-primary"
+                                id="saveMedicalButton"
+                            >
+                                Save Medical Record
+                            </button>
+
+                        </div>
+
+
+                        <!-- FORM MESSAGE -->
+
+                        <p
+                            class="medical-form-message"
+                            id="medicalFormMessage"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer clay-small">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- MEDICAL RECORDS JAVASCRIPT -->
+
+    <script src="../../js/client-medical-records.js"></script>
+
+</body>
+
+</html>

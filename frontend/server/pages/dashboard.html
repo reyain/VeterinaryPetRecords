@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Administrator Dashboard - Veterinary Pet Records System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-dashboard.css"
+    >
+
+</head>
+
+
+<body class="server-page">
+
+    <div class="server-layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="server-sidebar">
+
+            <div class="server-brand">
+
+                <div class="server-brand-icon">
+                    🐾
+                </div>
+
+                <div class="server-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <nav class="server-navigation">
+
+                <p class="server-navigation-title">
+                    ADMINISTRATION
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="server-nav-item active"
+                >
+
+                    <span class="server-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="staff-accounts.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        👥
+                    </span>
+
+                    <span>
+                        Staff Accounts
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="online-users.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        🟢
+                    </span>
+
+                    <span>
+                        Online Users
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="audit-logs.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="server-configuration.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Server Configuration
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <div class="server-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="server-logout-button"
+                    id="logoutButton"
+                >
+
+                    ↪
+                    &nbsp;
+                    Logout
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main class="server-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="server-header">
+
+                <div class="server-header-left">
+
+                    <div>
+
+                        <h1>
+                            Administrator Dashboard
+                        </h1>
+
+                        <p>
+                            Monitor and configure the veterinary
+                            pet records server.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="server-user-area">
+
+                    <div
+                        class="server-user-avatar"
+                        id="userAvatar"
+                    >
+                        A
+                    </div>
+
+
+                    <div class="server-user-details">
+
+                        <strong id="userName">
+                            Administrator
+                        </strong>
+
+                        <span id="userRole">
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 WELCOME
+            ================================================== -->
+
+            <section class="server-welcome">
+
+                <h2 id="welcomeMessage">
+                    Welcome, Administrator
+                </h2>
+
+                <p>
+                    Manage staff access, monitor system activity,
+                    review reports, and configure the server.
+                </p>
+
+            </section>
+
+
+            <!-- =================================================
+                 SUMMARY
+            ================================================== -->
+
+            <section class="server-summary-grid">
+
+
+                <div class="server-summary-card">
+
+                    <div class="server-summary-top">
+
+                        <div class="server-summary-icon">
+                            👥
+                        </div>
+
+                    </div>
+
+                    <span class="server-summary-label">
+                        Staff Accounts
+                    </span>
+
+                    <strong
+                        class="server-summary-value"
+                        id="staffAccountCount"
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="server-summary-card">
+
+                    <div class="server-summary-top">
+
+                        <div class="server-summary-icon">
+                            🟢
+                        </div>
+
+                    </div>
+
+                    <span class="server-summary-label">
+                        Online Users
+                    </span>
+
+                    <strong
+                        class="server-summary-value"
+                        id="onlineUserCount"
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="server-summary-card">
+
+                    <div class="server-summary-top">
+
+                        <div class="server-summary-icon">
+                            🐾
+                        </div>
+
+                    </div>
+
+                    <span class="server-summary-label">
+                        Registered Pets
+                    </span>
+
+                    <strong
+                        class="server-summary-value"
+                        id="petCount"
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="server-summary-card">
+
+                    <div class="server-summary-top">
+
+                        <div class="server-summary-icon">
+                            📋
+                        </div>
+
+                    </div>
+
+                    <span class="server-summary-label">
+                        Audit Logs
+                    </span>
+
+                    <strong
+                        class="server-summary-value"
+                        id="auditLogCount"
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 DASHBOARD CONTENT
+            ================================================== -->
+
+            <div class="server-dashboard-grid">
+
+
+                <!-- =================================================
+                     QUICK ACTIONS
+                ================================================== -->
+
+                <section class="server-panel">
+
+                    <div class="server-panel-header">
+
+                        <h3>
+                            Administrator Quick Actions
+                        </h3>
+
+                        <p>
+                            Frequently used server functions
+                        </p>
+
+                    </div>
+
+
+                    <div class="server-quick-actions">
+
+
+                        <a
+                            href="staff-accounts.html"
+                            class="server-action-button"
+                        >
+
+                            <span class="server-action-icon">
+                                👥
+                            </span>
+
+                            <span>
+                                Staff Accounts
+                            </span>
+
+                        </a>
+
+
+                        <a
+                            href="online-users.html"
+                            class="server-action-button"
+                        >
+
+                            <span class="server-action-icon">
+                                🟢
+                            </span>
+
+                            <span>
+                                Online Users
+                            </span>
+
+                        </a>
+
+
+                        <a
+                            href="audit-logs.html"
+                            class="server-action-button"
+                        >
+
+                            <span class="server-action-icon">
+                                📋
+                            </span>
+
+                            <span>
+                                Audit Logs
+                            </span>
+
+                        </a>
+
+
+                        <a
+                            href="reports.html"
+                            class="server-action-button"
+                        >
+
+                            <span class="server-action-icon">
+                                📊
+                            </span>
+
+                            <span>
+                                Reports
+                            </span>
+
+                        </a>
+
+
+                        <a
+                            href="server-configuration.html"
+                            class="server-action-button"
+                        >
+
+                            <span class="server-action-icon">
+                                ⚙
+                            </span>
+
+                            <span>
+                                Server Configuration
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     RECENT ACTIVITY
+                ================================================== -->
+
+                <section class="server-panel">
+
+                    <div class="server-panel-header">
+
+                        <h3>
+                            Recent System Activity
+                        </h3>
+
+                        <p>
+                            Latest actions performed in the system
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="server-activity-list"
+                        id="recentActivityList"
+                    >
+
+                        <div class="server-activity-item">
+
+                            <div class="server-activity-icon">
+                                ℹ
+                            </div>
+
+                            <div class="server-activity-text">
+
+                                <strong>
+                                    No recent activity
+                                </strong>
+
+                                <span>
+                                    Activity will appear here
+                                    after database integration.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SERVER STATUS -->
+
+                    <div class="server-status">
+
+                        <div class="server-status-row">
+
+                            <span>
+                                Web Server
+                            </span>
+
+                            <strong id="webServerStatus">
+                                Running
+                            </strong>
+
+                        </div>
+
+
+                        <div class="server-status-row">
+
+                            <span>
+                                Database
+                            </span>
+
+                            <strong id="databaseStatus">
+                                Checking...
+                            </strong>
+
+                        </div>
+
+
+                        <div class="server-status-row">
+
+                            <span>
+                                Application
+                            </span>
+
+                            <strong>
+                                Online
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script src="../../js/server-dashboard.js"></script>
+
+</body>
+
+</html>

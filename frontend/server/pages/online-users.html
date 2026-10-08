@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Online Users - Veterinary Pet Records System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-dashboard.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-online-users.css"
+    >
+
+</head>
+
+
+<body class="server-page">
+
+    <div class="server-layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="server-sidebar">
+
+            <div class="server-brand">
+
+                <div class="server-brand-icon">
+                    🐾
+                </div>
+
+                <div class="server-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <nav class="server-navigation">
+
+                <p class="server-navigation-title">
+                    ADMINISTRATION
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="staff-accounts.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        👥
+                    </span>
+
+                    <span>
+                        Staff Accounts
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="online-users.html"
+                    class="server-nav-item active"
+                >
+
+                    <span class="server-nav-icon">
+                        🟢
+                    </span>
+
+                    <span>
+                        Online Users
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="audit-logs.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="server-configuration.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Server Configuration
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <div class="server-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="server-logout-button"
+                    id="logoutButton"
+                >
+
+                    ↪
+                    &nbsp;
+                    Logout
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main class="server-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="server-header">
+
+                <div class="server-header-left">
+
+                    <div>
+
+                        <h1>
+                            Online Users
+                        </h1>
+
+                        <p>
+                            Monitor users currently connected to the system.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="server-user-area">
+
+                    <div
+                        class="server-user-avatar"
+                        id="userAvatar"
+                    >
+                        A
+                    </div>
+
+
+                    <div class="server-user-details">
+
+                        <strong id="userName">
+                            Administrator
+                        </strong>
+
+                        <span id="userRole">
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="online-content">
+
+
+                <!-- =================================================
+                     PAGE HEADING
+                ================================================== -->
+
+                <section class="online-page-heading">
+
+                    <div>
+
+                        <p class="online-page-label">
+                            SESSION MONITORING
+                        </p>
+
+                        <h2>
+                            Currently Online Users
+                        </h2>
+
+                        <p>
+                            Monitor active user sessions connected
+                            to the veterinary records system.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="online-refresh-button"
+                        id="refreshOnlineUsersButton"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </section>
+
+
+                <!-- =================================================
+                     SUMMARY CARDS
+                ================================================== -->
+
+                <section class="online-summary-grid">
+
+
+                    <div class="online-summary-card">
+
+                        <div class="online-summary-icon">
+                            🟢
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Online
+                            </span>
+
+                            <strong id="totalOnlineCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="online-summary-card">
+
+                        <div class="online-summary-icon">
+                            👨‍💼
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Front Desk
+                            </span>
+
+                            <strong id="frontDeskOnlineCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="online-summary-card">
+
+                        <div class="online-summary-icon">
+                            🩺
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Veterinarians
+                            </span>
+
+                            <strong id="veterinarianOnlineCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="online-summary-card">
+
+                        <div class="online-summary-icon">
+                            🔐
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Administrator
+                            </span>
+
+                            <strong id="administratorOnlineCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     TOOLBAR
+                ================================================== -->
+
+                <section class="online-toolbar">
+
+                    <div class="online-search">
+
+                        <input
+                            type="search"
+                            id="onlineUserSearch"
+                            placeholder="Search by name, username, role, or user ID..."
+                        >
+
+                    </div>
+
+
+                    <div
+                        class="online-record-count"
+                        id="onlineRecordCount"
+                    >
+
+                        Showing
+
+                        <strong id="visibleOnlineCount">
+                            0
+                        </strong>
+
+                        users
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     MESSAGE
+                ================================================== -->
+
+                <p
+                    id="onlineUserMessage"
+                    class="online-user-message"
+                ></p>
+
+
+                <!-- =================================================
+                     USERS TABLE
+                ================================================== -->
+
+                <section class="online-table-panel">
+
+                    <div class="online-table-wrapper">
+
+                        <table class="online-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        User ID
+                                    </th>
+
+                                    <th>
+                                        Full Name
+                                    </th>
+
+                                    <th>
+                                        Username
+                                    </th>
+
+                                    <th>
+                                        Role
+                                    </th>
+
+                                    <th>
+                                        Login Time
+                                    </th>
+
+                                    <th>
+                                        Last Activity
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="onlineUsersTableBody">
+                            </tbody>
+
+                        </table>
+
+
+                        <div
+                            class="online-empty-state"
+                            id="onlineEmptyState"
+                        >
+
+                            <div class="online-empty-icon">
+                                🟢
+                            </div>
+
+                            <h3>
+                                No Online Users
+                            </h3>
+
+                            <p>
+                                There are currently no active user sessions.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     SESSION INFORMATION
+                ================================================== -->
+
+                <section class="session-information-panel">
+
+                    <div class="session-information-header">
+
+                        <div>
+
+                            <p class="online-page-label">
+                                SESSION INFORMATION
+                            </p>
+
+                            <h3>
+                                Online User Monitoring
+                            </h3>
+
+                            <p>
+                                This page displays active sessions that are
+                                currently connected to the system.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="session-information-grid">
+
+
+                        <div class="session-information-item">
+
+                            <strong>
+                                Login Time
+                            </strong>
+
+                            <span>
+                                Time when the user session started.
+                            </span>
+
+                        </div>
+
+
+                        <div class="session-information-item">
+
+                            <strong>
+                                Last Activity
+                            </strong>
+
+                            <span>
+                                Most recent recorded activity of the session.
+                            </span>
+
+                        </div>
+
+
+                        <div class="session-information-item">
+
+                            <strong>
+                                Session Status
+                            </strong>
+
+                            <span>
+                                Indicates whether the session is currently active.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../../js/server-online-users.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Administrator Reports - Veterinary Pet Records System
+    </title>
+
+
+    <!-- BASE CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+
+    <!-- SERVER DASHBOARD CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-dashboard.css"
+    >
+
+
+    <!-- SERVER REPORTS CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-reports.css"
+    >
+
+</head>
+
+
+<body class="server-page">
+
+    <div class="server-layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="server-sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="server-brand">
+
+                <div class="server-brand-icon">
+                    🐾
+                </div>
+
+                <div class="server-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="server-navigation">
+
+                <p class="server-navigation-title">
+                    ADMINISTRATION
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="staff-accounts.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        👥
+                    </span>
+
+                    <span>
+                        Staff Accounts
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="online-users.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        🟢
+                    </span>
+
+                    <span>
+                        Online Users
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="audit-logs.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="server-nav-item active"
+                >
+
+                    <span class="server-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="server-configuration.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Server Configuration
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- LOGOUT -->
+
+            <div class="server-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="server-logout-button"
+                    id="logoutButton"
+                >
+
+                    ↪
+                    &nbsp;
+                    Logout
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main class="server-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="server-header">
+
+                <div class="server-header-left">
+
+                    <div>
+
+                        <h1>
+                            Administrator Reports
+                        </h1>
+
+                        <p>
+                            Review system-wide administrative
+                            and operational information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="server-user-area">
+
+                    <div
+                        class="server-user-avatar"
+                        id="userAvatar"
+                    >
+                        A
+                    </div>
+
+
+                    <div class="server-user-details">
+
+                        <strong id="userName">
+                            Administrator
+                        </strong>
+
+                        <span id="userRole">
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="server-report-content">
+
+
+                <!-- =================================================
+                     PAGE HEADING
+                ================================================== -->
+
+                <section class="server-report-heading">
+
+                    <div>
+
+                        <p class="server-report-label">
+                            ADMINISTRATIVE REPORTING
+                        </p>
+
+                        <h2>
+                            System Reports
+                        </h2>
+
+                        <p>
+                            Generate summaries covering staff,
+                            system activity, audit records,
+                            and veterinary records.
+                        </p>
+
+                    </div>
+
+
+                    <div class="server-report-header-actions">
+
+                        <button
+                            type="button"
+                            class="server-report-button"
+                            id="refreshServerReportButton"
+                        >
+                            ↻ Refresh
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="server-report-button primary"
+                            id="printServerReportButton"
+                        >
+                            🖨 Print
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     REPORT FILTER
+                ================================================== -->
+
+                <section class="server-report-filter">
+
+                    <div class="server-report-filter-header">
+
+                        <div>
+
+                            <h3>
+                                Report Selection
+                            </h3>
+
+                            <p>
+                                Select the type of report to generate.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-report-filter-grid">
+
+
+                        <!-- REPORT TYPE -->
+
+                        <div class="server-report-input-group">
+
+                            <label for="serverReportType">
+                                Report Type
+                            </label>
+
+                            <select id="serverReportType">
+
+                                <option value="overview">
+                                    System Overview
+                                </option>
+
+                                <option value="staff">
+                                    Staff Account Report
+                                </option>
+
+                                <option value="user-activity">
+                                    User Activity Report
+                                </option>
+
+                                <option value="audit">
+                                    Audit Activity Report
+                                </option>
+
+                                <option value="records">
+                                    Veterinary Records Report
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- START DATE -->
+
+                        <div class="server-report-input-group">
+
+                            <label for="serverReportStartDate">
+                                Start Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="serverReportStartDate"
+                            >
+
+                        </div>
+
+
+                        <!-- END DATE -->
+
+                        <div class="server-report-input-group">
+
+                            <label for="serverReportEndDate">
+                                End Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="serverReportEndDate"
+                            >
+
+                        </div>
+
+
+                        <!-- GENERATE -->
+
+                        <div class="server-report-filter-actions">
+
+                            <button
+                                type="button"
+                                class="server-report-generate-button"
+                                id="generateServerReportButton"
+                            >
+                                Generate Report
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="server-report-reset-button"
+                                id="resetServerReportButton"
+                            >
+                                Reset
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <p
+                        id="serverReportMessage"
+                        class="server-report-message"
+                    ></p>
+
+                </section>
+
+
+                <!-- =================================================
+                     SUMMARY CARDS
+                ================================================== -->
+
+                <section class="server-report-summary-grid">
+
+
+                    <div class="server-report-summary-card">
+
+                        <div class="server-report-summary-icon">
+                            👥
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Staff Accounts
+                            </span>
+
+                            <strong id="serverReportStaffCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-report-summary-card">
+
+                        <div class="server-report-summary-icon">
+                            🟢
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Online Users
+                            </span>
+
+                            <strong id="serverReportOnlineCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-report-summary-card">
+
+                        <div class="server-report-summary-icon">
+                            📋
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Audit Logs
+                            </span>
+
+                            <strong id="serverReportAuditCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-report-summary-card">
+
+                        <div class="server-report-summary-icon">
+                            🐾
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Pets
+                            </span>
+
+                            <strong id="serverReportPetCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-report-summary-card">
+
+                        <div class="server-report-summary-icon">
+                            💉
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Vaccinations
+                            </span>
+
+                            <strong id="serverReportVaccinationCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     REPORT DISTRIBUTION
+                ================================================== -->
+
+                <div class="server-report-grid">
+
+
+                    <!-- STAFF DISTRIBUTION -->
+
+                    <section class="server-report-panel">
+
+                        <div class="server-report-panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Staff Role Distribution
+                                </h3>
+
+                                <p>
+                                    Current staff accounts by role.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="server-report-bars">
+
+
+                            <div class="server-report-bar-row">
+
+                                <div class="server-report-bar-label">
+
+                                    <span>
+                                        Front Desk
+                                    </span>
+
+                                    <strong
+                                        id="frontDeskRoleValue"
+                                    >
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="server-report-bar-track">
+
+                                    <div
+                                        class="server-report-bar"
+                                        id="frontDeskRoleBar"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="server-report-bar-row">
+
+                                <div class="server-report-bar-label">
+
+                                    <span>
+                                        Veterinarian
+                                    </span>
+
+                                    <strong
+                                        id="veterinarianRoleValue"
+                                    >
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="server-report-bar-track">
+
+                                    <div
+                                        class="server-report-bar"
+                                        id="veterinarianRoleBar"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- AUDIT DISTRIBUTION -->
+
+                    <section class="server-report-panel">
+
+                        <div class="server-report-panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Audit Activity
+                                </h3>
+
+                                <p>
+                                    Distribution of recorded system actions.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="server-audit-stat-list">
+
+
+                            <div class="server-audit-stat-item">
+
+                                <span>
+                                    Create
+                                </span>
+
+                                <strong id="serverCreateCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div class="server-audit-stat-item">
+
+                                <span>
+                                    Update
+                                </span>
+
+                                <strong id="serverUpdateCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div class="server-audit-stat-item">
+
+                                <span>
+                                    Delete
+                                </span>
+
+                                <strong id="serverDeleteCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div class="server-audit-stat-item">
+
+                                <span>
+                                    Login
+                                </span>
+
+                                <strong id="serverLoginCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+                <!-- =================================================
+                     GENERATED REPORT
+                ================================================== -->
+
+                <section
+                    class="server-generated-report"
+                    id="serverPrintableReport"
+                >
+
+                    <div class="server-generated-report-header">
+
+                        <div>
+
+                            <p class="server-report-label">
+                                GENERATED REPORT
+                            </p>
+
+                            <h3 id="serverGeneratedReportTitle">
+                                System Overview
+                            </h3>
+
+                            <p id="serverGeneratedReportDescription">
+                                Current summary of the veterinary
+                                pet records system.
+                            </p>
+
+                        </div>
+
+
+                        <div class="server-generated-date">
+
+                            <span>
+                                Generated
+                            </span>
+
+                            <strong id="serverGeneratedDate">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-report-table-wrapper">
+
+                        <table class="server-report-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Category
+                                    </th>
+
+                                    <th>
+                                        Total
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Remarks
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="serverReportTableBody"
+                            >
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../../js/server-reports.js"></script>
+
+</body>
+
+</html>

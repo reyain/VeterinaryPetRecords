@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vaccinations - Veterinary Pet Records System</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/vaccinations.css">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-icon">
+                    🐾
+                </div>
+
+                <div class="brand-text">
+                    <h2>VetPet Records</h2>
+                    <span>Veterinary System</span>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-navigation">
+
+                <p class="navigation-title">MAIN</p>
+
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="owners.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Owners</span>
+                </a>
+
+                <a href="pets.html" class="nav-item">
+                    <span class="nav-icon">🐕</span>
+                    <span>Pets</span>
+                </a>
+
+                <a href="medical-records.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Medical Records</span>
+                </a>
+
+                <a href="vaccinations.html" class="nav-item active">
+                    <span class="nav-icon">💉</span>
+                    <span>Vaccinations</span>
+                </a>
+
+                <p class="navigation-title">SYSTEM</p>
+
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+
+                <a href="audit-logs.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span>Audit Logs</span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    class="logout-button"
+                    type="button"
+                    onclick="logout()"
+                >
+                    <span>↪</span>
+                    <span>Logout</span>
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN CONTENT
+        ========================== -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
+
+            <header class="dashboard-header">
+
+                <div class="header-left">
+
+                    <button
+                        class="menu-button"
+                        id="menuButton"
+                        type="button"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+
+                        <h1>Vaccination Records</h1>
+
+                        <p>
+                            Record and monitor pet vaccination history
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <div class="user-profile">
+
+                        <div class="user-avatar">
+                            A
+                        </div>
+
+                        <div class="user-details">
+                            <strong>Administrator</strong>
+                            <span>System User</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 PAGE CONTENT
+            ========================== -->
+
+            <section class="page-content">
+
+                <!-- PAGE HEADING -->
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <p class="page-label">VACCINATION HISTORY</p>
+
+                        <h2>Pet Vaccinations</h2>
+
+                        <p class="page-description">
+                            View vaccination history and upcoming vaccination due dates.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="add-vaccination-button"
+                        id="openVaccinationForm"
+                    >
+                        <span>＋</span>
+                        Add Vaccination
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     SUMMARY CARDS
+                ========================== -->
+
+                <div class="vaccination-summary-grid">
+
+                    <div class="vaccination-summary-card">
+
+                        <div class="vaccination-summary-icon">
+                            💉
+                        </div>
+
+                        <div>
+                            <span>Total Vaccinations</span>
+                            <strong id="totalVaccinations">0</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="vaccination-summary-card">
+
+                        <div class="vaccination-summary-icon due-icon">
+                            📅
+                        </div>
+
+                        <div>
+                            <span>Due Soon</span>
+                            <strong id="dueSoonCount">0</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="vaccination-summary-card">
+
+                        <div class="vaccination-summary-icon overdue-icon">
+                            ⚠
+                        </div>
+
+                        <div>
+                            <span>Overdue</span>
+                            <strong id="overdueCount">0</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     TOOLBAR
+                ========================== -->
+
+                <div class="vaccination-toolbar">
+
+                    <div class="search-wrapper">
+
+                        <span class="search-icon">⌕</span>
+
+                        <input
+                            type="text"
+                            id="vaccinationSearch"
+                            placeholder="Search by pet, owner, vaccine, or veterinarian..."
+                        >
+
+                    </div>
+
+
+                    <div class="vaccination-count">
+
+                        <span>Records</span>
+
+                        <strong id="vaccinationCount">0</strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     TABLE
+                ========================== -->
+
+                <section class="vaccination-table-panel">
+
+                    <div class="table-header">
+
+                        <div>
+
+                            <h3>Vaccination History</h3>
+
+                            <p>
+                                Recorded vaccines and scheduled due dates
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table class="vaccination-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Vaccination ID</th>
+                                    <th>Pet</th>
+                                    <th>Owner</th>
+                                    <th>Vaccine</th>
+                                    <th>Date Given</th>
+                                    <th>Next Due Date</th>
+                                    <th>Veterinarian</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="vaccinationTableBody">
+
+                                <!-- Temporary sample record -->
+
+                                <tr
+                                    data-date-given="2026-10-08"
+                                    data-next-due="2027-10-08"
+                                >
+
+                                    <td>VAC-0001</td>
+
+                                    <td>
+
+                                        <div class="vaccination-pet-cell">
+
+                                            <div class="vaccination-pet-avatar">
+                                                🐕
+                                            </div>
+
+                                            <div>
+
+                                                <strong>Max</strong>
+
+                                                <small>
+                                                    PET-0001
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+                                        Juan Dela Cruz
+                                    </td>
+
+                                    <td>
+                                        Anti-Rabies
+                                    </td>
+
+                                    <td>
+                                        2026-10-08
+                                    </td>
+
+                                    <td>
+                                        2027-10-08
+                                    </td>
+
+                                    <td>
+                                        Dr. Sample Vet
+                                    </td>
+
+                                    <td>
+                                        <span class="vaccine-status up-to-date-status">
+                                            Up to Date
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <button
+                                                type="button"
+                                                class="table-action view-action"
+                                                title="View vaccination"
+                                            >
+                                                👁
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="table-action edit-action"
+                                                title="Edit vaccination"
+                                            >
+                                                ✎
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="table-action delete-action"
+                                                title="Delete vaccination"
+                                            >
+                                                🗑
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- EMPTY STATE -->
+
+                    <div
+                        class="table-empty"
+                        id="vaccinationTableEmpty"
+                        style="display: none;"
+                    >
+
+                        <div class="empty-record-icon">
+                            💉
+                        </div>
+
+                        <h4>No Vaccination Records Found</h4>
+
+                        <p>
+                            Vaccination records matching your search
+                            will appear here.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =========================
+                 ADD VACCINATION MODAL
+            ========================== -->
+
+            <div
+                class="modal-overlay"
+                id="vaccinationModal"
+            >
+
+                <div class="vaccination-modal">
+
+                    <!-- HEADER -->
+
+                    <div class="modal-header">
+
+                        <div>
+
+                            <p class="page-label">NEW RECORD</p>
+
+                            <h2>Add Vaccination Record</h2>
+
+                            <p>
+                                Enter the vaccination information below.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="closeVaccinationForm"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <!-- FORM -->
+
+                    <form id="vaccinationForm">
+
+                        <!-- PET INFORMATION -->
+
+                        <div class="form-section">
+
+                            <h3>Pet Information</h3>
+
+                            <div class="form-grid">
+
+                                <div class="input-group">
+
+                                    <label for="vaccinationPet">
+                                        Pet
+                                    </label>
+
+                                    <select
+                                        id="vaccinationPet"
+                                        name="vaccinationPet"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Pet
+                                        </option>
+
+                                        <option value="PET-0001">
+                                            PET-0001 — Max
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="vaccineName">
+                                        Vaccine Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="vaccineName"
+                                        name="vaccineName"
+                                        placeholder="Enter vaccine name"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- VACCINATION DETAILS -->
+
+                        <div class="form-section">
+
+                            <h3>Vaccination Details</h3>
+
+                            <div class="form-grid">
+
+                                <div class="input-group">
+
+                                    <label for="dateGiven">
+                                        Date Given
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="dateGiven"
+                                        name="dateGiven"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="nextDueDate">
+                                        Next Due Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="nextDueDate"
+                                        name="nextDueDate"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="vaccinationVeterinarian">
+                                        Veterinarian
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="vaccinationVeterinarian"
+                                        name="vaccinationVeterinarian"
+                                        placeholder="Enter veterinarian name"
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="vaccinationStatus">
+                                        Status
+                                    </label>
+
+                                    <select
+                                        id="vaccinationStatus"
+                                        name="vaccinationStatus"
+                                    >
+
+                                        <option value="Up to Date">
+                                            Up to Date
+                                        </option>
+
+                                        <option value="Due Soon">
+                                            Due Soon
+                                        </option>
+
+                                        <option value="Overdue">
+                                            Overdue
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="input-group full-width">
+
+                                    <label for="vaccinationRemarks">
+                                        Remarks
+                                    </label>
+
+                                    <textarea
+                                        id="vaccinationRemarks"
+                                        name="vaccinationRemarks"
+                                        rows="3"
+                                        placeholder="Enter additional vaccination notes or remarks"
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTIONS -->
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="cancel-button"
+                                id="cancelVaccinationForm"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="save-vaccination-button"
+                            >
+                                Save Vaccination
+                            </button>
+
+                        </div>
+
+
+                        <p
+                            id="vaccinationFormMessage"
+                            class="vaccination-form-message"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <footer class="dashboard-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/vaccinations.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Server Configuration - Veterinary Pet Records System
+    </title>
+
+
+    <!-- BASE CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+
+    <!-- SERVER DASHBOARD CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-dashboard.css"
+    >
+
+
+    <!-- SERVER CONFIGURATION CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-configuration.css"
+    >
+
+</head>
+
+
+<body class="server-page">
+
+    <div class="server-layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="server-sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="server-brand">
+
+                <div class="server-brand-icon">
+                    🐾
+                </div>
+
+                <div class="server-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="server-navigation">
+
+                <p class="server-navigation-title">
+                    ADMINISTRATION
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="staff-accounts.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        👥
+                    </span>
+
+                    <span>
+                        Staff Accounts
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="online-users.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        🟢
+                    </span>
+
+                    <span>
+                        Online Users
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="audit-logs.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="server-configuration.html"
+                    class="server-nav-item active"
+                >
+
+                    <span class="server-nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Server Configuration
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- LOGOUT -->
+
+            <div class="server-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="server-logout-button"
+                    id="logoutButton"
+                >
+
+                    ↪
+                    &nbsp;
+                    Logout
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main class="server-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="server-header">
+
+                <div class="server-header-left">
+
+                    <div>
+
+                        <h1>
+                            Server Configuration
+                        </h1>
+
+                        <p>
+                            Configure the server and database connection settings.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="server-user-area">
+
+                    <div
+                        class="server-user-avatar"
+                        id="userAvatar"
+                    >
+                        A
+                    </div>
+
+
+                    <div class="server-user-details">
+
+                        <strong id="userName">
+                            Administrator
+                        </strong>
+
+                        <span id="userRole">
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="server-config-content">
+
+
+                <!-- =================================================
+                     PAGE HEADING
+                ================================================== -->
+
+                <section class="server-config-heading">
+
+                    <div>
+
+                        <p class="server-config-label">
+                            SERVER MANAGEMENT
+                        </p>
+
+                        <h2>
+                            Server & Database Configuration
+                        </h2>
+
+                        <p>
+                            Review the application server, LAN,
+                            and database connection settings.
+                        </p>
+
+                    </div>
+
+
+                    <div class="server-config-status-badge">
+
+                        <span
+                            class="status-indicator"
+                            id="serverStatusIndicator"
+                        ></span>
+
+                        <span id="serverStatusText">
+                            Running
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     STATUS CARDS
+                ================================================== -->
+
+                <section class="server-config-summary-grid">
+
+
+                    <div class="server-config-summary-card">
+
+                        <div class="server-config-summary-icon">
+                            🌐
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Web Server
+                            </span>
+
+                            <strong id="webServerStatus">
+                                Running
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-config-summary-card">
+
+                        <div class="server-config-summary-icon">
+                            🗄
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Database
+                            </span>
+
+                            <strong id="databaseStatus">
+                                Not Connected
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-config-summary-card">
+
+                        <div class="server-config-summary-icon">
+                            🔗
+                        </div>
+
+                        <div>
+
+                            <span>
+                                LAN Access
+                            </span>
+
+                            <strong id="lanStatus">
+                                Enabled
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-config-summary-card">
+
+                        <div class="server-config-summary-icon">
+                            ⚙
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Application
+                            </span>
+
+                            <strong>
+                                Online
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     SERVER SETTINGS
+                ================================================== -->
+
+                <section class="server-config-panel">
+
+                    <div class="server-config-panel-header">
+
+                        <div>
+
+                            <p class="server-config-label">
+                                APPLICATION SERVER
+                            </p>
+
+                            <h3>
+                                Server Settings
+                            </h3>
+
+                            <p>
+                                Configure the address and port used
+                                by the Node.js web server.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-config-form-grid">
+
+
+                        <!-- HOST -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="serverHost">
+                                Server Host / IP Address
+                            </label>
+
+                            <input
+                                type="text"
+                                id="serverHost"
+                                placeholder="127.0.0.1"
+                            >
+
+                            <small>
+                                Use the Server PC's LAN IP when
+                                Client PCs connect through the network.
+                            </small>
+
+                        </div>
+
+
+                        <!-- PORT -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="serverPort">
+                                Server Port
+                            </label>
+
+                            <input
+                                type="number"
+                                id="serverPort"
+                                min="1"
+                                max="65535"
+                                placeholder="3000"
+                            >
+
+                            <small>
+                                Current development port is 3000.
+                            </small>
+
+                        </div>
+
+
+                        <!-- LAN -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="lanAccess">
+                                LAN Access
+                            </label>
+
+                            <select id="lanAccess">
+
+                                <option value="enabled">
+                                    Enabled
+                                </option>
+
+                                <option value="disabled">
+                                    Disabled
+                                </option>
+
+                            </select>
+
+                            <small>
+                                Indicates whether the server is intended
+                                to accept Client PC connections.
+                            </small>
+
+                        </div>
+
+
+                        <!-- APPLICATION -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="applicationName">
+                                Application Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="applicationName"
+                                placeholder="Veterinary Pet Records System"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     DATABASE SETTINGS
+                ================================================== -->
+
+                <section class="server-config-panel">
+
+                    <div class="server-config-panel-header">
+
+                        <div>
+
+                            <p class="server-config-label">
+                                DATABASE CONNECTION
+                            </p>
+
+                            <h3>
+                                MySQL / XAMPP Settings
+                            </h3>
+
+                            <p>
+                                Configure the connection information
+                                used by the backend and C# Bridge.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="server-config-form-grid">
+
+
+                        <!-- DATABASE HOST -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="databaseHost">
+                                Database Host
+                            </label>
+
+                            <input
+                                type="text"
+                                id="databaseHost"
+                                placeholder="127.0.0.1"
+                            >
+
+                        </div>
+
+
+                        <!-- DATABASE PORT -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="databasePort">
+                                Database Port
+                            </label>
+
+                            <input
+                                type="number"
+                                id="databasePort"
+                                min="1"
+                                max="65535"
+                                placeholder="3306"
+                            >
+
+                        </div>
+
+
+                        <!-- DATABASE NAME -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="databaseName">
+                                Database Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="databaseName"
+                                placeholder="veterinary_pet_records"
+                            >
+
+                        </div>
+
+
+                        <!-- DATABASE USER -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="databaseUsername">
+                                Database Username
+                            </label>
+
+                            <input
+                                type="text"
+                                id="databaseUsername"
+                                placeholder="root"
+                            >
+
+                        </div>
+
+
+                        <!-- PASSWORD -->
+
+                        <div class="server-config-input-group">
+
+                            <label for="databasePassword">
+                                Database Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="databasePassword"
+                                placeholder="Enter database password"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     CONNECTION INFORMATION
+                ================================================== -->
+
+                <section class="server-config-panel">
+
+
+                    <div class="server-config-panel-header">
+
+                        <div>
+
+                            <p class="server-config-label">
+                                CONNECTION INFORMATION
+                            </p>
+
+                            <h3>
+                                Client Connection
+                            </h3>
+
+                            <p>
+                                Use this address when connecting a
+                                Client PC to the Server PC through LAN.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="connection-display">
+
+                        <span>
+                            Client Access URL
+                        </span>
+
+                        <strong id="clientAccessUrl">
+                            http://localhost:3000
+                        </strong>
+
+                    </div>
+
+
+                    <div class="connection-notice">
+
+                        <strong>
+                            LAN Connection Notice
+                        </strong>
+
+                        <p>
+                            When deployed on the network, replace
+                            <strong>localhost</strong> with the
+                            Server PC's LAN IP address.
+                            For example:
+                            <strong>http://192.168.50.1:3000</strong>
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     ACTIONS
+                ================================================== -->
+
+                <section class="server-config-actions">
+
+                    <button
+                        type="button"
+                        class="server-config-reset-button"
+                        id="resetConfigurationButton"
+                    >
+                        Reset
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="server-config-save-button"
+                        id="saveConfigurationButton"
+                    >
+                        Save Configuration
+                    </button>
+
+                </section>
+
+
+                <p
+                    class="server-config-message"
+                    id="configurationMessage"
+                ></p>
+
+
+                <!-- =================================================
+                     INFORMATION
+                ================================================== -->
+
+                <section class="server-config-information">
+
+                    <div>
+
+                        <p class="server-config-label">
+                            ADMINISTRATOR RESPONSIBILITY
+                        </p>
+
+                        <h3>
+                            Server Operation
+                        </h3>
+
+                        <p>
+                            The Administrator is responsible for
+                            configuring the server connection,
+                            starting the required server and database
+                            services, and monitoring system availability.
+                            Staff members use the Client System to perform
+                            veterinary record operations.
+                        </p>
+
+                    </div>
+
+
+                    <div class="server-config-information-grid">
+
+
+                        <div>
+
+                            <strong>
+                                Node.js / Express
+                            </strong>
+
+                            <span>
+                                Hosts the web application and backend
+                                services.
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                MySQL / XAMPP
+                            </strong>
+
+                            <span>
+                                Provides the database used to store
+                                system records.
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                C# Bridge
+                            </strong>
+
+                            <span>
+                                Provides communication between the
+                                Node.js backend and Core DLL.
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                LAN
+                            </strong>
+
+                            <span>
+                                Allows Client PCs to access the system
+                                from the Server PC.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../../js/server-configuration.js"></script>
+
+</body>
+
+</html>

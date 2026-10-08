@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Owners - Veterinary Pet Records System
+    </title>
+
+
+    <!-- Existing Dashboard Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-dashboard.css"
+    >
+
+    <!-- Existing Global Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <!-- Owner Management Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-owners.css"
+    >
+
+    <!-- Claymorphism Theme -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-clay.css"
+    >
+
+</head>
+
+
+<body class="client-page">
+
+    <div class="client-layout">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside
+            class="client-sidebar clay"
+            id="clientSidebar"
+        >
+
+            <!-- BRAND -->
+
+            <div class="client-brand clay-small">
+
+                <div class="client-brand-icon clay-icon">
+                    🐾
+                </div>
+
+                <div class="client-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Client System
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="client-navigation">
+
+                <p class="navigation-title">
+                    MAIN
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="dashboard.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- OWNERS -->
+
+                <a
+                    href="owners.html"
+                    class="client-nav-item active clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        👤
+                    </span>
+
+                    <span>
+                        Owners
+                    </span>
+
+                </a>
+
+
+                <!-- PETS -->
+
+                <a
+                    href="pets.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        🐕
+                    </span>
+
+                    <span>
+                        Pets
+                    </span>
+
+                </a>
+
+
+                <!-- MEDICAL RECORDS -->
+
+                <a
+                    href="medical-records.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Medical Records
+                    </span>
+
+                </a>
+
+
+                <!-- VACCINATIONS -->
+
+                <a
+                    href="vaccinations.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        💉
+                    </span>
+
+                    <span>
+                        Vaccinations
+                    </span>
+
+                </a>
+
+
+                <!-- REPORTS -->
+
+                <a
+                    href="reports.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR BOTTOM -->
+
+            <div class="client-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="client-logout-button clay-btn"
+                    id="logoutButton"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="client-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="client-header clay-small">
+
+                <div class="client-header-left">
+
+                    <button
+                        type="button"
+                        class="client-menu-button clay-btn"
+                        id="menuButton"
+                    >
+                        ☰
+                    </button>
+
+
+                    <div>
+
+                        <h1>
+                            Owner Management
+                        </h1>
+
+                        <p>
+                            Register and manage pet owner records
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER INFORMATION -->
+
+                <div class="client-header-user">
+
+                    <div
+                        class="client-user-avatar clay-small"
+                        id="userAvatar"
+                    >
+                        U
+                    </div>
+
+
+                    <div class="client-user-details">
+
+                        <strong id="userName">
+                            User
+                        </strong>
+
+                        <span id="userRole">
+                            Staff
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="client-content">
+
+
+                <!-- =================================================
+                     PAGE HEADING
+                ================================================== -->
+
+                <div class="owner-page-heading clay-card">
+
+                    <div>
+
+                        <p class="owner-page-label">
+                            CLIENT RECORDS
+                        </p>
+
+                        <h2>
+                            Pet Owners
+                        </h2>
+
+                        <p>
+                            Create, view, update, and delete registered
+                            pet owner information.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ADD OWNER -->
+
+                    <button
+                        type="button"
+                        class="owner-primary-button clay-btn clay-btn-primary"
+                        id="addOwnerButton"
+                    >
+
+                        <span>
+                            ＋
+                        </span>
+
+                        Add New Owner
+
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     SUMMARY CARDS
+                ================================================== -->
+
+                <div class="owner-summary-grid">
+
+
+                    <!-- TOTAL OWNERS -->
+
+                    <div class="owner-summary-card clay-card">
+
+                        <div class="owner-summary-icon clay-icon">
+
+                            👤
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Owners
+                            </span>
+
+                            <strong id="totalOwnerCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTIVE OWNERS -->
+
+                    <div class="owner-summary-card clay-card">
+
+                        <div class="owner-summary-icon active-owner-icon clay-icon">
+
+                            ✓
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Active Owners
+                            </span>
+
+                            <strong id="activeOwnerCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- INACTIVE OWNERS -->
+
+                    <div class="owner-summary-card clay-card">
+
+                        <div class="owner-summary-icon inactive-owner-icon clay-icon">
+
+                            –
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Inactive Owners
+                            </span>
+
+                            <strong id="inactiveOwnerCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     TOOLBAR
+                ================================================== -->
+
+                <div class="owner-toolbar clay-small">
+
+
+                    <!-- SEARCH -->
+
+                    <div class="owner-search">
+
+                        <span>
+                            ⌕
+                        </span>
+
+                        <input
+                            type="text"
+                            id="ownerSearch"
+                            class="clay-input"
+                            placeholder="Search by name, contact number, email, or address..."
+                        >
+
+                    </div>
+
+
+                    <!-- RECORD COUNT -->
+
+                    <div class="owner-record-count clay-small">
+
+                        <span>
+                            Showing
+                        </span>
+
+                        <strong id="visibleOwnerCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     OWNER TABLE
+                ================================================== -->
+
+                <section class="owner-table-panel clay-card">
+
+
+                    <!-- TABLE HEADER -->
+
+                    <div class="owner-table-header">
+
+                        <div>
+
+                            <h3>
+                                Owner Records
+                            </h3>
+
+                            <p>
+                                Registered pet owners
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TABLE -->
+
+                    <div class="owner-table-wrapper clay-table">
+
+                        <table class="owner-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Owner ID
+                                    </th>
+
+                                    <th>
+                                        Full Name
+                                    </th>
+
+                                    <th>
+                                        Contact Number
+                                    </th>
+
+                                    <th>
+                                        Email
+                                    </th>
+
+                                    <th>
+                                        Address
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="ownerTableBody"
+                            >
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         EMPTY STATE
+                    ================================================== -->
+
+                    <div
+                        class="owner-empty-state clay-small"
+                        id="ownerEmptyState"
+                    >
+
+                        <div class="owner-empty-icon clay-icon">
+
+                            👤
+
+                        </div>
+
+                        <h4>
+                            No Owner Records Found
+                        </h4>
+
+                        <p>
+                            Add a new owner or change your search.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 OWNER MODAL
+            ================================================== -->
+
+            <div
+                class="owner-modal-overlay"
+                id="ownerModal"
+            >
+
+                <div class="owner-modal clay-modal">
+
+
+                    <!-- MODAL HEADER -->
+
+                    <div class="owner-modal-header">
+
+                        <div>
+
+                            <p class="owner-page-label">
+                                OWNER RECORD
+                            </p>
+
+                            <h2 id="modalTitle">
+                                Add New Owner
+                            </h2>
+
+                            <p>
+                                Enter the owner's information below.
+                            </p>
+
+                        </div>
+
+
+                        <!-- CLOSE -->
+
+                        <button
+                            type="button"
+                            class="owner-modal-close clay-btn"
+                            id="closeOwnerModal"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         OWNER FORM
+                    ================================================== -->
+
+                    <form
+                        id="ownerForm"
+                        novalidate
+                    >
+
+
+                        <!-- =================================================
+                             PERSONAL INFORMATION
+                        ================================================== -->
+
+                        <div class="owner-form-section">
+
+                            <h3>
+                                Personal Information
+                            </h3>
+
+
+                            <div class="owner-form-grid">
+
+
+                                <!-- FIRST NAME -->
+
+                                <div class="owner-input-group">
+
+                                    <label for="firstName">
+                                        First Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        class="clay-input"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <!-- MIDDLE NAME -->
+
+                                <div class="owner-input-group">
+
+                                    <label for="middleName">
+                                        Middle Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="middleName"
+                                        class="clay-input"
+                                    >
+
+                                </div>
+
+
+                                <!-- LAST NAME -->
+
+                                <div class="owner-input-group">
+
+                                    <label for="lastName">
+                                        Last Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="lastName"
+                                        class="clay-input"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <!-- NAME EXTENSION -->
+
+                                <div class="owner-input-group">
+
+                                    <label for="nameExtension">
+                                        Name Extension
+                                    </label>
+
+                                    <select
+                                        id="nameExtension"
+                                        class="clay-select"
+                                    >
+
+                                        <option value="">
+                                            None
+                                        </option>
+
+                                        <option value="Jr.">
+                                            Jr.
+                                        </option>
+
+                                        <option value="Sr.">
+                                            Sr.
+                                        </option>
+
+                                        <option value="II">
+                                            II
+                                        </option>
+
+                                        <option value="III">
+                                            III
+                                        </option>
+
+                                        <option value="IV">
+                                            IV
+                                        </option>
+
+                                        <option value="V">
+                                            V
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             CONTACT INFORMATION
+                        ================================================== -->
+
+                        <div class="owner-form-section">
+
+                            <h3>
+                                Contact Information
+                            </h3>
+
+
+                            <div class="owner-form-grid">
+
+
+                                <!-- CONTACT NUMBER -->
+
+                                <div class="owner-input-group">
+
+                                    <label for="contactNumber">
+                                        Contact Number
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        id="contactNumber"
+                                        class="clay-input"
+                                        maxlength="11"
+                                        inputmode="numeric"
+                                        placeholder="09XXXXXXXXX"
+                                        required
+                                    >
+
+                                    <small>
+                                        Exactly 11 digits
+                                    </small>
+
+                                </div>
+
+
+                                <!-- EMAIL -->
+
+                                <div class="owner-input-group">
+
+                                    <label for="email">
+                                        Email Address
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        class="clay-input"
+                                        placeholder="example@email.com"
+                                    >
+
+                                </div>
+
+
+                                <!-- ADDRESS -->
+
+                                <div
+                                    class="owner-input-group owner-full-width"
+                                >
+
+                                    <label for="address">
+                                        Complete Address
+                                    </label>
+
+                                    <textarea
+                                        id="address"
+                                        class="clay-textarea"
+                                        rows="3"
+                                        required
+                                    ></textarea>
+
+                                </div>
+
+
+                                <!-- STATUS -->
+
+                                <div class="owner-input-group">
+
+                                    <label for="ownerStatus">
+                                        Status
+                                    </label>
+
+                                    <select
+                                        id="ownerStatus"
+                                        class="clay-select"
+                                    >
+
+                                        <option value="Active">
+                                            Active
+                                        </option>
+
+                                        <option value="Inactive">
+                                            Inactive
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             FORM BUTTONS
+                        ================================================== -->
+
+                        <div class="owner-modal-actions">
+
+
+                            <!-- CANCEL -->
+
+                            <button
+                                type="button"
+                                class="owner-cancel-button clay-btn"
+                                id="cancelOwnerButton"
+                            >
+                                Cancel
+                            </button>
+
+
+                            <!-- SAVE -->
+
+                            <button
+                                type="submit"
+                                class="owner-save-button clay-btn clay-btn-primary"
+                                id="saveOwnerButton"
+                            >
+                                Save Owner
+                            </button>
+
+                        </div>
+
+
+                        <!-- FORM MESSAGE -->
+
+                        <p
+                            class="owner-form-message"
+                            id="ownerFormMessage"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer clay-small">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="../../js/client-owners.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,585 @@
+/* =========================================================
+   SERVER CONFIGURATION
+   ========================================================= */
+
+.server-config-content {
+    width: 100%;
+}
+
+
+/* =========================================================
+   PAGE HEADING
+   ========================================================= */
+
+.server-config-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 26px;
+
+    margin-bottom: 22px;
+
+    border-radius: 24px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.90),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+.server-config-label {
+    margin: 0 0 6px;
+
+    color: #596275;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.3px;
+}
+
+.server-config-heading h2 {
+    margin: 0 0 7px;
+
+    color: #111827;
+
+    font-size: 23px;
+}
+
+.server-config-heading p:last-child {
+    margin: 0;
+
+    color: #4b5563;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   STATUS BADGE
+   ========================================================= */
+
+.server-config-status-badge {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 11px 16px;
+
+    border-radius: 15px;
+
+    background: #dff5e8;
+
+    color: #17633a;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.80),
+        5px 5px 10px rgba(190, 197, 210, 0.45);
+}
+
+.status-indicator {
+    width: 9px;
+
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #35a866;
+
+    box-shadow:
+        0 0 0 4px rgba(53, 168, 102, 0.12);
+}
+
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
+.server-config-summary-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+}
+
+.server-config-summary-card {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 19px;
+
+    border-radius: 21px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -8px -8px 16px rgba(255, 255, 255, 0.85),
+        8px 8px 16px rgba(190, 197, 210, 0.55);
+}
+
+.server-config-summary-icon {
+    width: 46px;
+
+    height: 46px;
+
+    min-width: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #edf1f6;
+
+    font-size: 19px;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.50);
+}
+
+.server-config-summary-card span {
+    display: block;
+
+    color: #4b5563;
+
+    font-size: 12px;
+}
+
+.server-config-summary-card strong {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #111827;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   CONFIGURATION PANELS
+   ========================================================= */
+
+.server-config-panel {
+    padding: 23px;
+
+    margin-bottom: 20px;
+
+    border-radius: 22px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -9px -9px 18px rgba(255, 255, 255, 0.85),
+        9px 9px 18px rgba(190, 197, 210, 0.58);
+}
+
+.server-config-panel-header {
+    margin-bottom: 20px;
+}
+
+.server-config-panel-header h3 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 18px;
+}
+
+.server-config-panel-header p:last-child {
+    margin: 5px 0 0;
+
+    color: #4b5563;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+
+.server-config-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 17px;
+}
+
+.server-config-input-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #111827;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.server-config-input-group input,
+.server-config-input-group select {
+    width: 100%;
+
+    height: 45px;
+
+    padding: 0 14px;
+
+    box-sizing: border-box;
+
+    border: none;
+
+    outline: none;
+
+    border-radius: 15px;
+
+    background: #edf1f6;
+
+    color: #111827;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.42);
+}
+
+.server-config-input-group input:focus,
+.server-config-input-group select:focus {
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.42),
+        0 0 0 3px rgba(124, 140, 255, 0.16);
+}
+
+.server-config-input-group small {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   CONNECTION DISPLAY
+   ========================================================= */
+
+.connection-display {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    background: #e1e5ff;
+
+    box-shadow:
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        6px 6px 12px rgba(190, 197, 210, 0.50);
+}
+
+.connection-display span {
+    color: #374151;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.connection-display strong {
+    color: #111827;
+
+    font-size: 14px;
+
+    word-break: break-all;
+}
+
+
+/* =========================================================
+   CONNECTION NOTICE
+   ========================================================= */
+
+.connection-notice {
+    margin-top: 14px;
+
+    padding: 16px;
+
+    border-radius: 17px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.75),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.32);
+}
+
+.connection-notice strong {
+    color: #111827;
+
+    font-size: 12px;
+}
+
+.connection-notice p {
+    margin: 6px 0 0;
+
+    color: #4b5563;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.server-config-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 5px;
+}
+
+.server-config-reset-button,
+.server-config-save-button {
+    height: 47px;
+
+    padding: 0 20px;
+
+    border: none;
+
+    border-radius: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        6px 6px 12px rgba(190, 197, 210, 0.50);
+}
+
+.server-config-reset-button {
+    background: #edf1f6;
+
+    color: #374151;
+}
+
+.server-config-save-button {
+    background: #e1e5ff;
+
+    color: #111827;
+}
+
+.server-config-reset-button:hover,
+.server-config-save-button:hover {
+    transform: translateY(-1px);
+}
+
+.server-config-reset-button:active,
+.server-config-save-button:active {
+    transform: translateY(1px);
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.75),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.35);
+}
+
+
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
+.server-config-message {
+    min-height: 21px;
+
+    margin: 10px 3px 0;
+
+    color: #17633a;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   INFORMATION PANEL
+   ========================================================= */
+
+.server-config-information {
+    padding: 22px;
+
+    margin-top: 20px;
+
+    border-radius: 22px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -9px -9px 18px rgba(255, 255, 255, 0.85),
+        9px 9px 18px rgba(190, 197, 210, 0.58);
+}
+
+.server-config-information h3 {
+    margin: 0;
+
+    color: #111827;
+}
+
+.server-config-information > div:first-child > p:last-child {
+    margin: 6px 0 0;
+
+    color: #4b5563;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+.server-config-information-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 13px;
+
+    margin-top: 18px;
+}
+
+.server-config-information-grid > div {
+    padding: 15px;
+
+    border-radius: 17px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.75),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.32);
+}
+
+.server-config-information-grid strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #111827;
+
+    font-size: 12px;
+}
+
+.server-config-information-grid span {
+    display: block;
+
+    color: #4b5563;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .server-config-summary-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .server-config-information-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .server-config-heading {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .server-config-status-badge {
+        width: fit-content;
+    }
+
+    .server-config-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .connection-display {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .server-config-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .server-config-information-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .server-config-actions {
+        flex-direction: column;
+    }
+
+    .server-config-reset-button,
+    .server-config-save-button {
+        width: 100%;
+    }
+
+}

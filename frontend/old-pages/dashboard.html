@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Veterinary Pet Records System</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-icon">
+                    🐾
+                </div>
+
+                <div class="brand-text">
+                    <h2>VetPet Records</h2>
+                    <span>Veterinary System</span>
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="navigation-title">MAIN</p>
+
+                <a href="dashboard.html" class="nav-item active">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="owners.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Owners</span>
+                </a>
+
+                <a href="pets.html" class="nav-item">
+                    <span class="nav-icon">🐕</span>
+                    <span>Pets</span>
+                </a>
+
+                <a href="medical-records.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Medical Records</span>
+                </a>
+
+                <a href="vaccinations.html" class="nav-item">
+                    <span class="nav-icon">💉</span>
+                    <span>Vaccinations</span>
+                </a>
+
+                <p class="navigation-title">SYSTEM</p>
+
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+
+                <a href="audit-logs.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span>Audit Logs</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button class="logout-button" onclick="logout()">
+                    <span>↪</span>
+                    <span>Logout</span>
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN CONTENT
+        ========================== -->
+
+        <main class="main-content">
+
+            <!-- Top Header -->
+
+            <header class="dashboard-header">
+
+                <div class="header-left">
+
+                    <button
+                        class="menu-button"
+                        id="menuButton"
+                        type="button"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+                        <h1>Dashboard</h1>
+
+                        <p>
+                            Overview of the veterinary records system
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <div class="user-profile">
+
+                        <div class="user-avatar">
+                            A
+                        </div>
+
+                        <div class="user-details">
+                            <strong>Administrator</strong>
+                            <span>System User</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- Dashboard Content -->
+
+            <section class="dashboard-content">
+
+                <!-- Welcome Banner -->
+
+                <div class="welcome-banner">
+
+                    <div>
+
+                        <p class="banner-label">
+                            SYSTEM OVERVIEW
+                        </p>
+
+                        <h2>
+                            Welcome to Veterinary Pet Records
+                        </h2>
+
+                        <p>
+                            Monitor pet information, medical records,
+                            vaccinations, and system activities from one place.
+                        </p>
+
+                    </div>
+
+                    <div class="banner-icon">
+                        🐾
+                    </div>
+
+                </div>
+
+
+                <!-- Summary Cards -->
+
+                <div class="summary-grid">
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon owner-icon">
+                            👤
+                        </div>
+
+                        <div class="summary-information">
+                            <span>Total Owners</span>
+                            <strong>0</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon pet-icon">
+                            🐕
+                        </div>
+
+                        <div class="summary-information">
+                            <span>Total Pets</span>
+                            <strong>0</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon medical-icon">
+                            📋
+                        </div>
+
+                        <div class="summary-information">
+                            <span>Medical Records</span>
+                            <strong>0</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon vaccine-icon">
+                            💉
+                        </div>
+
+                        <div class="summary-information">
+                            <span>Vaccinations</span>
+                            <strong>0</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Lower Dashboard Area -->
+
+                <div class="dashboard-grid">
+
+                    <!-- Recent Activity -->
+
+                    <section class="dashboard-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+                                <h3>Recent Activity</h3>
+
+                                <p>
+                                    Latest activity in the system
+                                </p>
+                            </div>
+
+                            <a href="audit-logs.html">
+                                View All
+                            </a>
+
+                        </div>
+
+
+                        <div class="activity-empty">
+
+                            <div class="empty-icon">
+                                📝
+                            </div>
+
+                            <h4>No Recent Activity</h4>
+
+                            <p>
+                                System activities will appear here
+                                once records are added.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Quick Actions -->
+
+                    <section class="dashboard-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+                                <h3>Quick Actions</h3>
+
+                                <p>
+                                    Frequently used functions
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="quick-actions">
+
+                            <a
+                                href="owners.html"
+                                class="quick-action"
+                            >
+                                <span>👤</span>
+                                <div>
+                                    <strong>Manage Owners</strong>
+                                    <small>View owner records</small>
+                                </div>
+                            </a>
+
+
+                            <a
+                                href="pets.html"
+                                class="quick-action"
+                            >
+                                <span>🐕</span>
+                                <div>
+                                    <strong>Manage Pets</strong>
+                                    <small>View registered pets</small>
+                                </div>
+                            </a>
+
+
+                            <a
+                                href="medical-records.html"
+                                class="quick-action"
+                            >
+                                <span>📋</span>
+                                <div>
+                                    <strong>Medical Records</strong>
+                                    <small>View medical history</small>
+                                </div>
+                            </a>
+
+
+                            <a
+                                href="vaccinations.html"
+                                class="quick-action"
+                            >
+                                <span>💉</span>
+                                <div>
+                                    <strong>Vaccinations</strong>
+                                    <small>View vaccination records</small>
+                                </div>
+                            </a>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+            </section>
+
+
+            <!-- Footer -->
+
+            <footer class="dashboard-footer">
+                <p>
+                    Veterinary Pet Records System
+                </p>
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+
+</body>
+</html>

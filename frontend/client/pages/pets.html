@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Pets - Veterinary Pet Records System
+    </title>
+
+
+    <!-- Global Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <!-- Client Dashboard Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-dashboard.css"
+    >
+
+    <!-- Pet Management Styles -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-pets.css"
+    >
+
+    <!-- Claymorphism Theme -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-clay.css"
+    >
+
+</head>
+
+
+<body class="client-page">
+
+    <div class="client-layout">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside
+            class="client-sidebar clay"
+            id="clientSidebar"
+        >
+
+            <!-- BRAND -->
+
+            <div class="client-brand clay-small">
+
+                <div class="client-brand-icon clay-icon">
+                    🐾
+                </div>
+
+                <div class="client-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Client System
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="client-navigation">
+
+                <p class="navigation-title">
+                    MAIN
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="dashboard.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- OWNERS -->
+
+                <a
+                    href="owners.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        👤
+                    </span>
+
+                    <span>
+                        Owners
+                    </span>
+
+                </a>
+
+
+                <!-- PETS - ACTIVE -->
+
+                <a
+                    href="pets.html"
+                    class="client-nav-item active clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        🐕
+                    </span>
+
+                    <span>
+                        Pets
+                    </span>
+
+                </a>
+
+
+                <!-- MEDICAL RECORDS -->
+
+                <a
+                    href="medical-records.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Medical Records
+                    </span>
+
+                </a>
+
+
+                <!-- VACCINATIONS -->
+
+                <a
+                    href="vaccinations.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        💉
+                    </span>
+
+                    <span>
+                        Vaccinations
+                    </span>
+
+                </a>
+
+
+                <!-- REPORTS -->
+
+                <a
+                    href="reports.html"
+                    class="client-nav-item clay-small"
+                >
+
+                    <span class="client-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR BOTTOM -->
+
+            <div class="client-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="client-logout-button clay-btn"
+                    id="logoutButton"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="client-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="client-header clay-small">
+
+                <div class="client-header-left">
+
+                    <button
+                        type="button"
+                        class="client-menu-button clay-btn"
+                        id="menuButton"
+                    >
+                        ☰
+                    </button>
+
+
+                    <div>
+
+                        <h1>
+                            Pet Management
+                        </h1>
+
+                        <p>
+                            Register and manage pet records
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER -->
+
+                <div class="client-header-user">
+
+                    <div
+                        class="client-user-avatar clay-small"
+                        id="userAvatar"
+                    >
+                        U
+                    </div>
+
+
+                    <div class="client-user-details">
+
+                        <strong id="userName">
+                            User
+                        </strong>
+
+                        <span id="userRole">
+                            Staff
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="client-content">
+
+
+                <!-- =================================================
+                     PAGE HEADING
+                ================================================== -->
+
+                <div class="pet-page-heading clay-card">
+
+                    <div>
+
+                        <p class="pet-page-label">
+                            CLIENT RECORDS
+                        </p>
+
+                        <h2>
+                            Registered Pets
+                        </h2>
+
+                        <p>
+                            Create, view, update, and delete registered
+                            pet information.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ADD PET -->
+
+                    <button
+                        type="button"
+                        class="pet-primary-button clay-btn clay-btn-primary"
+                        id="addPetButton"
+                    >
+
+                        <span>
+                            ＋
+                        </span>
+
+                        Add New Pet
+
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     SUMMARY
+                ================================================== -->
+
+                <div class="pet-summary-grid">
+
+
+                    <!-- TOTAL PETS -->
+
+                    <div class="pet-summary-card clay-card">
+
+                        <div class="pet-summary-icon clay-icon">
+
+                            🐾
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Pets
+                            </span>
+
+                            <strong id="totalPetCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTIVE PETS -->
+
+                    <div class="pet-summary-card clay-card">
+
+                        <div class="pet-summary-icon active-pet-summary clay-icon">
+
+                            ✓
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Active Pets
+                            </span>
+
+                            <strong id="activePetCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- INACTIVE PETS -->
+
+                    <div class="pet-summary-card clay-card">
+
+                        <div class="pet-summary-icon inactive-pet-summary clay-icon">
+
+                            –
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Inactive Pets
+                            </span>
+
+                            <strong id="inactivePetCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     TOOLBAR
+                ================================================== -->
+
+                <div class="pet-toolbar clay-small">
+
+
+                    <!-- SEARCH -->
+
+                    <div class="pet-search">
+
+                        <span>
+                            ⌕
+                        </span>
+
+                        <input
+                            type="text"
+                            id="petSearch"
+                            class="clay-input"
+                            placeholder="Search by pet name, owner, species, or breed..."
+                        >
+
+                    </div>
+
+
+                    <!-- RECORD COUNT -->
+
+                    <div class="pet-record-count clay-small">
+
+                        <span>
+                            Showing
+                        </span>
+
+                        <strong id="visiblePetCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     PET TABLE
+                ================================================== -->
+
+                <section class="pet-table-panel clay-card">
+
+                    <div class="pet-table-header">
+
+                        <div>
+
+                            <h3>
+                                Pet Records
+                            </h3>
+
+                            <p>
+                                Registered pets and their owner information
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="pet-table-wrapper clay-table">
+
+                        <table class="pet-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Pet ID
+                                    </th>
+
+                                    <th>
+                                        Pet
+                                    </th>
+
+                                    <th>
+                                        Owner
+                                    </th>
+
+                                    <th>
+                                        Species
+                                    </th>
+
+                                    <th>
+                                        Breed
+                                    </th>
+
+                                    <th>
+                                        Sex
+                                    </th>
+
+                                    <th>
+                                        Birth Date
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="petTableBody">
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         EMPTY STATE
+                    ================================================== -->
+
+                    <div
+                        class="pet-empty-state clay-small"
+                        id="petEmptyState"
+                    >
+
+                        <div class="pet-empty-icon clay-icon">
+
+                            🐕
+
+                        </div>
+
+                        <h4>
+                            No Pet Records Found
+                        </h4>
+
+                        <p>
+                            Add a new pet or change your search.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 PET MODAL
+            ================================================== -->
+
+            <div
+                class="pet-modal-overlay"
+                id="petModal"
+            >
+
+                <div class="pet-modal clay-modal">
+
+
+                    <!-- MODAL HEADER -->
+
+                    <div class="pet-modal-header">
+
+                        <div>
+
+                            <p class="pet-page-label">
+                                PET RECORD
+                            </p>
+
+                            <h2 id="modalTitle">
+                                Register New Pet
+                            </h2>
+
+                            <p>
+                                Enter the pet's information below.
+                            </p>
+
+                        </div>
+
+
+                        <!-- CLOSE -->
+
+                        <button
+                            type="button"
+                            class="pet-modal-close clay-btn"
+                            id="closePetModal"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         PET FORM
+                    ================================================== -->
+
+                    <form
+                        id="petForm"
+                        novalidate
+                    >
+
+
+                        <!-- PET INFORMATION -->
+
+                        <div class="pet-form-section">
+
+                            <h3>
+                                Pet Information
+                            </h3>
+
+
+                            <div class="pet-form-grid">
+
+
+                                <!-- PET NAME -->
+
+                                <div class="pet-input-group">
+
+                                    <label for="petName">
+                                        Pet Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="petName"
+                                        class="clay-input"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <!-- OWNER -->
+
+                                <div class="pet-input-group">
+
+                                    <label for="ownerSelect">
+                                        Owner
+                                    </label>
+
+                                    <select
+                                        id="ownerSelect"
+                                        class="clay-select"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Owner
+                                        </option>
+
+                                    </select>
+
+                                    <small>
+                                        Select the registered owner
+                                    </small>
+
+                                </div>
+
+
+                                <!-- SPECIES -->
+
+                                <div class="pet-input-group">
+
+                                    <label for="species">
+                                        Species
+                                    </label>
+
+                                    <select
+                                        id="species"
+                                        class="clay-select"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Species
+                                        </option>
+
+                                        <option value="Dog">
+                                            Dog
+                                        </option>
+
+                                        <option value="Cat">
+                                            Cat
+                                        </option>
+
+                                        <option value="Bird">
+                                            Bird
+                                        </option>
+
+                                        <option value="Rabbit">
+                                            Rabbit
+                                        </option>
+
+                                        <option value="Other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <!-- BREED -->
+
+                                <div class="pet-input-group">
+
+                                    <label for="breed">
+                                        Breed
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="breed"
+                                        class="clay-input"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <!-- SEX -->
+
+                                <div class="pet-input-group">
+
+                                    <label for="sex">
+                                        Sex
+                                    </label>
+
+                                    <select
+                                        id="sex"
+                                        class="clay-select"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Sex
+                                        </option>
+
+                                        <option value="Male">
+                                            Male
+                                        </option>
+
+                                        <option value="Female">
+                                            Female
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <!-- BIRTH DATE -->
+
+                                <div class="pet-input-group">
+
+                                    <label for="birthDate">
+                                        Birth Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="birthDate"
+                                        class="clay-input"
+                                    >
+
+                                </div>
+
+
+                                <!-- REGISTRATION STATUS -->
+
+                                <div class="pet-input-group">
+
+                                    <label for="registrationStatus">
+                                        Registration Status
+                                    </label>
+
+                                    <select
+                                        id="registrationStatus"
+                                        class="clay-select"
+                                    >
+
+                                        <option value="Active">
+                                            Active
+                                        </option>
+
+                                        <option value="Inactive">
+                                            Inactive
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             ACTIONS
+                        ================================================== -->
+
+                        <div class="pet-modal-actions">
+
+
+                            <!-- CANCEL -->
+
+                            <button
+                                type="button"
+                                class="pet-cancel-button clay-btn"
+                                id="cancelPetButton"
+                            >
+                                Cancel
+                            </button>
+
+
+                            <!-- SAVE -->
+
+                            <button
+                                type="submit"
+                                class="pet-save-button clay-btn clay-btn-primary"
+                                id="savePetButton"
+                            >
+                                Register Pet
+                            </button>
+
+                        </div>
+
+
+                        <!-- FORM MESSAGE -->
+
+                        <p
+                            class="pet-form-message"
+                            id="petFormMessage"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer clay-small">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- PET JAVASCRIPT -->
+
+    <script src="../../js/client-pets.js"></script>
+
+</body>
+
+</html>

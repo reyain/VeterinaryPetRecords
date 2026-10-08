@@ -1,0 +1,784 @@
+/* =========================================================
+   SERVER / ADMIN DASHBOARD
+   ========================================================= */
+
+.server-page {
+    min-height: 100vh;
+    background: #edf1f6;
+    color: #111827;
+}
+
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.server-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.server-sidebar {
+    width: 270px;
+    min-width: 270px;
+
+    padding: 24px 18px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        10px 0 22px rgba(190, 197, 210, 0.45);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.server-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px;
+
+    margin-bottom: 28px;
+
+    border-radius: 22px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -8px -8px 16px rgba(255, 255, 255, 0.85),
+        8px 8px 16px rgba(190, 197, 210, 0.55);
+}
+
+.server-brand-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.50);
+
+    font-size: 22px;
+}
+
+.server-brand-text h2 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 17px;
+}
+
+.server-brand-text span {
+    color: #4b5563;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.server-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.server-navigation-title {
+    margin: 8px 10px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    color: #4b5563;
+}
+
+
+.server-nav-item {
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 0 16px;
+
+    box-sizing: border-box;
+
+    border-radius: 18px;
+
+    text-decoration: none;
+
+    background: #edf1f6;
+
+    color: #1f2937;
+
+    box-shadow:
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        6px 6px 12px rgba(190, 197, 210, 0.50);
+
+    transition:
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.server-nav-item:hover {
+    color: #111827;
+
+    box-shadow:
+        -8px -8px 16px rgba(255, 255, 255, 0.90),
+        8px 8px 16px rgba(190, 197, 210, 0.60);
+}
+
+
+.server-nav-item.active {
+    background: #e1e5ff;
+
+    color: #111827;
+
+    box-shadow:
+        -7px -7px 14px rgba(255, 255, 255, 0.90),
+        7px 7px 14px rgba(190, 197, 210, 0.60);
+}
+
+
+.server-nav-icon {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -4px -4px 8px rgba(255, 255, 255, 0.85),
+        4px 4px 8px rgba(190, 197, 210, 0.45);
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+   ========================================================= */
+
+.server-sidebar-bottom {
+    margin-top: 30px;
+}
+
+.server-logout-button {
+    width: 100%;
+    height: 58px;
+
+    border: none;
+
+    border-radius: 18px;
+
+    background: #edf1f6;
+
+    color: #1f2937;
+
+    font-weight: 700;
+
+    box-shadow:
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        6px 6px 12px rgba(190, 197, 210, 0.50);
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.server-main {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 24px 30px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.server-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 22px;
+
+    margin-bottom: 24px;
+
+    border-radius: 22px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -8px -8px 16px rgba(255, 255, 255, 0.85),
+        8px 8px 16px rgba(190, 197, 210, 0.55);
+}
+
+.server-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.server-header h1 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 25px;
+}
+
+.server-header p {
+    margin: 4px 0 0;
+
+    color: #4b5563;
+
+    font-size: 13px;
+}
+
+.server-user-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.server-user-avatar {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: #edf1f6;
+
+    color: #111827;
+
+    font-weight: 800;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.50);
+}
+
+.server-user-details strong,
+.server-user-details span {
+    display: block;
+}
+
+.server-user-details strong {
+    color: #111827;
+}
+
+.server-user-details span {
+    margin-top: 2px;
+
+    color: #4b5563;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   WELCOME PANEL
+   ========================================================= */
+
+.server-welcome {
+    padding: 28px;
+
+    margin-bottom: 24px;
+
+    border-radius: 24px;
+
+    background: #e1e5ff;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.90),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+.server-welcome h2 {
+    margin: 0 0 8px;
+
+    color: #111827;
+
+    font-size: 24px;
+}
+
+.server-welcome p {
+    margin: 0;
+
+    color: #374151;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+.server-summary-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 24px;
+}
+
+.server-summary-card {
+    padding: 20px;
+
+    border-radius: 22px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -9px -9px 18px rgba(255, 255, 255, 0.85),
+        9px 9px 18px rgba(190, 197, 210, 0.58);
+}
+
+.server-summary-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 16px;
+}
+
+.server-summary-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.50);
+}
+
+.server-summary-label {
+    color: #4b5563;
+
+    font-size: 13px;
+}
+
+.server-summary-value {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #111827;
+
+    font-size: 27px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   CONTENT GRID
+   ========================================================= */
+
+.server-dashboard-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(300px, 1fr);
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   PANELS
+   ========================================================= */
+
+.server-panel {
+    padding: 22px;
+
+    border-radius: 22px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -9px -9px 18px rgba(255, 255, 255, 0.85),
+        9px 9px 18px rgba(190, 197, 210, 0.58);
+}
+
+.server-panel-header {
+    margin-bottom: 18px;
+}
+
+.server-panel-header h3 {
+    margin: 0;
+
+    color: #111827;
+}
+
+.server-panel-header p {
+    margin: 5px 0 0;
+
+    color: #4b5563;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+.server-quick-actions {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 12px;
+}
+
+.server-action-button {
+    min-height: 70px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 18px;
+
+    background: #edf1f6;
+
+    color: #111827;
+
+    text-decoration: none;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.45);
+}
+
+.server-action-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        -4px -4px 8px rgba(255, 255, 255, 0.85),
+        4px 4px 8px rgba(190, 197, 210, 0.45);
+}
+
+
+/* =========================================================
+   RECENT ACTIVITY
+   ========================================================= */
+
+.server-activity-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.server-activity-item {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    border-radius: 16px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        inset -3px -3px 6px rgba(255, 255, 255, 0.70),
+        inset 3px 3px 6px rgba(190, 197, 210, 0.30);
+}
+
+.server-activity-icon {
+    width: 34px;
+    height: 34px;
+
+    min-width: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #edf1f6;
+}
+
+.server-activity-text strong,
+.server-activity-text span {
+    display: block;
+}
+
+.server-activity-text strong {
+    color: #111827;
+
+    font-size: 13px;
+}
+
+.server-activity-text span {
+    color: #4b5563;
+
+    font-size: 11px;
+
+    margin-top: 2px;
+}
+
+
+/* =========================================================
+   SERVER STATUS
+   ========================================================= */
+
+.server-status {
+    margin-top: 20px;
+
+    padding: 16px;
+
+    border-radius: 18px;
+
+    background: #edf1f6;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.75),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.35);
+}
+
+.server-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 7px 0;
+}
+
+.server-status-row span {
+    color: #4b5563;
+
+    font-size: 13px;
+}
+
+.server-status-row strong {
+    color: #111827;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .server-summary-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .server-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .server-sidebar {
+        width: 230px;
+        min-width: 230px;
+    }
+
+    .server-main {
+        padding: 18px;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .server-layout {
+        display: block;
+    }
+
+    .server-sidebar {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .server-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .server-quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .server-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+}
+/* =========================================================
+   FIXED SERVER SIDEBAR
+   Sidebar stays visible while main content scrolls
+   ========================================================= */
+
+.server-sidebar {
+    position: fixed !important;
+
+    top: 0;
+    left: 0;
+
+    width: 270px !important;
+    min-width: 270px !important;
+
+    height: 100vh;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    z-index: 1000;
+}
+
+
+/* =========================================================
+   MAIN CONTENT OFFSET
+   Prevent main content from going underneath sidebar
+   ========================================================= */
+
+.server-main {
+    margin-left: 270px;
+
+    width: calc(100% - 270px);
+
+    min-height: 100vh;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   SIDEBAR SCROLLBAR
+   ========================================================= */
+
+.server-sidebar::-webkit-scrollbar {
+    width: 7px;
+}
+
+.server-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.server-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(120, 128, 145, 0.25);
+
+    border-radius: 10px;
+}
+
+.server-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(120, 128, 145, 0.40);
+}
+
+
+/* =========================================================
+   MOBILE / SMALL SCREEN
+   Return sidebar to normal layout
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    .server-sidebar {
+        position: relative !important;
+
+        top: auto;
+        left: auto;
+
+        width: 100% !important;
+        min-width: 0 !important;
+
+        height: auto;
+
+        overflow: visible;
+    }
+
+    .server-main {
+        margin-left: 0;
+
+        width: 100%;
+    }
+
+}

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Client Dashboard - Veterinary Pet Records System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <link rel="stylesheet" href="../../css/client-dashboard.css">
+    <link rel="stylesheet" href="../../css/client-clay.css">
+
+</head>
+
+
+<body class="client-page">
+
+    <div class="client-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside
+            class="client-sidebar clay"
+            id="clientSidebar"
+        >
+
+            <!-- BRAND -->
+
+            <div class="client-brand clay-small">
+
+                <div class="client-brand-icon">
+                    🐾
+                </div>
+
+                <div class="client-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Client System
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="client-navigation">
+
+                <p class="navigation-title">
+                    MAIN
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="client-nav-item active clay-small"
+                >
+                    <span class="client-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+                </a>
+
+
+                <a
+                    href="owners.html"
+                    class="client-nav-item clay-small"
+                >
+                    <span class="client-nav-icon">
+                        👤
+                    </span>
+
+                    <span>
+                        Owners
+                    </span>
+                </a>
+
+
+                <a
+                    href="pets.html"
+                    class="client-nav-item clay-small"
+                >
+                    <span class="client-nav-icon">
+                        🐕
+                    </span>
+
+                    <span>
+                        Pets
+                    </span>
+                </a>
+
+
+                <a
+                    href="medical-records.html"
+                    class="client-nav-item clay-small"
+                >
+                    <span class="client-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Medical Records
+                    </span>
+                </a>
+
+
+                <a
+                    href="vaccinations.html"
+                    class="client-nav-item clay-small"
+                >
+                    <span class="client-nav-icon">
+                        💉
+                    </span>
+
+                    <span>
+                        Vaccinations
+                    </span>
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="client-nav-item clay-small"
+                >
+                    <span class="client-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+                </a>
+
+            </nav>
+
+
+            <!-- LOGOUT -->
+
+            <div class="client-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="client-logout-button clay-btn"
+                    id="logoutButton"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN AREA
+        ========================== -->
+
+        <main class="client-main">
+
+
+            <!-- =========================
+                 TOP HEADER
+            ========================== -->
+
+            <header class="client-header clay-small">
+
+                <div class="client-header-left">
+
+                    <button
+                        type="button"
+                        class="client-menu-button clay-btn"
+                        id="menuButton"
+                    >
+                        ☰
+                    </button>
+
+
+                    <div>
+
+                        <h1>
+                            Dashboard
+                        </h1>
+
+                        <p>
+                            Veterinary records and daily operations
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER -->
+
+                <div class="client-header-user">
+
+                    <div
+                        class="client-user-avatar clay-small"
+                        id="userAvatar"
+                    >
+                        U
+                    </div>
+
+
+                    <div class="client-user-details">
+
+                        <strong id="userName">
+                            User
+                        </strong>
+
+                        <span id="userRole">
+                            Staff
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 CONTENT
+            ========================== -->
+
+            <section class="client-content">
+
+
+                <!-- =========================
+                     WELCOME BANNER
+                ========================== -->
+
+                <section class="client-welcome-banner clay-card">
+
+                    <div>
+
+                        <p class="client-banner-label">
+                            CLIENT OPERATIONS
+                        </p>
+
+                        <h2 id="welcomeHeading">
+                            Welcome
+                        </h2>
+
+                        <p id="welcomeDescription">
+                            Manage veterinary records from one place.
+                        </p>
+
+                    </div>
+
+
+                    <div class="client-banner-icon">
+                        🐾
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     SUMMARY CARDS
+                ========================== -->
+
+                <section class="client-summary-grid">
+
+
+                    <!-- OWNERS -->
+
+                    <div class="client-summary-card clay-card">
+
+                        <div
+                            class="client-summary-icon owners-summary clay-icon"
+                        >
+                            👤
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Owners
+                            </span>
+
+                            <strong id="ownerCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PETS -->
+
+                    <div class="client-summary-card clay-card">
+
+                        <div
+                            class="client-summary-icon pets-summary clay-icon"
+                        >
+                            🐕
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Pets
+                            </span>
+
+                            <strong id="petCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MEDICAL -->
+
+                    <div class="client-summary-card clay-card">
+
+                        <div
+                            class="client-summary-icon medical-summary clay-icon"
+                        >
+                            📋
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Medical Records
+                            </span>
+
+                            <strong id="medicalCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- VACCINATIONS -->
+
+                    <div class="client-summary-card clay-card">
+
+                        <div
+                            class="client-summary-icon vaccination-summary clay-icon"
+                        >
+                            💉
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Vaccinations
+                            </span>
+
+                            <strong id="vaccinationCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     MAIN DASHBOARD GRID
+                ========================== -->
+
+                <div class="client-dashboard-grid">
+
+
+                    <!-- RECENT ACTIVITY -->
+
+                    <section class="client-panel activity-panel clay-card">
+
+                        <div class="client-panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Recent Activity
+                                </h3>
+
+                                <p>
+                                    Recent actions performed in the system
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="client-empty-state clay-small">
+
+                            <div class="client-empty-icon">
+                                📝
+                            </div>
+
+                            <h4>
+                                No Recent Activity
+                            </h4>
+
+                            <p>
+                                Recent operational activities will
+                                appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- QUICK ACTIONS -->
+
+                    <section class="client-panel clay-card">
+
+                        <div class="client-panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Quick Actions
+                                </h3>
+
+                                <p>
+                                    Frequently used client functions
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="client-quick-actions">
+
+
+                            <a
+                                href="owners.html"
+                                class="client-quick-action clay-small"
+                            >
+
+                                <div class="quick-action-icon clay-icon">
+                                    👤
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Owner Records
+                                    </strong>
+
+                                    <span>
+                                        Add or manage owners
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+
+                            <a
+                                href="pets.html"
+                                class="client-quick-action clay-small"
+                            >
+
+                                <div class="quick-action-icon clay-icon">
+                                    🐕
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Pet Records
+                                    </strong>
+
+                                    <span>
+                                        Register and manage pets
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+
+                            <a
+                                href="medical-records.html"
+                                class="client-quick-action clay-small"
+                            >
+
+                                <div class="quick-action-icon clay-icon">
+                                    📋
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Medical Records
+                                    </strong>
+
+                                    <span>
+                                        Record medical information
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+
+                            <a
+                                href="vaccinations.html"
+                                class="client-quick-action clay-small"
+                            >
+
+                                <div class="quick-action-icon clay-icon">
+                                    💉
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Vaccinations
+                                    </strong>
+
+                                    <span>
+                                        Record vaccination history
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+
+                            <a
+                                href="reports.html"
+                                class="client-quick-action clay-small"
+                            >
+
+                                <div class="quick-action-icon clay-icon">
+                                    📊
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Overall Reports
+                                    </strong>
+
+                                    <span>
+                                        View system reports
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+                <!-- =========================
+                     SYSTEM INFORMATION
+                ========================== -->
+
+                <section class="client-panel system-information-panel clay-card">
+
+                    <div class="client-panel-header">
+
+                        <div>
+
+                            <h3>
+                                Client System
+                            </h3>
+
+                            <p>
+                                Current workstation information
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="system-information-grid">
+
+
+                        <div class="system-info-item clay-small">
+
+                            <span>
+                                Application
+                            </span>
+
+                            <strong>
+                                Veterinary Pet Records System
+                            </strong>
+
+                        </div>
+
+
+                        <div class="system-info-item clay-small">
+
+                            <span>
+                                Connection
+                            </span>
+
+                            <strong class="connection-status">
+                                ● Ready
+                            </strong>
+
+                        </div>
+
+
+                        <div class="system-info-item clay-small">
+
+                            <span>
+                                Access Type
+                            </span>
+
+                            <strong id="accessType">
+                                Client
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================== -->
+
+            <footer class="client-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+
+        </main>
+
+    </div>
+
+
+    <script src="../../js/client-dashboard.js"></script>
+
+</body>
+
+</html>

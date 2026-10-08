@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Reports - Veterinary Pet Records System
+    </title>
+
+    <!-- Base CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <!-- Client Dashboard CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-dashboard.css"
+    >
+
+    <!-- Reports CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-reports.css"
+    >
+
+    <!-- Claymorphism CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/client-clay.css"
+    >
+
+</head>
+
+
+<body class="client-page">
+
+    <div class="client-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside
+            class="client-sidebar clay"
+            id="clientSidebar"
+        >
+
+            <div class="client-brand ">
+
+                <div class="client-brand-icon clay-icon">
+                    🐾
+                </div>
+
+                <div class="client-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Client System
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <nav class="client-navigation">
+
+                <p class="navigation-title">
+                    MAIN
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="client-nav-item"
+                >
+                    <span class="client-nav-icon clay-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+                </a>
+
+
+                <a
+                    href="owners.html"
+                    class="client-nav-item "
+                >
+                    <span class="client-nav-icon clay-icon">
+                        👤
+                    </span>
+
+                    <span>
+                        Owners
+                    </span>
+                </a>
+
+
+                <a
+                    href="pets.html"
+                    class="client-nav-item "
+                >
+                    <span class="client-nav-icon clay-icon">
+                        🐕
+                    </span>
+
+                    <span>
+                        Pets
+                    </span>
+                </a>
+
+
+                <a
+                    href="medical-records.html"
+                    class="client-nav-item "
+                >
+                    <span class="client-nav-icon clay-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Medical Records
+                    </span>
+                </a>
+
+
+                <a
+                    href="vaccinations.html"
+                    class="client-nav-item "
+                >
+                    <span class="client-nav-icon clay-icon">
+                        💉
+                    </span>
+
+                    <span>
+                        Vaccinations
+                    </span>
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="client-nav-item active "
+                >
+                    <span class="client-nav-icon clay-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+                </a>
+
+            </nav>
+
+
+            <div class="client-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="client-logout-button clay-btn"
+                    id="logoutButton"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN
+        ========================== -->
+
+        <main class="client-main">
+
+
+            <!-- =========================
+                 HEADER
+            ========================== -->
+
+            <header class="client-header ">
+
+                <div class="client-header-left">
+
+                    <button
+                        type="button"
+                        class="client-menu-button clay-btn"
+                        id="menuButton"
+                    >
+                        ☰
+                    </button>
+
+
+                    <div>
+
+                        <h1>
+                            Reports
+                        </h1>
+
+                        <p>
+                            View overall veterinary system reports
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="client-header-user">
+
+                    <div
+                        class="client-user-avatar clay-small"
+                        id="userAvatar"
+                    >
+                        U
+                    </div>
+
+
+                    <div class="client-user-details">
+
+                        <strong id="userName">
+                            User
+                        </strong>
+
+                        <span id="userRole">
+                            Staff
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 CONTENT
+            ========================== -->
+
+            <section class="client-content">
+
+
+                <!-- =========================
+                     PAGE HEADING
+                ========================== -->
+
+                <div class="report-page-heading clay-card">
+
+                    <div>
+
+                        <p class="report-page-label">
+                            CLIENT REPORTING
+                        </p>
+
+                        <h2>
+                            Overall System Reports
+                        </h2>
+
+                        <p>
+                            Review summarized information from owners,
+                            pets, medical records, and vaccinations.
+                        </p>
+
+                    </div>
+
+
+                    <div class="report-header-actions">
+
+                        <button
+                            type="button"
+                            class="report-refresh-button clay-btn"
+                            id="refreshReportButton"
+                        >
+                            ↻ Refresh
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="report-print-button clay-btn"
+                            id="printReportButton"
+                        >
+                            🖨 Print
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     REPORT FILTER
+                ========================== -->
+
+                <section class="report-filter-panel clay-card">
+
+                    <div class="report-filter-header">
+
+                        <div>
+
+                            <h3>
+                                Report Filter
+                            </h3>
+
+                            <p>
+                                Select the report type and optional date range.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-filter-grid">
+
+
+                        <div class="report-input-group">
+
+                            <label for="reportType">
+                                Report Type
+                            </label>
+
+                            <select
+                                id="reportType"
+                                class="clay-select"
+                            >
+
+                                <option value="overview">
+                                    Overall System Report
+                                </option>
+
+                                <option value="owners">
+                                    Owner Report
+                                </option>
+
+                                <option value="pets">
+                                    Pet Report
+                                </option>
+
+                                <option value="medical">
+                                    Medical Records Report
+                                </option>
+
+                                <option value="vaccinations">
+                                    Vaccination Report
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="report-input-group">
+
+                            <label for="reportStartDate">
+                                Start Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="reportStartDate"
+                                class="clay-input"
+                            >
+
+                        </div>
+
+
+                        <div class="report-input-group">
+
+                            <label for="reportEndDate">
+                                End Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="reportEndDate"
+                                class="clay-input"
+                            >
+
+                        </div>
+
+
+                        <div class="report-filter-actions">
+
+                            <button
+                                type="button"
+                                class="report-generate-button clay-btn clay-btn-primary"
+                                id="generateReportButton"
+                            >
+                                Generate Report
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="report-reset-button clay-btn"
+                                id="resetReportButton"
+                            >
+                                Reset
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <p
+                        id="reportMessage"
+                        class="report-message clay-small"
+                    ></p>
+
+                </section>
+
+
+                <!-- =========================
+                     SUMMARY CARDS
+                ========================== -->
+
+                <section class="report-summary-grid">
+
+
+                    <div class="report-summary-card clay-card">
+
+                        <div class="report-summary-icon owner-report-icon clay-icon">
+                            👤
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Owners
+                            </span>
+
+                            <strong id="reportOwnerCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-summary-card clay-card">
+
+                        <div class="report-summary-icon pet-report-icon clay-icon">
+                            🐕
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Pets
+                            </span>
+
+                            <strong id="reportPetCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-summary-card clay-card">
+
+                        <div class="report-summary-icon medical-report-icon clay-icon">
+                            📋
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Medical Records
+                            </span>
+
+                            <strong id="reportMedicalCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-summary-card clay-card">
+
+                        <div class="report-summary-icon vaccine-report-icon clay-icon">
+                            💉
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Vaccinations
+                            </span>
+
+                            <strong id="reportVaccinationCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     REPORT GRID
+                ========================== -->
+
+                <div class="report-grid">
+
+
+                    <!-- =========================
+                         RECORD DISTRIBUTION
+                    ========================== -->
+
+                    <section class="report-panel clay-card">
+
+                        <div class="report-panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Record Distribution
+                                </h3>
+
+                                <p>
+                                    Current records by module
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-bars">
+
+
+                            <div class="report-bar-row">
+
+                                <div class="report-bar-label">
+
+                                    <span>
+                                        Owners
+                                    </span>
+
+                                    <strong id="ownerBarValue">
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="report-bar-track clay-small">
+
+                                    <div
+                                        class="report-bar owner-bar"
+                                        id="ownerBar"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="report-bar-row">
+
+                                <div class="report-bar-label">
+
+                                    <span>
+                                        Pets
+                                    </span>
+
+                                    <strong id="petBarValue">
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="report-bar-track clay-small">
+
+                                    <div
+                                        class="report-bar pet-bar"
+                                        id="petBar"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="report-bar-row">
+
+                                <div class="report-bar-label">
+
+                                    <span>
+                                        Medical Records
+                                    </span>
+
+                                    <strong id="medicalBarValue">
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="report-bar-track clay-small">
+
+                                    <div
+                                        class="report-bar medical-bar"
+                                        id="medicalBar"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="report-bar-row">
+
+                                <div class="report-bar-label">
+
+                                    <span>
+                                        Vaccinations
+                                    </span>
+
+                                    <strong id="vaccinationBarValue">
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="report-bar-track clay-small">
+
+                                    <div
+                                        class="report-bar vaccination-bar"
+                                        id="vaccinationBar"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         VACCINATION STATUS
+                    ========================== -->
+
+                    <section class="report-panel clay-card">
+
+                        <div class="report-panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Vaccination Status
+                                </h3>
+
+                                <p>
+                                    Current vaccination monitoring
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="vaccination-status-list">
+
+
+                            <div class="vaccination-status-item clay-small">
+
+                                <div class="status-icon up-to-date-status-icon clay-icon">
+                                    ✓
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Up to Date
+                                    </strong>
+
+                                    <span id="upToDateCount">
+                                        0 records
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="vaccination-status-item clay-small">
+
+                                <div class="status-icon due-soon-status-icon clay-icon">
+                                    !
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Due Soon
+                                    </strong>
+
+                                    <span id="dueSoonCount">
+                                        0 records
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="vaccination-status-item clay-small">
+
+                                <div class="status-icon overdue-status-icon clay-icon">
+                                    !
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Overdue
+                                    </strong>
+
+                                    <span id="overdueCount">
+                                        0 records
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+                <!-- =========================
+                     GENERATED REPORT
+                ========================== -->
+
+                <section
+                    class="generated-report-panel clay-card"
+                    id="printableReport"
+                >
+
+                    <div class="generated-report-header">
+
+                        <div>
+
+                            <p class="report-page-label">
+                                GENERATED REPORT
+                            </p>
+
+                            <h3 id="generatedReportTitle">
+                                Overall System Report
+                            </h3>
+
+                            <p id="generatedReportDescription">
+                                Current summary of the veterinary
+                                pet records system.
+                            </p>
+
+                        </div>
+
+
+                        <div class="report-generated-info clay-small">
+
+                            <span>
+                                Generated
+                            </span>
+
+                            <strong id="generatedDate">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-table-wrapper clay-table">
+
+                        <table class="report-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Category
+                                    </th>
+
+                                    <th>
+                                        Total Records
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Remarks
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="reportTableBody"
+                            >
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================== -->
+
+            <footer class="client-footer clay-small">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../../js/client-reports.js"></script>
+
+</body>
+
+</html>

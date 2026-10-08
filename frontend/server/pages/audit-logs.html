@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Audit Logs - Veterinary Pet Records System
+    </title>
+
+
+    <!-- BASE CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+
+    <!-- SERVER DASHBOARD CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-dashboard.css"
+    >
+
+
+    <!-- AUDIT LOG CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/server-audit-logs.css"
+    >
+
+</head>
+
+
+<body class="server-page">
+
+    <div class="server-layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="server-sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="server-brand">
+
+                <div class="server-brand-icon">
+                    🐾
+                </div>
+
+                <div class="server-brand-text">
+
+                    <h2>
+                        VetPet Records
+                    </h2>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="server-navigation">
+
+                <p class="server-navigation-title">
+                    ADMINISTRATION
+                </p>
+
+
+                <a
+                    href="dashboard.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="staff-accounts.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        👥
+                    </span>
+
+                    <span>
+                        Staff Accounts
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="online-users.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        🟢
+                    </span>
+
+                    <span>
+                        Online Users
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="audit-logs.html"
+                    class="server-nav-item active"
+                >
+
+                    <span class="server-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="server-configuration.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Server Configuration
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- LOGOUT -->
+
+            <div class="server-sidebar-bottom">
+
+                <button
+                    type="button"
+                    class="server-logout-button"
+                    id="logoutButton"
+                >
+
+                    ↪
+                    &nbsp;
+                    Logout
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main class="server-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="server-header">
+
+                <div class="server-header-left">
+
+                    <div>
+
+                        <h1>
+                            Audit Logs
+                        </h1>
+
+                        <p>
+                            Monitor recorded activities performed
+                            throughout the system.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="server-user-area">
+
+                    <div
+                        class="server-user-avatar"
+                        id="userAvatar"
+                    >
+                        A
+                    </div>
+
+
+                    <div class="server-user-details">
+
+                        <strong id="userName">
+                            Administrator
+                        </strong>
+
+                        <span id="userRole">
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <section class="audit-content">
+
+
+                <!-- =================================================
+                     PAGE HEADING
+                ================================================== -->
+
+                <section class="audit-page-heading">
+
+                    <div>
+
+                        <p class="audit-page-label">
+                            SYSTEM ACTIVITY MONITORING
+                        </p>
+
+                        <h2>
+                            Audit Log Monitoring
+                        </h2>
+
+                        <p>
+                            Review actions automatically recorded
+                            by the veterinary records system.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="audit-refresh-button"
+                        id="refreshAuditButton"
+                    >
+                        ↻ Refresh Logs
+                    </button>
+
+                </section>
+
+
+                <!-- =================================================
+                     SUMMARY
+                ================================================== -->
+
+                <section class="audit-summary-grid">
+
+
+                    <!-- TOTAL -->
+
+                    <div class="audit-summary-card">
+
+                        <div class="audit-summary-icon">
+                            📋
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Total Logs
+                            </span>
+
+                            <strong id="totalAuditCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TODAY -->
+
+                    <div class="audit-summary-card">
+
+                        <div class="audit-summary-icon">
+                            📅
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Today's Logs
+                            </span>
+
+                            <strong id="todayAuditCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CREATE -->
+
+                    <div class="audit-summary-card">
+
+                        <div class="audit-summary-icon">
+                            +
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Create Actions
+                            </span>
+
+                            <strong id="createAuditCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- UPDATE -->
+
+                    <div class="audit-summary-card">
+
+                        <div class="audit-summary-icon">
+                            ✎
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Update Actions
+                            </span>
+
+                            <strong id="updateAuditCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DELETE -->
+
+                    <div class="audit-summary-card">
+
+                        <div class="audit-summary-icon">
+                            ×
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Delete Actions
+                            </span>
+
+                            <strong id="deleteAuditCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     FILTER PANEL
+                ================================================== -->
+
+                <section class="audit-filter-panel">
+
+                    <div class="audit-filter-header">
+
+                        <div>
+
+                            <h3>
+                                Log Filters
+                            </h3>
+
+                            <p>
+                                Narrow the audit history by user,
+                                module, action, or date.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="audit-filter-grid">
+
+
+                        <!-- SEARCH -->
+
+                        <div class="audit-input-group">
+
+                            <label for="auditSearch">
+                                Search
+                            </label>
+
+                            <input
+                                type="search"
+                                id="auditSearch"
+                                placeholder="Search user, username, record ID, or details..."
+                            >
+
+                        </div>
+
+
+                        <!-- MODULE -->
+
+                        <div class="audit-input-group">
+
+                            <label for="auditModuleFilter">
+                                Module
+                            </label>
+
+                            <select id="auditModuleFilter">
+
+                                <option value="all">
+                                    All Modules
+                                </option>
+
+                                <option value="Owners">
+                                    Owners
+                                </option>
+
+                                <option value="Pets">
+                                    Pets
+                                </option>
+
+                                <option value="Medical Records">
+                                    Medical Records
+                                </option>
+
+                                <option value="Vaccinations">
+                                    Vaccinations
+                                </option>
+
+                                <option value="Staff Accounts">
+                                    Staff Accounts
+                                </option>
+
+                                <option value="Authentication">
+                                    Authentication
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- ACTION -->
+
+                        <div class="audit-input-group">
+
+                            <label for="auditActionFilter">
+                                Action
+                            </label>
+
+                            <select id="auditActionFilter">
+
+                                <option value="all">
+                                    All Actions
+                                </option>
+
+                                <option value="Login">
+                                    Login
+                                </option>
+
+                                <option value="Logout">
+                                    Logout
+                                </option>
+
+                                <option value="Create">
+                                    Create
+                                </option>
+
+                                <option value="Update">
+                                    Update
+                                </option>
+
+                                <option value="Delete">
+                                    Delete
+                                </option>
+
+                                <option value="Deactivate">
+                                    Deactivate
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- ROLE -->
+
+                        <div class="audit-input-group">
+
+                            <label for="auditRoleFilter">
+                                User Role
+                            </label>
+
+                            <select id="auditRoleFilter">
+
+                                <option value="all">
+                                    All Roles
+                                </option>
+
+                                <option value="Administrator">
+                                    Administrator
+                                </option>
+
+                                <option value="Front Desk">
+                                    Front Desk
+                                </option>
+
+                                <option value="Veterinarian">
+                                    Veterinarian
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- DATE -->
+
+                        <div class="audit-input-group">
+
+                            <label for="auditDateFilter">
+                                Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="auditDateFilter"
+                            >
+
+                        </div>
+
+
+                        <!-- RESET -->
+
+                        <div class="audit-filter-actions">
+
+                            <button
+                                type="button"
+                                class="audit-reset-button"
+                                id="resetAuditButton"
+                            >
+                                Reset Filters
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <p
+                        id="auditMessage"
+                        class="audit-message"
+                    ></p>
+
+                </section>
+
+
+                <!-- =================================================
+                     TOOLBAR
+                ================================================== -->
+
+                <section class="audit-toolbar">
+
+                    <div>
+
+                        <strong>
+                            System Activity
+                        </strong>
+
+                        <span>
+                            Automatically recorded actions
+                        </span>
+
+                    </div>
+
+
+                    <div class="audit-record-count">
+
+                        Showing
+
+                        <strong id="visibleAuditCount">
+                            0
+                        </strong>
+
+                        logs
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     TABLE
+                ================================================== -->
+
+                <section class="audit-table-panel">
+
+                    <div class="audit-table-wrapper">
+
+                        <table class="audit-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Log ID
+                                    </th>
+
+                                    <th>
+                                        Date & Time
+                                    </th>
+
+                                    <th>
+                                        User
+                                    </th>
+
+                                    <th>
+                                        Role
+                                    </th>
+
+                                    <th>
+                                        Module
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                    <th>
+                                        Record ID
+                                    </th>
+
+                                    <th>
+                                        Details
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="auditTableBody"
+                            >
+                            </tbody>
+
+                        </table>
+
+
+                        <div
+                            class="audit-empty-state"
+                            id="auditEmptyState"
+                        >
+
+                            <div class="audit-empty-icon">
+                                📋
+                            </div>
+
+                            <h3>
+                                No Audit Logs Found
+                            </h3>
+
+                            <p>
+                                No system activity matches
+                                the current filters.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     INFORMATION PANEL
+                ================================================== -->
+
+                <section class="audit-information-panel">
+
+                    <div>
+
+                        <p class="audit-page-label">
+                            AUDIT INFORMATION
+                        </p>
+
+                        <h3>
+                            System Activity Tracking
+                        </h3>
+
+                        <p>
+                            Audit logs are generated automatically
+                            when users perform actions within the
+                            system. Administrators can view and
+                            monitor these records but cannot
+                            manually modify them.
+                        </p>
+
+                    </div>
+
+
+                    <div class="audit-information-grid">
+
+
+                        <div class="audit-information-item">
+
+                            <strong>
+                                Create
+                            </strong>
+
+                            <span>
+                                Records the creation of a new
+                                system record.
+                            </span>
+
+                        </div>
+
+
+                        <div class="audit-information-item">
+
+                            <strong>
+                                Update
+                            </strong>
+
+                            <span>
+                                Records changes made to an
+                                existing record.
+                            </span>
+
+                        </div>
+
+
+                        <div class="audit-information-item">
+
+                            <strong>
+                                Delete
+                            </strong>
+
+                            <span>
+                                Records the removal of a
+                                system record.
+                            </span>
+
+                        </div>
+
+
+                        <div class="audit-information-item">
+
+                            <strong>
+                                Authentication
+                            </strong>
+
+                            <span>
+                                Records important login and
+                                logout activities.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="client-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../../js/server-audit-logs.js"></script>
+
+</body>
+
+</html>

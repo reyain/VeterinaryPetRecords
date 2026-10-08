@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pets - Veterinary Pet Records System</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/pets.css">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-icon">
+                    🐾
+                </div>
+
+                <div class="brand-text">
+                    <h2>VetPet Records</h2>
+                    <span>Veterinary System</span>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-navigation">
+
+                <p class="navigation-title">MAIN</p>
+
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="owners.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Owners</span>
+                </a>
+
+                <a href="pets.html" class="nav-item active">
+                    <span class="nav-icon">🐕</span>
+                    <span>Pets</span>
+                </a>
+
+                <a href="medical-records.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Medical Records</span>
+                </a>
+
+                <a href="vaccinations.html" class="nav-item">
+                    <span class="nav-icon">💉</span>
+                    <span>Vaccinations</span>
+                </a>
+
+                <p class="navigation-title">SYSTEM</p>
+
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+
+                <a href="audit-logs.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span>Audit Logs</span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    class="logout-button"
+                    type="button"
+                    onclick="logout()"
+                >
+                    <span>↪</span>
+                    <span>Logout</span>
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN CONTENT
+        ========================== -->
+
+        <main class="main-content">
+
+            <!-- Header -->
+
+            <header class="dashboard-header">
+
+                <div class="header-left">
+
+                    <button
+                        class="menu-button"
+                        id="menuButton"
+                        type="button"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+
+                        <h1>Pet Management</h1>
+
+                        <p>
+                            Manage registered pet information and records
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <div class="user-profile">
+
+                        <div class="user-avatar">
+                            A
+                        </div>
+
+                        <div class="user-details">
+                            <strong>Administrator</strong>
+                            <span>System User</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 PAGE CONTENT
+            ========================== -->
+
+            <section class="page-content">
+
+                <!-- Page Heading -->
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <p class="page-label">RECORDS</p>
+
+                        <h2>Registered Pets</h2>
+
+                        <p class="page-description">
+                            View and manage pets registered under their owners.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="add-pet-button"
+                        id="openPetForm"
+                    >
+                        <span>＋</span>
+                        Add New Pet
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     SEARCH / TOOLBAR
+                ========================== -->
+
+                <div class="pets-toolbar">
+
+                    <div class="search-wrapper">
+
+                        <span class="search-icon">⌕</span>
+
+                        <input
+                            type="text"
+                            id="petSearch"
+                            placeholder="Search by pet name, owner, species, or breed..."
+                        >
+
+                    </div>
+
+
+                    <div class="pet-count">
+
+                        <span>Total Pets</span>
+
+                        <strong id="petCount">0</strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     PET TABLE
+                ========================== -->
+
+                <section class="pet-table-panel">
+
+                    <div class="table-header">
+
+                        <div>
+
+                            <h3>Pet Records</h3>
+
+                            <p>
+                                Registered animals and their owner information
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table class="pet-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Pet ID</th>
+                                    <th>Pet</th>
+                                    <th>Owner</th>
+                                    <th>Species</th>
+                                    <th>Breed</th>
+                                    <th>Sex</th>
+                                    <th>Birth Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="petTableBody">
+
+                                <!-- Temporary sample record -->
+
+                                <tr>
+
+                                    <td>PET-0001</td>
+
+                                    <td>
+
+                                        <div class="pet-name-cell">
+
+                                            <div class="pet-avatar dog-avatar">
+                                                🐕
+                                            </div>
+
+                                            <div>
+
+                                                <strong>
+                                                    Max
+                                                </strong>
+
+                                                <small>
+                                                    Registered Pet
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+                                        Juan Dela Cruz
+                                    </td>
+
+
+                                    <td>
+                                        Dog
+                                    </td>
+
+
+                                    <td>
+                                        Golden Retriever
+                                    </td>
+
+
+                                    <td>
+                                        Male
+                                    </td>
+
+
+                                    <td>
+                                        2022-05-14
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="pet-status active-pet">
+                                            Active
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <button
+                                                type="button"
+                                                class="table-action view-action"
+                                                title="View pet"
+                                            >
+                                                👁
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="table-action edit-action"
+                                                title="Edit pet"
+                                            >
+                                                ✎
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="table-action delete-action"
+                                                title="Delete pet"
+                                            >
+                                                🗑
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- Empty State -->
+
+                    <div
+                        class="table-empty"
+                        id="petTableEmpty"
+                        style="display: none;"
+                    >
+
+                        <div class="empty-record-icon">
+                            🐕
+                        </div>
+
+                        <h4>No Pet Records Found</h4>
+
+                        <p>
+                            Pet records matching your search will appear here.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =========================
+                 ADD PET MODAL
+            ========================== -->
+
+            <div
+                class="modal-overlay"
+                id="petModal"
+            >
+
+                <div class="pet-modal">
+
+                    <!-- Modal Header -->
+
+                    <div class="modal-header">
+
+                        <div>
+
+                            <p class="page-label">NEW RECORD</p>
+
+                            <h2>Register New Pet</h2>
+
+                            <p>
+                                Enter the pet's information below.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="closePetForm"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <!-- Pet Form -->
+
+                    <form id="petForm">
+
+                        <!-- Pet Information -->
+
+                        <div class="form-section">
+
+                            <h3>Pet Information</h3>
+
+                            <div class="form-grid">
+
+
+                                <div class="input-group">
+
+                                    <label for="petName">
+                                        Pet Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="petName"
+                                        name="petName"
+                                        placeholder="Enter pet name"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="ownerSelect">
+                                        Owner
+                                    </label>
+
+                                    <select
+                                        id="ownerSelect"
+                                        name="ownerSelect"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Owner
+                                        </option>
+
+                                        <option value="OWN-0001">
+                                            OWN-0001 — Juan Dela Cruz
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="species">
+                                        Species
+                                    </label>
+
+                                    <select
+                                        id="species"
+                                        name="species"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Species
+                                        </option>
+
+                                        <option value="Dog">
+                                            Dog
+                                        </option>
+
+                                        <option value="Cat">
+                                            Cat
+                                        </option>
+
+                                        <option value="Bird">
+                                            Bird
+                                        </option>
+
+                                        <option value="Rabbit">
+                                            Rabbit
+                                        </option>
+
+                                        <option value="Other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="breed">
+                                        Breed
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="breed"
+                                        name="breed"
+                                        placeholder="Enter breed"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="sex">
+                                        Sex
+                                    </label>
+
+                                    <select
+                                        id="sex"
+                                        name="sex"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Sex
+                                        </option>
+
+                                        <option value="Male">
+                                            Male
+                                        </option>
+
+                                        <option value="Female">
+                                            Female
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="birthDate">
+                                        Birth Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="birthDate"
+                                        name="birthDate"
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="registrationStatus">
+                                        Registration Status
+                                    </label>
+
+                                    <select
+                                        id="registrationStatus"
+                                        name="registrationStatus"
+                                    >
+
+                                        <option value="Active">
+                                            Active
+                                        </option>
+
+                                        <option value="Inactive">
+                                            Inactive
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Form Buttons -->
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="cancel-button"
+                                id="cancelPetForm"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="save-pet-button"
+                            >
+                                Register Pet
+                            </button>
+
+                        </div>
+
+
+                        <p
+                            id="petFormMessage"
+                            class="pet-form-message"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================== -->
+
+            <footer class="dashboard-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/pets.js"></script>
+
+</body>
+</html>

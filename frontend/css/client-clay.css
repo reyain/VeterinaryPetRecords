@@ -1,0 +1,1404 @@
+/* =========================================================
+   CLIENT CLAYMORPHISM THEME
+   Veterinary Pet Records System
+   ========================================================= */
+
+:root {
+    --clay-bg: #eef1f5;
+    --clay-surface: #eef1f5;
+    --clay-white: #ffffff;
+
+    --clay-text: #303746;
+    --clay-muted: #7d8492;
+
+    --clay-primary: #7c8cff;
+    --clay-primary-dark: #6575e8;
+
+    --clay-success: #72c89b;
+    --clay-warning: #f2bd68;
+    --clay-danger: #e98b8b;
+    --clay-info: #71b7e6;
+
+    --clay-radius: 24px;
+
+    --clay-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.90),
+         10px  10px 20px rgba(190, 197, 210, 0.65);
+
+    --clay-shadow-small:
+        -5px -5px 12px rgba(255, 255, 255, 0.90),
+         5px  5px 12px rgba(190, 197, 210, 0.55);
+
+    --clay-shadow-pressed:
+        inset -5px -5px 10px rgba(255, 255, 255, 0.80),
+        inset  5px  5px 10px rgba(190, 197, 210, 0.55);
+}
+
+
+/* =========================
+   CLIENT PAGE BASE
+   ========================= */
+
+body.client-page {
+    background: var(--clay-bg);
+    color: var(--clay-text);
+}
+
+
+/* =========================
+   GENERAL CLAY SURFACES
+   ========================= */
+
+.clay {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: var(--clay-radius);
+    box-shadow: var(--clay-shadow);
+}
+
+.clay-small {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 18px;
+    box-shadow: var(--clay-shadow-small);
+}
+
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.clay-btn {
+    border: none;
+    border-radius: 18px;
+    padding: 11px 20px;
+    background: var(--clay-surface);
+    color: var(--clay-text);
+    font-weight: 600;
+    cursor: pointer;
+
+    box-shadow: var(--clay-shadow-small);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.clay-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        -7px -7px 14px rgba(255, 255, 255, 0.90),
+         7px  7px 14px rgba(190, 197, 210, 0.55);
+}
+
+.clay-btn:active {
+    transform: translateY(1px);
+    box-shadow: var(--clay-shadow-pressed);
+}
+
+.clay-btn-primary {
+    background: var(--clay-primary);
+    color: #ffffff;
+
+    box-shadow:
+        -6px -6px 14px rgba(255, 255, 255, 0.75),
+         6px  6px 14px rgba(190, 197, 210, 0.65);
+}
+
+.clay-btn-primary:hover {
+    background: var(--clay-primary-dark);
+}
+
+
+/* =========================
+   CARDS / PANELS
+   ========================= */
+
+.clay-card {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 22px;
+    box-shadow: var(--clay-shadow-small);
+    padding: 20px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.clay-card:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   INPUTS
+   ========================= */
+
+.clay-input,
+.clay-select,
+.clay-textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    border: none;
+    outline: none;
+
+    background: var(--clay-surface);
+    color: var(--clay-text);
+
+    border-radius: 16px;
+    padding: 12px 15px;
+
+    box-shadow: var(--clay-shadow-pressed);
+}
+
+.clay-input:focus,
+.clay-select:focus,
+.clay-textarea:focus {
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.85),
+        inset  4px  4px 8px rgba(190, 197, 210, 0.45),
+        0 0 0 3px rgba(124, 140, 255, 0.16);
+}
+
+
+/* =========================
+   ICON HOLDERS
+   ========================= */
+
+.clay-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 16px;
+    background: var(--clay-surface);
+
+    box-shadow: var(--clay-shadow-small);
+}
+
+
+/* =========================
+   BADGES
+   ========================= */
+
+.clay-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 12px;
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    box-shadow: var(--clay-shadow-small);
+}
+
+.clay-badge-success {
+    color: #287a52;
+}
+
+.clay-badge-warning {
+    color: #9a651a;
+}
+
+.clay-badge-danger {
+    color: #9a3f3f;
+}
+
+
+/* =========================
+   TABLE / MODAL
+   ========================= */
+
+.clay-table {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 22px;
+    box-shadow: var(--clay-shadow-small);
+    overflow: hidden;
+}
+
+.clay-modal {
+    background: var(--clay-surface);
+    border-radius: 28px;
+
+    box-shadow:
+        -15px -15px 30px rgba(255, 255, 255, 0.90),
+         15px  15px 30px rgba(190, 197, 210, 0.70);
+}
+
+
+/* =========================
+   SMALL UTILITY ELEMENTS
+   ========================= */
+
+.clay-divider {
+    border: none;
+    height: 1px;
+    background: rgba(125, 132, 146, 0.12);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* =========================================================
+   TEXT READABILITY OVERRIDES
+   Keep all Client Dashboard text dark and readable.
+   ========================================================= */
+
+body.client-page,
+body.client-page * {
+    color: var(--clay-text);
+}
+
+/* Main page headings and descriptions */
+.client-main h1,
+.client-main h2,
+.client-main h3,
+.client-main h4,
+.client-main h5,
+.client-main h6,
+.client-main p,
+.client-main span,
+.client-main strong,
+.client-main label {
+    color: var(--clay-text);
+}
+
+/* Header */
+.client-header h1,
+.client-header p,
+.client-header .client-user-details strong,
+.client-header .client-user-details span {
+    color: var(--clay-text);
+}
+
+/* Sidebar / brand */
+.client-brand h2,
+.client-brand span,
+.navigation-title,
+.client-nav-item,
+.client-nav-item span,
+.client-nav-icon {
+    color: var(--clay-text) !important;
+}
+
+/* Active navigation item:
+   use a lighter clay accent instead of a dark/green background
+   so black text remains readable. */
+.client-nav-item.active {
+    background: #dfe3ff !important;
+    color: var(--clay-text) !important;
+    box-shadow:
+        inset -3px -3px 7px rgba(255, 255, 255, 0.85),
+        inset 3px 3px 7px rgba(190, 197, 210, 0.45),
+        0 5px 12px rgba(190, 197, 210, 0.35);
+}
+
+.client-nav-item:hover {
+    background: #e4e7ee !important;
+    color: var(--clay-text) !important;
+}
+
+/* Logout */
+.client-logout-button,
+.client-logout-button span {
+    color: var(--clay-text) !important;
+}
+
+/* Welcome banner */
+.client-welcome-banner,
+.client-welcome-banner h2,
+.client-welcome-banner p,
+.client-banner-label,
+.client-banner-icon {
+    color: var(--clay-text) !important;
+}
+
+/* Summary cards */
+.client-summary-card,
+.client-summary-card span,
+.client-summary-card strong {
+    color: var(--clay-text) !important;
+}
+
+/* Dashboard panels */
+.client-panel,
+.client-panel h3,
+.client-panel p,
+.client-panel h4,
+.client-panel span,
+.client-panel strong {
+    color: var(--clay-text);
+}
+
+/* Empty state */
+.client-empty-state,
+.client-empty-state h4,
+.client-empty-state p {
+    color: var(--clay-text) !important;
+}
+
+/* Quick actions */
+.client-quick-action,
+.client-quick-action strong,
+.client-quick-action span {
+    color: var(--clay-text) !important;
+}
+
+/* System information */
+.system-information-panel,
+.system-information-panel h3,
+.system-information-panel p,
+.system-info-item,
+.system-info-item span,
+.system-info-item strong {
+    color: var(--clay-text) !important;
+}
+
+/* Footer */
+.client-footer,
+.client-footer p {
+    color: var(--clay-text) !important;
+}
+
+/* Keep icons visible while preserving the dark/readable text rule */
+.client-summary-icon,
+.quick-action-icon,
+.client-brand-icon,
+.client-banner-icon,
+.client-empty-icon,
+.client-nav-icon {
+    color: var(--clay-text);
+}
+
+/* Form/input text for later Client pages */
+.clay-input,
+.clay-select,
+.clay-textarea {
+    color: var(--clay-text) !important;
+}
+
+.clay-input::placeholder,
+.clay-textarea::placeholder {
+    color: #697181;
+    opacity: 1;
+}
+
+/* Links should not fall back to browser blue */
+.client-page a {
+    color: var(--clay-text);
+}
+
+/* =========================================================
+   RECORD COUNTER FIX
+   Pets + Owners
+   ========================================================= */
+
+/* PETS */
+
+.pet-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+}
+
+.pet-search {
+    flex: 1;
+    min-width: 0;
+}
+
+.pet-search input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pet-record-count {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-width: 105px;
+    height: 44px;
+
+    padding: 0 16px;
+
+    white-space: nowrap;
+
+    box-sizing: border-box;
+}
+
+.pet-record-count span,
+.pet-record-count strong {
+    display: inline-block;
+    white-space: nowrap;
+    margin: 0;
+}
+
+
+/* OWNERS */
+
+.owner-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+}
+
+.owner-search {
+    flex: 1;
+    min-width: 0;
+}
+
+.owner-search input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.owner-record-count {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-width: 105px;
+    height: 44px;
+
+    padding: 0 16px;
+
+    white-space: nowrap;
+
+    box-sizing: border-box;
+}
+
+.owner-record-count span,
+.owner-record-count strong {
+    display: inline-block;
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* =========================================================
+   VACCINATIONS - CLAYMORPHISM
+   ========================================================= */
+
+
+/* PAGE HEADING */
+
+.vaccination-page-heading {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 24px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+
+/* SUMMARY CARDS */
+
+.vaccination-summary-card {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 22px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.vaccination-summary-card:hover {
+    transform: translateY(-2px);
+}
+
+
+/* SUMMARY ICONS */
+
+.vaccination-summary-icon {
+    background: var(--clay-surface);
+    border-radius: 16px;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.55);
+}
+
+
+/* TOOLBAR */
+
+.vaccination-toolbar {
+    background: var(--clay-surface);
+    border-radius: 20px;
+
+    box-shadow:
+        -8px -8px 16px rgba(255, 255, 255, 0.85),
+        8px 8px 16px rgba(190, 197, 210, 0.55);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+/* SEARCH */
+
+.vaccination-search {
+    flex: 1;
+    min-width: 0;
+}
+
+.vaccination-search input {
+    width: 100%;
+    box-sizing: border-box;
+
+    background: var(--clay-surface);
+    border: none;
+    outline: none;
+
+    color: var(--clay-text);
+
+    border-radius: 16px;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.45);
+}
+
+.vaccination-search input:focus {
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.45),
+        0 0 0 3px rgba(124, 140, 255, 0.16);
+}
+
+
+/* RECORD COUNTER */
+
+.vaccination-record-count {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-width: 105px;
+    height: 44px;
+
+    padding: 0 16px;
+
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.vaccination-record-count span,
+.vaccination-record-count strong {
+    display: inline-block;
+
+    white-space: nowrap;
+
+    margin: 0;
+}
+
+
+/* TABLE PANEL */
+
+.vaccination-table-panel {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 22px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+
+/* TABLE WRAPPER */
+
+.vaccination-table-wrapper {
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow:
+        inset -3px -3px 7px rgba(255, 255, 255, 0.75),
+        inset 3px 3px 7px rgba(190, 197, 210, 0.35);
+}
+
+
+/* EMPTY STATE */
+
+.vaccination-empty-state {
+    background: var(--clay-surface);
+    border-radius: 18px;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.70),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.30);
+}
+
+.vaccination-empty-icon {
+    background: var(--clay-surface);
+    border-radius: 16px;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.55);
+}
+
+
+/* =========================================================
+   VACCINATION MODAL
+   ========================================================= */
+
+.vaccination-modal {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 28px;
+
+    box-shadow:
+        -15px -15px 30px rgba(255, 255, 255, 0.90),
+        15px 15px 30px rgba(190, 197, 210, 0.70);
+}
+
+
+/* MODAL INPUTS */
+
+.vaccination-modal input,
+.vaccination-modal select,
+.vaccination-modal textarea {
+    background: var(--clay-surface);
+
+    border: none;
+
+    color: var(--clay-text);
+
+    border-radius: 16px;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.45);
+}
+
+.vaccination-modal input:focus,
+.vaccination-modal select:focus,
+.vaccination-modal textarea:focus {
+    outline: none;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.45),
+        0 0 0 3px rgba(124, 140, 255, 0.16);
+}
+
+
+/* FORM TEXT */
+
+.vaccination-modal label,
+.vaccination-modal small,
+.vaccination-modal h2,
+.vaccination-modal h3,
+.vaccination-modal p {
+    color: var(--clay-text);
+}
+
+
+/* =========================================================
+   AUTOMATIC STATUS PREVIEW
+   ========================================================= */
+
+.vaccination-status-preview {
+    background: var(--clay-surface);
+    border-radius: 18px;
+
+    box-shadow:
+        inset -5px -5px 10px rgba(255, 255, 255, 0.75),
+        inset 5px 5px 10px rgba(190, 197, 210, 0.35);
+}
+
+
+/* STATUS TEXT */
+
+.vaccination-status-preview span {
+    color: var(--clay-text);
+}
+
+.vaccination-status-preview p {
+    color: var(--clay-text);
+}
+
+
+/* STATUS BADGE */
+
+.vaccination-status-preview strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 30px;
+
+    padding: 5px 12px;
+
+    border-radius: 12px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   RESPONSIVE TOOLBAR
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .vaccination-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .vaccination-search {
+        width: 100%;
+    }
+
+    .vaccination-record-count {
+        align-self: flex-end;
+    }
+
+}
+
+/* =========================================================
+   REPORTS - CLAYMORPHISM
+   ========================================================= */
+
+
+/* =========================================================
+   PAGE HEADING
+   ========================================================= */
+
+.report-page-heading {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 24px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+
+/* =========================================================
+   REPORT HEADER BUTTONS
+   ========================================================= */
+
+.report-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.report-refresh-button,
+.report-print-button {
+    background: var(--clay-surface);
+    border: none;
+    color: var(--clay-text);
+
+    border-radius: 16px;
+
+    box-shadow:
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        6px 6px 12px rgba(190, 197, 210, 0.55);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.report-refresh-button:hover,
+.report-print-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        -8px -8px 16px rgba(255, 255, 255, 0.90),
+        8px 8px 16px rgba(190, 197, 210, 0.65);
+}
+
+.report-refresh-button:active,
+.report-print-button:active {
+    transform: translateY(1px);
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.80),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.40);
+}
+
+
+/* =========================================================
+   REPORT FILTER
+   ========================================================= */
+
+.report-filter-panel {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 22px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+.report-filter-header h3,
+.report-filter-header p {
+    color: var(--clay-text);
+}
+
+.report-input-group label {
+    color: var(--clay-text);
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FILTER MESSAGE
+   ========================================================= */
+
+.report-message {
+    color: var(--clay-text);
+    min-height: 20px;
+}
+
+
+/* =========================================================
+   FILTER ACTIONS
+   ========================================================= */
+
+.report-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.report-generate-button,
+.report-reset-button {
+    border: none;
+    border-radius: 16px;
+
+    color: var(--clay-text);
+
+    box-shadow:
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        6px 6px 12px rgba(190, 197, 210, 0.55);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.report-generate-button:hover,
+.report-reset-button:hover {
+    transform: translateY(-2px);
+}
+
+.report-generate-button:active,
+.report-reset-button:active {
+    transform: translateY(1px);
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.80),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.40);
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+.report-summary-card {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 22px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.report-summary-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        -12px -12px 24px rgba(255, 255, 255, 0.90),
+        12px 12px 24px rgba(190, 197, 210, 0.65);
+}
+
+.report-summary-card span,
+.report-summary-card strong {
+    color: var(--clay-text);
+}
+
+.report-summary-icon {
+    background: var(--clay-surface);
+
+    border-radius: 16px;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.55);
+}
+
+
+/* =========================================================
+   REPORT PANELS
+   ========================================================= */
+
+.report-panel {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 22px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+.report-panel-header h3,
+.report-panel-header p {
+    color: var(--clay-text);
+}
+
+
+/* =========================================================
+   RECORD DISTRIBUTION BARS
+   ========================================================= */
+
+.report-bar-track {
+    background: var(--clay-surface);
+
+    border-radius: 14px;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.80),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.35);
+
+    overflow: hidden;
+}
+
+.report-bar {
+    border-radius: 14px;
+    min-height: 10px;
+
+    box-shadow:
+        inset -2px -2px 5px rgba(255, 255, 255, 0.35),
+        inset 2px 2px 5px rgba(0, 0, 0, 0.12);
+
+    transition: width 0.35s ease;
+}
+
+.report-bar-label span,
+.report-bar-label strong {
+    color: var(--clay-text);
+}
+
+
+/* =========================================================
+   VACCINATION STATUS
+   ========================================================= */
+
+.vaccination-status-item {
+    background: var(--clay-surface);
+
+    border-radius: 18px;
+
+    box-shadow:
+        -6px -6px 12px rgba(255, 255, 255, 0.80),
+        6px 6px 12px rgba(190, 197, 210, 0.45);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.vaccination-status-item:hover {
+    transform: translateY(-2px);
+}
+
+.vaccination-status-item strong,
+.vaccination-status-item span {
+    color: var(--clay-text);
+}
+
+.status-icon {
+    background: var(--clay-surface);
+
+    border-radius: 14px;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.55);
+}
+
+
+/* =========================================================
+   GENERATED REPORT
+   ========================================================= */
+
+.generated-report-panel {
+    background: var(--clay-surface);
+    border: none;
+    border-radius: 24px;
+
+    box-shadow:
+        -10px -10px 20px rgba(255, 255, 255, 0.85),
+        10px 10px 20px rgba(190, 197, 210, 0.60);
+}
+
+.generated-report-header h3,
+.generated-report-header p,
+.generated-report-header span,
+.generated-report-header strong {
+    color: var(--clay-text);
+}
+
+.report-generated-info {
+    background: var(--clay-surface);
+
+    border-radius: 16px;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.75),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.35);
+
+    color: var(--clay-text);
+}
+
+
+/* =========================================================
+   REPORT TABLE
+   ========================================================= */
+
+.report-table-wrapper {
+    background: var(--clay-surface);
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        inset -3px -3px 7px rgba(255, 255, 255, 0.75),
+        inset 3px 3px 7px rgba(190, 197, 210, 0.35);
+}
+
+.report-table {
+    color: var(--clay-text);
+}
+
+.report-table th,
+.report-table td {
+    color: var(--clay-text);
+}
+
+.report-table thead th {
+    background: var(--clay-surface);
+
+    box-shadow:
+        inset 0 -2px 0 rgba(190, 197, 210, 0.35);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.client-footer {
+    color: var(--clay-text);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .report-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 15px;
+    }
+
+    .report-filter-actions {
+        width: 100%;
+    }
+
+    .report-generate-button,
+    .report-reset-button {
+        flex: 1;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .report-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .report-refresh-button,
+    .report-print-button {
+        width: 100%;
+    }
+
+}
+
+/* =========================================================
+   CLIENT SIDEBAR - UNIFIED CLAYMORPHISM BUTTON STYLE
+   Applies to ALL sidebar navigation buttons
+   ========================================================= */
+
+
+/* =========================================================
+   SIDEBAR NAVIGATION CONTAINER
+   ========================================================= */
+
+.client-sidebar .client-navigation {
+    width: 100%;
+}
+
+
+/* =========================================================
+   ALL SIDEBAR BUTTONS
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-item {
+    width: 100% !important;
+    height: 72px !important;
+
+    min-width: 0 !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+
+    box-sizing: border-box !important;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 20px !important;
+
+    margin: 0 0 8px 0 !important;
+
+    border-radius: 20px !important;
+
+    background: var(--clay-surface) !important;
+
+    color: var(--clay-text) !important;
+
+    border: none !important;
+
+    transform: none !important;
+    scale: 1 !important;
+
+    box-shadow:
+        -7px -7px 14px rgba(255, 255, 255, 0.85),
+        7px 7px 14px rgba(190, 197, 210, 0.55) !important;
+
+    transition:
+        box-shadow 0.2s ease,
+        background 0.2s ease !important;
+}
+
+
+/* =========================================================
+   HOVER
+   Slight visual change only.
+   NO resizing.
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-item:hover {
+    width: 100% !important;
+    height: 72px !important;
+
+    transform: none !important;
+    scale: 1 !important;
+
+    background: var(--clay-surface) !important;
+
+    box-shadow:
+        -8px -8px 16px rgba(255, 255, 255, 0.90),
+        8px 8px 16px rgba(190, 197, 210, 0.60) !important;
+}
+
+
+/* =========================================================
+   ACTIVE BUTTON
+   Same physical size as every other button.
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-item.active {
+    width: 100% !important;
+    height: 72px !important;
+
+    min-height: 72px !important;
+    max-height: 72px !important;
+
+    transform: none !important;
+    scale: 1 !important;
+
+    background: #e1e5ff !important;
+
+    color: #111827 !important;
+
+    box-shadow:
+        -7px -7px 14px rgba(255, 255, 255, 0.90),
+        7px 7px 14px rgba(190, 197, 210, 0.60) !important;
+}
+
+
+/* =========================================================
+   ACTIVE + HOVER
+   Do NOT allow it to grow.
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-item.active:hover {
+    width: 100% !important;
+    height: 72px !important;
+
+    transform: none !important;
+    scale: 1 !important;
+
+    background: #e1e5ff !important;
+
+    box-shadow:
+        -7px -7px 14px rgba(255, 255, 255, 0.90),
+        7px 7px 14px rgba(190, 197, 210, 0.60) !important;
+}
+
+
+/* =========================================================
+   CLICK / ACTIVE PRESS
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-item:active {
+    width: 100% !important;
+    height: 72px !important;
+
+    transform: none !important;
+    scale: 1 !important;
+
+    box-shadow:
+        inset -4px -4px 8px rgba(255, 255, 255, 0.80),
+        inset 4px 4px 8px rgba(190, 197, 210, 0.40) !important;
+}
+
+
+/* =========================================================
+   SIDEBAR ICON
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-icon {
+    width: 44px !important;
+    height: 44px !important;
+
+    min-width: 44px !important;
+    min-height: 44px !important;
+
+    max-width: 44px !important;
+    max-height: 44px !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0 !important;
+
+    margin-right: 14px;
+
+    border-radius: 15px !important;
+
+    background: var(--clay-surface) !important;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.85),
+        5px 5px 10px rgba(190, 197, 210, 0.50) !important;
+
+    transform: none !important;
+    scale: 1 !important;
+}
+
+
+/* =========================================================
+   ACTIVE ICON
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-item.active .client-nav-icon {
+    width: 44px !important;
+    height: 44px !important;
+
+    transform: none !important;
+    scale: 1 !important;
+
+    box-shadow:
+        -5px -5px 10px rgba(255, 255, 255, 0.90),
+        5px 5px 10px rgba(190, 197, 210, 0.55) !important;
+}
+
+
+/* =========================================================
+   PREVENT CLAY-SMALL FROM CHANGING NAV SIZE
+   ========================================================= */
+
+.client-sidebar .client-navigation .client-nav-item.clay-small,
+.client-sidebar .client-navigation .client-nav-item.clay-small:hover,
+.client-sidebar .client-navigation .client-nav-item.clay-small.active {
+    width: 100% !important;
+    height: 72px !important;
+
+    min-height: 72px !important;
+    max-height: 72px !important;
+
+    transform: none !important;
+    scale: 1 !important;
+
+    box-sizing: border-box !important;
+}

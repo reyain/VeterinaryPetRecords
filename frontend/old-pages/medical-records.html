@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Medical Records - Veterinary Pet Records System</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/medical-records.css">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-icon">
+                    🐾
+                </div>
+
+                <div class="brand-text">
+                    <h2>VetPet Records</h2>
+                    <span>Veterinary System</span>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-navigation">
+
+                <p class="navigation-title">MAIN</p>
+
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="owners.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Owners</span>
+                </a>
+
+                <a href="pets.html" class="nav-item">
+                    <span class="nav-icon">🐕</span>
+                    <span>Pets</span>
+                </a>
+
+                <a href="medical-records.html" class="nav-item active">
+                    <span class="nav-icon">📋</span>
+                    <span>Medical Records</span>
+                </a>
+
+                <a href="vaccinations.html" class="nav-item">
+                    <span class="nav-icon">💉</span>
+                    <span>Vaccinations</span>
+                </a>
+
+                <p class="navigation-title">SYSTEM</p>
+
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+
+                <a href="audit-logs.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span>Audit Logs</span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    class="logout-button"
+                    type="button"
+                    onclick="logout()"
+                >
+                    <span>↪</span>
+                    <span>Logout</span>
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN CONTENT
+        ========================== -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
+
+            <header class="dashboard-header">
+
+                <div class="header-left">
+
+                    <button
+                        class="menu-button"
+                        id="menuButton"
+                        type="button"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+
+                        <h1>Medical Records</h1>
+
+                        <p>
+                            Record and review the medical history of pets
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <div class="user-profile">
+
+                        <div class="user-avatar">
+                            A
+                        </div>
+
+                        <div class="user-details">
+                            <strong>Administrator</strong>
+                            <span>System User</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 PAGE CONTENT
+            ========================== -->
+
+            <section class="page-content">
+
+                <!-- PAGE HEADING -->
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <p class="page-label">MEDICAL HISTORY</p>
+
+                        <h2>Pet Medical Records</h2>
+
+                        <p class="page-description">
+                            View and record consultations, diagnoses,
+                            treatments, and other medical information.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="add-medical-button"
+                        id="openMedicalForm"
+                    >
+                        <span>＋</span>
+                        Add Medical Record
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     TOOLBAR
+                ========================== -->
+
+                <div class="medical-toolbar">
+
+                    <div class="search-wrapper">
+
+                        <span class="search-icon">⌕</span>
+
+                        <input
+                            type="text"
+                            id="medicalSearch"
+                            placeholder="Search by pet, owner, diagnosis, veterinarian..."
+                        >
+
+                    </div>
+
+
+                    <div class="medical-count">
+
+                        <span>Total Records</span>
+
+                        <strong id="medicalCount">0</strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     TABLE PANEL
+                ========================== -->
+
+                <section class="medical-table-panel">
+
+                    <div class="table-header">
+
+                        <div>
+
+                            <h3>Medical Record History</h3>
+
+                            <p>
+                                Recorded veterinary consultations and treatments
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table class="medical-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Record ID</th>
+                                    <th>Date</th>
+                                    <th>Pet</th>
+                                    <th>Owner</th>
+                                    <th>Veterinarian</th>
+                                    <th>Diagnosis</th>
+                                    <th>Treatment</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="medicalTableBody">
+
+                                <!-- Temporary sample record -->
+
+                                <tr>
+
+                                    <td>MED-0001</td>
+
+                                    <td>
+                                        2026-10-08
+                                    </td>
+
+                                    <td>
+
+                                        <div class="medical-pet-cell">
+
+                                            <div class="medical-pet-avatar">
+                                                🐕
+                                            </div>
+
+                                            <div>
+                                                <strong>Max</strong>
+
+                                                <small>
+                                                    PET-0001
+                                                </small>
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+                                        Juan Dela Cruz
+                                    </td>
+
+                                    <td>
+                                        Dr. Sample Vet
+                                    </td>
+
+                                    <td>
+                                        General Checkup
+                                    </td>
+
+                                    <td>
+                                        Routine examination
+                                    </td>
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <button
+                                                type="button"
+                                                class="table-action view-action"
+                                                title="View record"
+                                            >
+                                                👁
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="table-action edit-action"
+                                                title="Edit record"
+                                            >
+                                                ✎
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="table-action delete-action"
+                                                title="Delete record"
+                                            >
+                                                🗑
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- EMPTY STATE -->
+
+                    <div
+                        class="table-empty"
+                        id="medicalTableEmpty"
+                        style="display: none;"
+                    >
+
+                        <div class="empty-record-icon">
+                            📋
+                        </div>
+
+                        <h4>No Medical Records Found</h4>
+
+                        <p>
+                            Medical records matching your search will appear here.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =========================
+                 ADD MEDICAL RECORD MODAL
+            ========================== -->
+
+            <div
+                class="modal-overlay"
+                id="medicalModal"
+            >
+
+                <div class="medical-modal">
+
+                    <!-- MODAL HEADER -->
+
+                    <div class="modal-header">
+
+                        <div>
+
+                            <p class="page-label">NEW RECORD</p>
+
+                            <h2>Add Medical Record</h2>
+
+                            <p>
+                                Enter the pet's medical information below.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="closeMedicalForm"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <!-- MEDICAL FORM -->
+
+                    <form id="medicalForm">
+
+                        <!-- PATIENT INFORMATION -->
+
+                        <div class="form-section">
+
+                            <h3>Patient Information</h3>
+
+                            <div class="form-grid">
+
+                                <div class="input-group">
+
+                                    <label for="medicalPet">
+                                        Pet
+                                    </label>
+
+                                    <select
+                                        id="medicalPet"
+                                        name="medicalPet"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Pet
+                                        </option>
+
+                                        <option value="PET-0001">
+                                            PET-0001 — Max
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="medicalDate">
+                                        Record Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="medicalDate"
+                                        name="medicalDate"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CONSULTATION INFORMATION -->
+
+                        <div class="form-section">
+
+                            <h3>Consultation Information</h3>
+
+                            <div class="form-grid">
+
+                                <div class="input-group">
+
+                                    <label for="veterinarian">
+                                        Veterinarian
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="veterinarian"
+                                        name="veterinarian"
+                                        placeholder="Enter veterinarian name"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group">
+
+                                    <label for="recordType">
+                                        Record Type
+                                    </label>
+
+                                    <select
+                                        id="recordType"
+                                        name="recordType"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select Record Type
+                                        </option>
+
+                                        <option value="General Checkup">
+                                            General Checkup
+                                        </option>
+
+                                        <option value="Consultation">
+                                            Consultation
+                                        </option>
+
+                                        <option value="Treatment">
+                                            Treatment
+                                        </option>
+
+                                        <option value="Emergency">
+                                            Emergency
+                                        </option>
+
+                                        <option value="Follow-up">
+                                            Follow-up
+                                        </option>
+
+                                        <option value="Surgery">
+                                            Surgery
+                                        </option>
+
+                                        <option value="Other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="input-group full-width">
+
+                                    <label for="diagnosis">
+                                        Diagnosis
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="diagnosis"
+                                        name="diagnosis"
+                                        placeholder="Enter diagnosis"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="input-group full-width">
+
+                                    <label for="treatment">
+                                        Treatment / Procedure
+                                    </label>
+
+                                    <textarea
+                                        id="treatment"
+                                        name="treatment"
+                                        rows="3"
+                                        placeholder="Enter treatment or procedure performed"
+                                        required
+                                    ></textarea>
+
+                                </div>
+
+
+                                <div class="input-group full-width">
+
+                                    <label for="medicalNotes">
+                                        Notes
+                                    </label>
+
+                                    <textarea
+                                        id="medicalNotes"
+                                        name="medicalNotes"
+                                        rows="3"
+                                        placeholder="Enter additional medical notes"
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTIONS -->
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="cancel-button"
+                                id="cancelMedicalForm"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="save-medical-button"
+                            >
+                                Save Medical Record
+                            </button>
+
+                        </div>
+
+
+                        <p
+                            id="medicalFormMessage"
+                            class="medical-form-message"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <footer class="dashboard-footer">
+
+                <p>
+                    Veterinary Pet Records System
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/medical-records.js"></script>
+
+</body>
+</html>
