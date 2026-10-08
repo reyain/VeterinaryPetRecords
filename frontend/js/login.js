@@ -12,18 +12,26 @@ loginForm.addEventListener(
         event.preventDefault();
 
 
+        /* =====================================================
+           GET LOGIN VALUES
+        ===================================================== */
+
         const username =
             document
                 .getElementById("username")
                 .value
-                .trim();
+                .trim()
+                .toLowerCase();
 
         const password =
             document
                 .getElementById("password")
-                .value
-                .trim();
+                .value;
 
+
+        /* =====================================================
+           VALIDATION
+        ===================================================== */
 
         if (!username || !password) {
 
@@ -37,54 +45,251 @@ loginForm.addEventListener(
         }
 
 
-        /*
-            TEMPORARY FRONTEND TEST ACCOUNTS
+        /* =====================================================
+           TEMPORARY ADMINISTRATOR ACCOUNT
+        ===================================================== */
 
-            These are NOT real system accounts.
+        if (
+            username === "admin" &&
+            password === "admin123"
+        ) {
 
-            Real authentication will later use:
+            const loggedInUser = {
 
-            Browser
-                ↓
-            Node.js + Express
-                ↓
-            C# Bridge
-                ↓
-            Core DLL
-                ↓
-            MySQL users table
-        */
+                userId: "ADMIN-0001",
 
-        const demoAccounts = {
+                username: "admin",
 
-            admin: {
-                password: "admin123",
                 fullName: "Administrator",
+
                 role: "Administrator"
-            },
 
-            frontdesk: {
-                password: "front123",
-                fullName: "Front Desk",
-                role: "Front Desk"
-            },
+            };
 
-            veterinarian: {
-                password: "vet123",
-                fullName: "Veterinarian",
-                role: "Veterinarian"
+
+            /*
+                MAIN SESSION
+            */
+
+            sessionStorage.setItem(
+                "vetCurrentUser",
+                JSON.stringify(loggedInUser)
+            );
+
+
+            /*
+                LEGACY SESSION VALUES
+                Kept temporarily so older client
+                scripts do not reject the session.
+            */
+
+            sessionStorage.setItem(
+                "demoUsername",
+                "admin"
+            );
+
+            sessionStorage.setItem(
+                "demoRole",
+                "Administrator"
+            );
+
+
+            loginMessage.style.color =
+                "#2a9d8f";
+
+            loginMessage.textContent =
+                "Login successful. Redirecting...";
+
+
+            setTimeout(() => {
+
+                window.location.href =
+                    "server/pages/dashboard.html";
+
+            }, 500);
+
+
+            return;
+        }
+
+
+        /* =====================================================
+           LOAD STAFF ACCOUNTS
+        ===================================================== */
+
+        let staffAccounts = [];
+
+
+        const savedStaffAccounts =
+            localStorage.getItem(
+                "vetStaffAccounts"
+            );
+
+
+        if (savedStaffAccounts) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(
+                        savedStaffAccounts
+                    );
+
+
+                if (
+                    Array.isArray(parsed)
+                ) {
+
+                    staffAccounts =
+                        parsed;
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to read staff accounts:",
+                    error
+                );
+
             }
 
-        };
+        }
 
 
-        const account =
-            demoAccounts[username.toLowerCase()];
+        /* =====================================================
+           FALLBACK STAFF ACCOUNTS
+        ===================================================== */
+
+        if (
+            staffAccounts.length === 0
+        ) {
+
+            staffAccounts = [
+
+                {
+                    userId:
+                        "USR-0001",
+
+                    username:
+                        "frontdesk",
+
+                    password:
+                        "front123",
+
+                    fullName:
+                        "Front Desk",
+
+                    role:
+                        "Front Desk",
+
+                    status:
+                        "Active"
+
+                },
+
+                {
+                    userId:
+                        "USR-0002",
+
+                    username:
+                        "veterinarian",
+
+                    password:
+                        "vet123",
+
+                    fullName:
+                        "Veterinarian",
+
+                    role:
+                        "Veterinarian",
+
+                    status:
+                        "Active"
+
+                }
+
+            ];
+
+        }
+
+
+        /* =====================================================
+           FIND STAFF USERNAME
+        ===================================================== */
+
+        const staffAccount =
+            staffAccounts.find(
+                account => {
+
+                    const storedUsername =
+                        String(
+                            account.username || ""
+                        )
+                        .trim()
+                        .toLowerCase();
+
+
+                    return (
+                        storedUsername ===
+                        username
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           ACCOUNT NOT FOUND
+        ===================================================== */
+
+        if (!staffAccount) {
+
+            loginMessage.style.color =
+                "#c0392b";
+
+            loginMessage.textContent =
+                "Invalid username or password.";
+
+            return;
+        }
+
+
+        /* =====================================================
+           CHECK STATUS
+        ===================================================== */
+
+        const accountStatus =
+            String(
+                staffAccount.status ||
+                "Active"
+            )
+            .trim()
+            .toLowerCase();
 
 
         if (
-            !account ||
-            account.password !== password
+            accountStatus === "inactive"
+        ) {
+
+            loginMessage.style.color =
+                "#c0392b";
+
+            loginMessage.textContent =
+                "This account is inactive. Please contact the Administrator.";
+
+            return;
+        }
+
+
+        /* =====================================================
+           CHECK PASSWORD
+        ===================================================== */
+
+        if (
+            String(
+                staffAccount.password || ""
+            ) !== password
         ) {
 
             loginMessage.style.color =
@@ -97,33 +302,84 @@ loginForm.addEventListener(
         }
 
 
-        /*
-            Save temporary session information
-            for frontend testing only.
+        /* =====================================================
+           CHECK ROLE
+        ===================================================== */
 
-            This structure is used by both
-            Client and Server dashboards.
-        */
+        const role =
+            String(
+                staffAccount.role || ""
+            )
+            .trim();
+
+
+        if (
+            role !== "Front Desk" &&
+            role !== "Veterinarian"
+        ) {
+
+            loginMessage.style.color =
+                "#c0392b";
+
+            loginMessage.textContent =
+                "This account does not have Client System access.";
+
+            return;
+        }
+
+
+        /* =====================================================
+           CREATE COMMON SESSION
+        ===================================================== */
 
         const loggedInUser = {
 
+            userId:
+                staffAccount.userId || "",
+
             username:
-                username.toLowerCase(),
+                staffAccount.username,
 
             fullName:
-                account.fullName,
+                staffAccount.fullName ||
+                staffAccount.username,
 
             role:
-                account.role
+                role
 
         };
 
+
+        /* =====================================================
+           SAVE MAIN SESSION
+        ===================================================== */
 
         sessionStorage.setItem(
             "vetCurrentUser",
             JSON.stringify(loggedInUser)
         );
 
+
+        /* =====================================================
+           SAVE LEGACY SESSION VALUES
+           For compatibility with older client scripts
+        ===================================================== */
+
+        sessionStorage.setItem(
+            "demoUsername",
+            staffAccount.username
+        );
+
+
+        sessionStorage.setItem(
+            "demoRole",
+            staffAccount.role
+        );
+
+
+        /* =====================================================
+           LOGIN SUCCESS
+        ===================================================== */
 
         loginMessage.style.color =
             "#2a9d8f";
@@ -134,31 +390,8 @@ loginForm.addEventListener(
 
         setTimeout(() => {
 
-            /*
-                Administrator → Server Dashboard
-            */
-
-            if (
-                account.role ===
-                "Administrator"
-            ) {
-
-                window.location.href =
-                    "server/pages/dashboard.html";
-
-            }
-
-            /*
-                Front Desk / Veterinarian
-                → Client Dashboard
-            */
-
-            else {
-
-                window.location.href =
-                    "client/pages/dashboard.html";
-
-            }
+            window.location.href =
+                "client/pages/dashboard.html";
 
         }, 500);
 
