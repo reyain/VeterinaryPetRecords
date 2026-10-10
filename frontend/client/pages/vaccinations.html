@@ -401,6 +401,19 @@
 
                     </div>
 
+                    
+                    <!-- DUE TODAY -->
+                    <div class="vaccination-summary-card clay-card">
+                        <div class="vaccination-summary-icon due-summary-icon clay-icon">
+                            !
+                        </div>
+                        <div>
+                            <span>Due Today</span>
+                            <strong id="dueTodayCount">0</strong>
+                        </div>
+                    </div>
+
+
 
                     <!-- OVERDUE -->
 
@@ -775,7 +788,8 @@
                                         type="text"
                                         id="vaccinationVeterinarian"
                                         class="clay-input"
-                                        placeholder="Enter veterinarian name"
+                                        placeholder="Automatically filled from staff account"
+                                        readonly
                                         required
                                     >
 

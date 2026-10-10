@@ -391,29 +391,6 @@ function renderPets() {
             filteredPets.length === 0 ? "block" : "none";
     }
 
-    // =========================
-    // EMPTY / SEARCH STATES
-    // =========================
-
-    if (petEmptyState) {
-        if (filteredPets.length === 0) {
-            petEmptyState.textContent = searchValue
-                ? "No pets match your search."
-                : "No pet records found.";
-
-            petEmptyState.style.display = "block";
-
-            petEmptyState.dataset.state = searchValue
-                ? "search-empty"
-                : "empty";
-        } else {
-            petEmptyState.textContent = "";
-            petEmptyState.style.display = "none";
-
-            delete petEmptyState.dataset.state;
-        }
-    }
-
     if (visiblePetCount) {
         visiblePetCount.textContent = String(filteredPets.length);
     }
@@ -444,125 +421,6 @@ function showFormMessage(message, color = "") {
 
     petFormMessage.textContent = message;
     petFormMessage.style.color = color;
-}
-
-// =========================
-// APP NOTIFICATIONS
-// =========================
-
-function showNotification(message, type = "success") {
-    let container = document.getElementById("appNotifications");
-
-    if (!container) {
-        container = document.createElement("div");
-        container.id = "appNotifications";
-
-        Object.assign(container.style, {
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            zIndex: "99999",
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            width: "min(360px, calc(100vw - 40px))",
-            pointerEvents: "none"
-        });
-
-        container.setAttribute("aria-live", "polite");
-        container.setAttribute("aria-atomic", "false");
-
-        document.body.appendChild(container);
-    }
-
-    const notification = document.createElement("div");
-
-    const notificationColors = {
-        success: "#21865b",
-        error: "#c0392b",
-        info: "#285f8f",
-        warning: "#9a6700"
-    };
-
-    notification.textContent = String(message);
-
-    Object.assign(notification.style, {
-        backgroundColor: notificationColors[type] || notificationColors.info,
-        color: "#ffffff",
-        padding: "14px 18px",
-        borderRadius: "10px",
-        boxShadow: "0 5px 18px rgba(0, 0, 0, 0.18)",
-        fontSize: "14px",
-        lineHeight: "1.5",
-        overflowWrap: "anywhere",
-        opacity: "0",
-        transform: "translateY(-8px)",
-        transition: "opacity 0.2s ease, transform 0.2s ease",
-        pointerEvents: "auto"
-    });
-
-    container.appendChild(notification);
-
-    // Animate the notification into view.
-    requestAnimationFrame(() => {
-        notification.style.opacity = "1";
-        notification.style.transform = "translateY(0)";
-    });
-
-    // Automatically remove it after four seconds.
-    window.setTimeout(() => {
-        notification.style.opacity = "0";
-        notification.style.transform = "translateY(-8px)";
-
-        window.setTimeout(() => {
-            notification.remove();
-
-            if (container.childElementCount === 0) {
-                container.remove();
-            }
-        }, 250);
-    }, 4000);
-}
-
-// =========================
-// PAGE LOADING / ERROR STATES
-// =========================
-
-function showPageState(message, state = "info", canRetry = false) {
-    if (petTableBody) {
-        petTableBody.innerHTML = "";
-    }
-
-    if (visiblePetCount) {
-        visiblePetCount.textContent = "0";
-    }
-
-    if (!petEmptyState) {
-        return;
-    }
-
-    petEmptyState.textContent = message;
-    petEmptyState.style.display = "block";
-    petEmptyState.dataset.state = state;
-
-    if (canRetry) {
-        const retryButton = document.createElement("button");
-
-        retryButton.type = "button";
-        retryButton.className = "pet-retry-button";
-        retryButton.textContent = "Retry";
-        retryButton.dataset.action = "retry-load";
-
-        retryButton.addEventListener("click", async () => {
-            await initializePetPage();
-        });
-
-        petEmptyState.appendChild(
-            document.createTextNode(" ")
-        );
-
-        petEmptyState.appendChild(retryButton);
-    }
 }
 
 // =========================
@@ -736,11 +594,11 @@ if (petForm) {
             await loadPetsFromApi();
             renderPets();
 
-            showNotification(
+            showFormMessage(
                 isEditing
                     ? "Pet record updated successfully."
                     : "Pet registered successfully.",
-                "success"
+                "#2a9d8f"
             );
 
             window.setTimeout(closePetDialog, 650);
@@ -751,11 +609,6 @@ if (petForm) {
             showFormMessage(
                 `Unable to save pet: ${error.message}`,
                 "#c0392b"
-            );
-
-            showNotification(
-                `Unable to save pet: ${error.message}`,
-                "error"
             );
 
         } finally {
@@ -840,17 +693,13 @@ if (petTableBody) {
                 await loadPetsFromApi();
                 renderPets();
 
-                showNotification(
-                    result.message || "Pet record deleted successfully.",
-                    "success"
-                );
+                alert(result.message || "Pet record deleted successfully.");
 
             } catch (error) {
                 console.error("Unable to delete pet record:", error);
 
-                showNotification(
-                    `Unable to delete pet record: ${error.message}`,
-                    "error"
+                alert(
+                    `Unable to delete pet record.\n\n${error.message}`
                 );
 
                 button.disabled = false;
@@ -868,43 +717,38 @@ if (petSearch) {
     petSearch.addEventListener("input", renderPets);
 }
 
-
 // =========================
-// INITIALIZE PET PAGE
+// INITIALIZE FROM API
 // =========================
 
 async function initializePetPage() {
-    showPageState(
-        "Loading pet and owner records...",
-        "loading"
-    );
-
     try {
-        // Load pet and owner records from the API.
+        if (petEmptyState) {
+            petEmptyState.textContent = "Loading pet records...";
+            petEmptyState.style.display = "block";
+        }
+
         await Promise.all([
             loadPetsFromApi(),
             loadOwnersFromApi()
         ]);
 
-        // Populate the owner dropdown and render records.
         populateOwnerDropdown();
         renderPets();
 
     } catch (error) {
-        console.error(
-            "Unable to load pet page data:",
-            error
-        );
+        console.error("Unable to load pet page data:", error);
 
-        showPageState(
-            "Unable to load pet and owner records. " +
-            "Check that MySQL, the C# Bridge, and Node.js are running, then try again.",
-            "error",
-            true
-        );
+        if (petTableBody) petTableBody.innerHTML = "";
+
+        if (petEmptyState) {
+            petEmptyState.textContent =
+                "Unable to load records. Please check the server connection and refresh.";
+            petEmptyState.style.display = "block";
+        }
 
         showFormMessage(
-            `Unable to load records: ${error.message}`,
+            `Unable to load pet and owner records from the database: ${error.message}`,
             "#c0392b"
         );
     }

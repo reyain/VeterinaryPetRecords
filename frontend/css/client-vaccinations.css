@@ -492,6 +492,12 @@
     color: #b23a35;
 }
 
+.due-today-status {
+    background: #fce6d0;
+    color: #a34b09;
+}
+
+
 
 /* =========================
    ACTIONS
@@ -867,8 +873,14 @@
 .preview-overdue {
     background: #faeaea;
 
-    color: #b23a35;
+    color: #fd0800;
 }
+
+.preview-due-today {
+    background: #fce6d0;
+    color: #a34b09;
+}
+
 
 .vaccination-status-preview p {
     max-width: 280px;

@@ -119,396 +119,126 @@ logoutButton.addEventListener(
 );
 
 
-/// =========================
-// API / DATABASE DATA
+// =========================
+// STORAGE KEYS
 // =========================
 
-const API_BASE_URL = "/api";
+const PET_STORAGE_KEY =
+    "vetPetPets";
 
-function showVaccinationMessage(message, backgroundColor = "#2a9d8f") {
-    let toast = document.getElementById("vaccinationMessageToast");
-
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "vaccinationMessageToast";
-        toast.setAttribute("role", "status");
-        toast.setAttribute("aria-live", "polite");
-
-        Object.assign(toast.style, {
-            position: "fixed",
-            bottom: "24px",
-            right: "24px",
-            zIndex: "99999",
-            padding: "14px 20px",
-            borderRadius: "10px",
-            color: "#ffffff",
-            fontSize: "14px",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-            maxWidth: "360px",
-            overflowWrap: "anywhere",
-            display: "none"
-        });
-
-        document.body.appendChild(toast);
-    }
-
-    toast.textContent = message;
-    toast.style.backgroundColor = backgroundColor;
-    toast.style.display = "block";
-
-    clearTimeout(toast.hideTimer);
-
-    toast.hideTimer = setTimeout(() => {
-        toast.style.display = "none";
-    }, 4000);
-}
+const VACCINATION_STORAGE_KEY =
+    "vetPetVaccinations";
 
 
-let pets = [];
-let owners = [];
-let vaccinations = [];
-const staffNameById = new Map();
+// =========================
+// LOAD PETS
+// =========================
 
+function loadPets() {
 
-
-let loggedInDatabaseUserId = null;
-let loggedInDatabaseUserFullName = "";
-
-
-async function getLoggedInDatabaseUserId() {
-    if (loggedInDatabaseUserId !== null) {
-        return loggedInDatabaseUserId;
-    }
-
-    const sessionText = sessionStorage.getItem("vetCurrentUser");
-
-    if (!sessionText) {
-        throw new Error("Your login session has expired. Please log in again.");
-    }
-
-    const currentUser = JSON.parse(sessionText);
-
-    if (!currentUser.username) {
-        throw new Error("Unable to identify the logged-in staff member.");
-    }
-
-    // Map the frontend demo account to its existing database account.
-    const usernameMap = {
-        veterinarian: "vet"
-    };
-
-    const databaseUsername =
-        usernameMap[currentUser.username.toLowerCase()] ||
-        currentUser.username;
-
-    const result = await apiRequest(
-        `/users/by-username/${encodeURIComponent(databaseUsername)}`
-    );
-
-    const user = result.data;
-
-    if (
-        !user ||
-        !Number(user.userID) ||
-        String(user.status).toLowerCase() !== "active"
-    ) {
-        throw new Error(
-            `No active database staff account was found for "${databaseUsername}".`
-        );
-    }
-
-        loggedInDatabaseUserId = Number(user.userID);
-        loggedInDatabaseUserFullName = String(
-            user.fullName || user.username || ""
+    const savedPets =
+        localStorage.getItem(
+            PET_STORAGE_KEY
         );
 
-        return loggedInDatabaseUserId;
-}
 
+    if (!savedPets) {
 
+        return [];
 
+    }
 
-// =========================
-// API REQUEST HELPER
-// =========================
-
-async function apiRequest(endpoint, options = {}) {
-    let response;
 
     try {
-        response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            ...options,
-            headers: {
-                ...(options.headers || {}),
-                ...(options.body !== undefined
-                    ? { "Content-Type": "application/json" }
-                    : {})
-            }
-        });
-    } catch (error) {
-        throw new Error(
-            "Cannot connect to the server. Check that Node.js and the C# Bridge are running."
-        );
-    }
 
-    const responseText = await response.text();
-    let result = {};
-
-    if (responseText) {
-        try {
-            result = JSON.parse(responseText);
-        } catch {
-            result = { message: responseText };
-        }
-    }
-
-    if (!response.ok || result.success === false) {
-        throw new Error(
-            result.detail ||
-            result.message ||
-            result.title ||
-            `Request failed with HTTP ${response.status}`
-        );
-    }
-
-    return result;
-}
+        const parsedPets =
+            JSON.parse(
+                savedPets
+            );
 
 
-// =========================
-// EXTRACT API RECORDS
-// =========================
-
-function extractRecords(result, collectionName) {
-    if (Array.isArray(result)) {
-        return result;
-    }
-
-    if (Array.isArray(result?.data)) {
-        return result.data;
-    }
-
-    if (Array.isArray(result?.[collectionName])) {
-        return result[collectionName];
-    }
-
-    return [];
-}
-
-
-// =========================
-// NORMALIZE DATES
-// =========================
-
-function dateOnly(value) {
-    if (!value) {
-        return "";
-    }
-
-    return String(value).substring(0, 10);
-}
-
-
-// =========================
-// NORMALIZE PETS
-// =========================
-
-function normalizePet(pet) {
-    return {
-        petId: String(
-            pet.petID ?? pet.petId ?? pet.PetID ?? ""
-        ),
-
-        ownerId: String(
-            pet.ownerID ?? pet.ownerId ?? pet.OwnerID ?? ""
-        ),
-
-        petName: pet.petName ?? pet.PetName ?? "",
-        species: pet.species ?? pet.Species ?? "",
-        breed: pet.breed ?? pet.Breed ?? "",
-        sex: pet.sex ?? pet.Sex ?? "",
-
-        birthDate: dateOnly(
-            pet.birthDate ?? pet.BirthDate
-        ),
-
-        color: pet.color ?? pet.Color ?? "Not specified",
-        status: pet.status ?? pet.Status ?? "Active"
-    };
-}
-
-
-// =========================
-// NORMALIZE OWNERS
-// =========================
-
-function normalizeOwner(owner) {
-    return {
-        ownerId: String(
-            owner.ownerID ??
-            owner.ownerId ??
-            owner.OwnerID ??
-            ""
-        ),
-
-        firstName: owner.firstName ?? owner.FirstName ?? "",
-        middleName: owner.middleName ?? owner.MiddleName ?? "",
-        lastName: owner.lastName ?? owner.LastName ?? "",
-
-        nameExtension:
-            owner.nameExtension ??
-            owner.NameExtension ??
-            owner.extension ??
-            ""
-    };
-}
-
-
-// =========================
-// NORMALIZE VACCINATIONS
-// =========================
-
-function normalizeVaccination(vaccination) {
-    const userId = Number(
-        vaccination.userID ??
-        vaccination.userId ??
-        vaccination.UserID ??
-        0
-    );
-
-    return {
-        vaccinationId: String(
-            vaccination.vaccinationID ??
-            vaccination.vaccinationId ??
-            vaccination.VaccinationID ??
-            ""
-        ),
-
-        petId: String(
-            vaccination.petID ??
-            vaccination.petId ??
-            vaccination.PetID ??
-            ""
-        ),
-
-        userId: userId,
-
-        vaccineName:
-            vaccination.vaccineName ??
-            vaccination.VaccineName ??
-            "",
-
-        dateGiven: dateOnly(
-            vaccination.dateAdministered ??
-            vaccination.dateGiven ??
-            vaccination.DateAdministered
-        ),
-
-        nextDueDate: dateOnly(
-            vaccination.nextVaccinationDate ??
-            vaccination.nextDueDate ??
-            vaccination.NextVaccinationDate
-        ),
-
-        // The current database model stores UserID,
-        // not a separate veterinarian-name field.
-        veterinarian:
-            vaccination.veterinarian ??
-            vaccination.Veterinarian ??
-            (userId > 0
-                ? `Staff ID ${userId}`
-                : "Unknown Staff"),
-
-        remarks:
-            vaccination.remarks ??
-            vaccination.Remarks ??
-            ""
-    };
-}
-
-
-// =========================
-// LOAD PETS FROM DATABASE
-// =========================
-
-async function loadPetsFromApi() {
-    const result = await apiRequest("/pets");
-
-    pets = extractRecords(result, "pets")
-        .map(normalizePet);
-}
-
-
-// =========================
-// LOAD OWNERS FROM DATABASE
-// =========================
-
-async function loadOwnersFromApi() {
-    const result = await apiRequest("/owners");
-
-    owners = extractRecords(result, "owners")
-        .map(normalizeOwner);
-}
-
-
-// =========================
-// LOAD VACCINATIONS FROM DATABASE
-// =========================
-
-
-async function loadVaccinationsFromApi() {
-    const result = await apiRequest("/vaccinations");
-
-    const records = extractRecords(result, "vaccinations");
-
-    const normalizedRecords = records.map(normalizeVaccination);
-
-    // Get each distinct staff UserID from the vaccination records.
-    const userIds = [
-        ...new Set(
-            normalizedRecords
-                .map(vaccination => Number(vaccination.userId))
-                .filter(userId => userId > 0)
+        return Array.isArray(
+            parsedPets
         )
-    ];
+            ? parsedPets
+            : [];
 
-    // Retrieve the actual staff name for each UserID.
-    await Promise.all(
-        userIds.map(async userId => {
-            try {
-                const userResult = await apiRequest(
-                    `/users/by-id/${encodeURIComponent(userId)}`
-                );
+    } catch (error) {
 
-                const user = userResult.data;
+        console.error(
+            "Unable to load pets:",
+            error
+        );
 
-                staffNameById.set(
-                    userId,
-                    user?.fullName ||
-                    user?.username ||
-                    `Staff ID ${userId}`
-                );
-            } catch (error) {
-                console.warn(
-                    `Could not retrieve staff name for UserID ${userId}:`,
-                    error.message
-                );
+        return [];
 
-                // Keep the vaccination page usable if a staff lookup fails.
-                staffNameById.set(userId, `Staff ID ${userId}`);
-            }
-        })
-    );
+    }
 
-    // Attach the resolved staff name to every vaccination record.
-    vaccinations = normalizedRecords.map(vaccination => ({
-        ...vaccination,
-        veterinarian:
-            staffNameById.get(Number(vaccination.userId)) ||
-            vaccination.veterinarian
-    }));
 }
 
+
+// =========================
+// LOAD VACCINATIONS
+// =========================
+
+function loadVaccinations() {
+
+    const savedVaccinations =
+        localStorage.getItem(
+            VACCINATION_STORAGE_KEY
+        );
+
+
+    if (!savedVaccinations) {
+
+        localStorage.setItem(
+            VACCINATION_STORAGE_KEY,
+            JSON.stringify([])
+        );
+
+
+        return [];
+
+    }
+
+
+    try {
+
+        const parsedVaccinations =
+            JSON.parse(
+                savedVaccinations
+            );
+
+
+        return Array.isArray(
+            parsedVaccinations
+        )
+            ? parsedVaccinations
+            : [];
+
+    } catch (error) {
+
+        console.error(
+            "Unable to load vaccinations:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+// =========================
+// DATA
+// =========================
+
+let pets =
+    loadPets();
+
+let vaccinations =
+    loadVaccinations();
 
 
 // =========================
@@ -539,9 +269,6 @@ const dueSoonCount =
     document.getElementById(
         "dueSoonCount"
     );
-
-    const dueTodayCount =
-    document.getElementById("dueTodayCount");
 
 const overdueCount =
     document.getElementById(
@@ -651,42 +378,109 @@ let editingVaccinationId =
 // GET PET
 // =========================
 
-function getPet(petId) {
+function getPet(
+    petId
+) {
+
     return pets.find(
-        pet => String(pet.petId) === String(petId)
+        pet =>
+            pet.petId === petId
     );
+
 }
 
 
 // =========================
 // GET OWNER NAME
 // =========================
-function getOwnerNameFromPet(pet) {
+
+function getOwnerNameFromPet(
+    pet
+) {
+
     if (!pet) {
+
         return "Unknown Owner";
+
     }
 
-    const owner = owners.find(
-        item => String(item.ownerId) === String(pet.ownerId)
-    );
 
-    if (!owner) {
+    const savedOwners =
+        localStorage.getItem(
+            "vetPetOwners"
+        );
+
+
+    if (!savedOwners) {
+
         return "Unknown Owner";
+
     }
 
-    let fullName = [
-        owner.firstName,
-        owner.middleName,
-        owner.lastName
-    ]
-        .filter(Boolean)
-        .join(" ");
 
-    if (owner.nameExtension) {
-        fullName += `, ${owner.nameExtension}`;
+    try {
+
+        const owners =
+            JSON.parse(
+                savedOwners
+            );
+
+
+        if (!Array.isArray(
+            owners
+        )) {
+
+            return "Unknown Owner";
+
+        }
+
+
+        const owner =
+            owners.find(
+                item =>
+                    item.ownerId ===
+                    pet.ownerId
+            );
+
+
+        if (!owner) {
+
+            return "Unknown Owner";
+
+        }
+
+
+        let fullName =
+            [
+                owner.firstName,
+                owner.middleName,
+                owner.lastName
+            ]
+            .filter(Boolean)
+            .join(" ");
+
+
+        if (owner.nameExtension) {
+
+            fullName +=
+                `, ${owner.nameExtension}`;
+
+        }
+
+
+        return fullName;
+
+    } catch (error) {
+
+        console.error(
+            "Unable to load owner:",
+            error
+        );
+
+        return "Unknown Owner";
+
     }
 
-    return fullName || "Unknown Owner";
 }
 
 
@@ -807,74 +601,123 @@ function escapeHtml(
 // DATE STATUS
 // =========================
 
-function calculateVaccinationStatus(dueDate) {
+function calculateVaccinationStatus(
+    dueDate
+) {
+
     if (!dueDate) {
+
         return "Up to Date";
+
     }
 
-    const [year, month, day] = String(dueDate)
-        .substring(0, 10)
-        .split("-")
-        .map(Number);
 
-    if (!year || !month || !day) {
-        return "Up to Date";
-    }
+    const today =
+        new Date();
 
-    // Compare calendar dates in UTC to avoid daylight-saving
-    // and time-zone differences affecting the result.
-    const dueTime = Date.UTC(year, month - 1, day);
 
-    const now = new Date();
-    const todayTime = Date.UTC(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
+    today.setHours(
+        0,
+        0,
+        0,
+        0
     );
 
-    const days = Math.round(
-        (dueTime - todayTime) / 86400000
-    );
+
+    const due =
+        new Date(
+            `${dueDate}T00:00:00`
+        );
+
+
+    const difference =
+        due.getTime()
+        -
+        today.getTime();
+
+
+    const days =
+        Math.ceil(
+            difference /
+            (
+                1000 *
+                60 *
+                60 *
+                24
+            )
+        );
+
 
     if (days < 0) {
+
         return "Overdue";
+
     }
 
-    if (days === 0) {
-        return "Due Today";
-    }
 
     if (days <= 30) {
+
         return "Due Soon";
+
     }
 
-    return "Up to Date";
-}
 
+    return "Up to Date";
+
+}
 
 
 // =========================
 // STATUS CLASS
 // =========================
 
+function applyStatusClass(
+    element,
+    status
+) {
 
-function applyStatusClass(element, status) {
     element.classList.remove(
         "up-to-date-status",
         "due-soon-status",
-        "due-today-status",
         "overdue-status"
     );
 
-    if (status === "Up to Date") {
-        element.classList.add("up-to-date-status");
-    } else if (status === "Due Today") {
-        element.classList.add("due-today-status");
-    } else if (status === "Due Soon") {
-        element.classList.add("due-soon-status");
-    } else if (status === "Overdue") {
-        element.classList.add("overdue-status");
+
+    if (
+        status ===
+        "Up to Date"
+    ) {
+
+        element.classList.add(
+            "up-to-date-status"
+        );
+
     }
+
+
+    if (
+        status ===
+        "Due Soon"
+    ) {
+
+        element.classList.add(
+            "due-soon-status"
+        );
+
+    }
+
+
+    if (
+        status ===
+        "Overdue"
+    ) {
+
+        element.classList.add(
+            "overdue-status"
+        );
+
+    }
+
 }
 
 
@@ -883,63 +726,134 @@ function applyStatusClass(element, status) {
 // =========================
 
 function updateStatusPreview() {
-    const status = calculateVaccinationStatus(
-        nextDueDate.value
-    );
 
-    statusPreview.textContent = status;
+    const status =
+        calculateVaccinationStatus(
+            nextDueDate.value
+        );
+
+
+    statusPreview.textContent =
+        status;
+
 
     statusPreview.classList.remove(
         "preview-up-to-date",
         "preview-due-soon",
-        "preview-due-today",
         "preview-overdue"
     );
 
-    if (status === "Up to Date") {
-        statusPreview.classList.add("preview-up-to-date");
-    } else if (status === "Due Today") {
-        statusPreview.classList.add("preview-due-today");
-    } else if (status === "Due Soon") {
-        statusPreview.classList.add("preview-due-soon");
-    } else if (status === "Overdue") {
-        statusPreview.classList.add("preview-overdue");
+
+    if (
+        status ===
+        "Up to Date"
+    ) {
+
+        statusPreview.classList.add(
+            "preview-up-to-date"
+        );
+
     }
+
+
+    if (
+        status ===
+        "Due Soon"
+    ) {
+
+        statusPreview.classList.add(
+            "preview-due-soon"
+        );
+
+    }
+
+
+    if (
+        status ===
+        "Overdue"
+    ) {
+
+        statusPreview.classList.add(
+            "preview-overdue"
+        );
+
+    }
+
 }
 
 
 // =========================
 // POPULATE PET DROPDOWN
 // =========================
-// =========================
-// POPULATE PET DROPDOWN
-// =========================
 
-function populatePetDropdown(selectedPetId = "") {
-    if (!vaccinationPet) {
-        return;
-    }
+function populatePetDropdown(
+    selectedPetId = ""
+) {
 
-    // Use the pets already loaded from the API.
-    vaccinationPet.innerHTML = "";
+    pets =
+        loadPets();
 
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "Select Pet";
-    vaccinationPet.appendChild(defaultOption);
 
-    pets.forEach((pet) => {
-        const option = document.createElement("option");
+    vaccinationPet.innerHTML =
+        "";
 
-        option.value = String(pet.petId);
-        option.textContent = pet.petName || `Pet ${pet.petId}`;
 
-        if (String(pet.petId) === String(selectedPetId)) {
-            option.selected = true;
+    const defaultOption =
+        document.createElement(
+            "option"
+        );
+
+
+    defaultOption.value =
+        "";
+
+
+    defaultOption.textContent =
+        pets.length > 0
+            ? "Select Pet"
+            : "No registered pets available";
+
+
+    vaccinationPet.appendChild(
+        defaultOption
+    );
+
+
+    pets.forEach(
+        (pet) => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                pet.petId;
+
+
+            option.textContent =
+                `${pet.petId} — ${pet.petName}`;
+
+
+            if (
+                pet.petId ===
+                selectedPetId
+            ) {
+
+                option.selected =
+                    true;
+
+            }
+
+
+            vaccinationPet.appendChild(
+                option
+            );
+
         }
+    );
 
-        vaccinationPet.appendChild(option);
-    });
 }
 
 
@@ -987,6 +901,9 @@ function getPetIcon(
 // =========================
 
 function renderVaccinations() {
+
+    pets =
+        loadPets();
 
 
     const searchValue =
@@ -1272,9 +1189,9 @@ function renderVaccinations() {
 
 function updateSummary() {
 
-let dueSoon = 0;
-let dueToday = 0;
-let overdue = 0;
+    let dueSoon = 0;
+
+    let overdue = 0;
 
 
     vaccinations.forEach(
@@ -1293,10 +1210,6 @@ let overdue = 0;
 
                 dueSoon++;
 
-            }
-
-            if (status === "Due Today") {
-                dueToday++;
             }
 
 
@@ -1319,8 +1232,6 @@ let overdue = 0;
 
     dueSoonCount.textContent =
         dueSoon;
-        
-    dueTodayCount.textContent = dueToday;
 
 
     overdueCount.textContent =
@@ -1333,7 +1244,7 @@ let overdue = 0;
 // OPEN ADD MODAL
 // =========================
 
-async function openAddVaccinationModal() {
+function openAddVaccinationModal() {
 
     editingVaccinationId =
         null;
@@ -1349,24 +1260,6 @@ async function openAddVaccinationModal() {
 
     vaccinationForm.reset();
 
-    vaccinationVeterinarian.readOnly = true;
-    vaccinationVeterinarian.value = "";
-
-    try {
-        await getLoggedInDatabaseUserId();
-
-        vaccinationVeterinarian.value =
-            loggedInDatabaseUserFullName;
-    } catch (error) {
-        console.error("Unable to load the veterinarian account:", error);
-
-        showVaccinationMessage(
-            error.message || "Unable to load the veterinarian account.",
-            "#c0392b"
-        );
-
-        return;
-    }
 
     populatePetDropdown();
 
@@ -1471,11 +1364,8 @@ function openEditVaccinationModal(
         vaccination.nextDueDate;
 
 
-    vaccinationVeterinarian.readOnly = true;
-
     vaccinationVeterinarian.value =
-        vaccination.veterinarian ||
-        `Staff ID ${vaccination.userId}`;
+        vaccination.veterinarian;
 
 
     vaccinationRemarks.value =
@@ -1626,120 +1516,222 @@ nextDueDate.addEventListener(
 // FORM SUBMIT
 // =========================
 
-vaccinationForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+vaccinationForm.addEventListener(
+    "submit",
+    (event) => {
 
-    const formData = {
-        petId: vaccinationPet.value,
-        vaccineName: vaccineName.value.trim(),
-        dateGiven: dateGiven.value,
-        nextDueDate: nextDueDate.value,
-        veterinarian: vaccinationVeterinarian.value.trim(),
-        remarks: vaccinationRemarks.value.trim()
-    };
+        event.preventDefault();
 
-    if (!formData.petId) {
-        showVaccinationMessage("Please select a pet.", "#c0392b");
-        return;
-    }
 
-    if (!formData.vaccineName) {
-        showVaccinationMessage("Vaccine name is required.", "#c0392b");
-        return;
-    }
+        const formData = {
 
-    if (!formData.dateGiven) {
-        showVaccinationMessage("Date given is required.", "#c0392b");
-        return;
-    }
+            petId:
+                vaccinationPet.value,
 
-    if (!formData.nextDueDate) {
-        showVaccinationMessage("Next due date is required.", "#c0392b");
-        return;
-    }
+            vaccineName:
+                vaccineName.value.trim(),
 
-    if (formData.nextDueDate < formData.dateGiven) {
-        showVaccinationMessage(
-            "Next due date cannot be earlier than the date given.",
-            "#c0392b"
-        );
-        return;
-    }
+            dateGiven:
+                dateGiven.value,
 
-    if (!formData.veterinarian) {
-        showVaccinationMessage("Veterinarian name is required.", "#c0392b");
-        return;
-    }
+            nextDueDate:
+                nextDueDate.value,
 
-    try {
-        const existingVaccination = editingVaccinationId
-            ? vaccinations.find(
-                item =>
-                    String(item.vaccinationId) ===
-                    String(editingVaccinationId)
-            )
-            : null;
+            veterinarian:
+                vaccinationVeterinarian.value.trim(),
 
-        if (editingVaccinationId && !existingVaccination) {
-            throw new Error("Vaccination record could not be found.");
-        }
+            remarks:
+                vaccinationRemarks.value.trim()
 
-        const userId = editingVaccinationId
-            ? Number(existingVaccination.userId)
-            : await getLoggedInDatabaseUserId();
-
-        if (!Number.isInteger(userId) || userId <= 0) {
-            throw new Error("A valid staff account is required.");
-        }
-
-        const payload = {
-            petID: Number(formData.petId),
-            userID: userId,
-            vaccineName: formData.vaccineName,
-            dateAdministered: formData.dateGiven,
-            nextVaccinationDate: formData.nextDueDate,
-            remarks: formData.remarks || null
         };
 
 
-        if (editingVaccinationId) {
-            await apiRequest(
-                `/vaccinations/${encodeURIComponent(editingVaccinationId)}`,
-                {
-                    method: "PUT",
-                    body: JSON.stringify(payload)
-                }
+        // =========================
+        // VALIDATION
+        // =========================
+
+        if (
+            !formData.petId
+        ) {
+
+            showVaccinationMessage(
+                "Please select a pet.",
+                "#c0392b"
             );
+
+            return;
+
+        }
+
+
+        if (
+            !formData.vaccineName
+        ) {
+
+            showVaccinationMessage(
+                "Vaccine name is required.",
+                "#c0392b"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !formData.dateGiven
+        ) {
+
+            showVaccinationMessage(
+                "Date given is required.",
+                "#c0392b"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !formData.nextDueDate
+        ) {
+
+            showVaccinationMessage(
+                "Next due date is required.",
+                "#c0392b"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            formData.nextDueDate <
+            formData.dateGiven
+        ) {
+
+            showVaccinationMessage(
+                "Next due date cannot be earlier than the date given.",
+                "#c0392b"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !formData.veterinarian
+        ) {
+
+            showVaccinationMessage(
+                "Veterinarian name is required.",
+                "#c0392b"
+            );
+
+            return;
+
+        }
+
+
+        // =========================
+        // UPDATE
+        // =========================
+
+        if (
+            editingVaccinationId
+        ) {
+
+            const vaccinationIndex =
+                vaccinations.findIndex(
+                    vaccination =>
+                        vaccination.vaccinationId ===
+                        editingVaccinationId
+                );
+
+
+            if (
+                vaccinationIndex === -1
+            ) {
+
+                showVaccinationMessage(
+                    "Vaccination record could not be found.",
+                    "#c0392b"
+                );
+
+                return;
+
+            }
+
+
+            vaccinations[
+                vaccinationIndex
+            ] = {
+
+                ...vaccinations[
+                    vaccinationIndex
+                ],
+
+                ...formData
+
+            };
+
+
+            saveVaccinations();
+
+            renderVaccinations();
+
 
             showVaccinationMessage(
                 "Vaccination record updated successfully.",
                 "#2a9d8f"
             );
-        } else {
-            await apiRequest("/vaccinations", {
-                method: "POST",
-                body: JSON.stringify(payload)
-            });
+
+        }
+
+        // =========================
+        // CREATE
+        // =========================
+
+        else {
+
+            const newVaccination = {
+
+                vaccinationId:
+                    generateVaccinationId(),
+
+                ...formData
+
+            };
+
+
+            vaccinations.push(
+                newVaccination
+            );
+
+
+            saveVaccinations();
+
+            renderVaccinations();
+
 
             showVaccinationMessage(
                 "Vaccination record added successfully.",
                 "#2a9d8f"
             );
+
         }
 
-        await loadVaccinationsFromApi();
-        renderVaccinations();
 
-        setTimeout(closeVaccinationDialog, 600);
-    } catch (error) {
-        console.error("Unable to save vaccination record:", error);
-
-        showVaccinationMessage(
-            error.message || "Unable to save vaccination record.",
-            "#c0392b"
+        setTimeout(
+            closeVaccinationDialog,
+            600
         );
+
     }
-});
+);
+
 
 // =========================
 // TABLE ACTIONS
@@ -1747,7 +1739,7 @@ vaccinationForm.addEventListener("submit", async (event) => {
 
 vaccinationTableBody.addEventListener(
     "click",
-    async (event) => {
+    (event) => {
 
         const button =
             event.target.closest(
@@ -1884,39 +1876,41 @@ vaccinationTableBody.addEventListener(
         // DELETE
         // =========================
 
-                
-        if (action === "delete") {
-            const confirmed = confirm(
-                `Delete this vaccination record?\n\n` +
-                `Pet: ${petName}\n` +
-                `Vaccine: ${vaccination.vaccineName}`
-            );
+        if (
+            action === "delete"
+        ) {
+
+            const confirmed =
+                confirm(
+
+                    `Delete this vaccination record?\n\n` +
+
+                    `Pet: ${petName}\n` +
+
+                    `Vaccine: ${
+                        vaccination.vaccineName
+                    }`
+
+                );
+
 
             if (!confirmed) {
                 return;
             }
 
-            try {
-                await apiRequest(
-                    `/vaccinations/${encodeURIComponent(vaccination.vaccinationId)}`,
-                    { method: "DELETE" }
+
+            vaccinations =
+                vaccinations.filter(
+                    item =>
+                        item.vaccinationId !==
+                        vaccinationId
                 );
 
-                await loadVaccinationsFromApi();
-                renderVaccinations();
 
-                showVaccinationMessage(
-                    "Vaccination record deleted successfully.",
-                    "#2a9d8f"
-                );
-            } catch (error) {
-                console.error("Unable to delete vaccination record:", error);
+            saveVaccinations();
 
-                showVaccinationMessage(
-                    error.message || "Unable to delete vaccination record.",
-                    "#c0392b"
-                );
-            }
+            renderVaccinations();
+
         }
 
     }
@@ -1936,38 +1930,7 @@ vaccinationSearch.addEventListener(
 // =========================
 // INITIALIZE
 // =========================
-// =========================
-// INITIALIZE FROM DATABASE
-// =========================
 
-async function initializeVaccinationPage() {
-    try {
-        await Promise.all([
-            loadPetsFromApi(),
-            loadOwnersFromApi(),
-            loadVaccinationsFromApi()
-        ]);
+populatePetDropdown();
 
-        populatePetDropdown();
-        renderVaccinations();
-
-        console.log("Vaccination page loaded from the database.");
-        console.log("Pets:", pets.length);
-        console.log("Owners:", owners.length);
-        console.log("Vaccinations:", vaccinations.length);
-
-    } catch (error) {
-        console.error(
-            "Unable to initialize vaccination page:",
-            error
-        );
-
-        vaccinationEmptyState.style.display = "block";
-        vaccinationEmptyState.textContent =
-            `Unable to load vaccination records: ${error.message}`;
-
-        vaccinationTableBody.innerHTML = "";
-    }
-}
-
-initializeVaccinationPage();
+renderVaccinations();
