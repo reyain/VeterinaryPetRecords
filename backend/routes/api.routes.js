@@ -21,18 +21,17 @@ function notImplemented(feature) {
             success: false,
             code: "NOT_IMPLEMENTED",
             feature,
-            message:
-                `${feature} API has not been implemented yet.`
+            message: `${feature} API has not been implemented yet.`
         });
     };
 }
 
 
 /* =====================================================
-   HELPER TO FORWARD OWNER REQUESTS TO THE C# BRIDGE
+   HELPER TO FORWARD REQUESTS TO THE C# BRIDGE
    ===================================================== */
 
-async function proxyOwnerRequest(req, res, bridgePath) {
+async function proxyBridgeRequest(req, res, bridgePath) {
     try {
         const options = {
             method: req.method,
@@ -42,7 +41,6 @@ async function proxyOwnerRequest(req, res, bridgePath) {
             signal: AbortSignal.timeout(10000)
         };
 
-        // Forward request bodies for create and update operations.
         if (["POST", "PUT", "PATCH"].includes(req.method)) {
             options.headers["Content-Type"] = "application/json";
             options.body = JSON.stringify(req.body ?? {});
@@ -54,22 +52,15 @@ async function proxyOwnerRequest(req, res, bridgePath) {
         );
 
         const responseBody = await bridgeResponse.text();
-        const contentType =
-            bridgeResponse.headers.get("content-type");
+        const contentType = bridgeResponse.headers.get("content-type");
 
         if (contentType) {
             res.setHeader("Content-Type", contentType);
         }
 
-        return res
-            .status(bridgeResponse.status)
-            .send(responseBody);
-
+        return res.status(bridgeResponse.status).send(responseBody);
     } catch (error) {
-        console.error(
-            "C# Bridge request failed:",
-            error.message
-        );
+        console.error("C# Bridge request failed:", error.message);
 
         return res.status(503).json({
             success: false,
@@ -98,293 +89,216 @@ router.get("/health", (req, res) => {
 
 /* =====================================================
    AUTHENTICATION
+   POST /api/auth/login
+   POST /api/login (compatibility route)
    ===================================================== */
 
-router.post(
-    "/auth/login",
-    notImplemented("Authentication")
-);
+router.post("/auth/login", (req, res) => {
+    return proxyBridgeRequest(req, res, "/api/login");
+});
 
-router.post(
-    "/auth/logout",
-    notImplemented("Authentication")
-);
+router.post("/login", (req, res) => {
+    return proxyBridgeRequest(req, res, "/api/login");
+});
+
+router.post("/auth/logout", notImplemented("Authentication logout"));
 
 
 /* =====================================================
    STAFF ACCOUNTS
-   The Administrator manages staff accounts.
    ===================================================== */
 
-router.get(
-    "/staff-accounts",
-    notImplemented("Staff account listing")
-);
-
-router.post(
-    "/staff-accounts",
-    notImplemented("Staff account creation")
-);
-
-router.get(
-    "/staff-accounts/:userId",
-    notImplemented("Staff account details")
-);
-
-router.put(
-    "/staff-accounts/:userId",
-    notImplemented("Staff account update")
-);
-
-router.patch(
-    "/staff-accounts/:userId/status",
-    notImplemented("Staff account status")
-);
-
-router.post(
-    "/staff-accounts/:userId/reset-password",
-    notImplemented("Staff password reset")
-);
+router.get("/staff-accounts", notImplemented("Staff account listing"));
+router.post("/staff-accounts", notImplemented("Staff account creation"));
+router.get("/staff-accounts/:userId", notImplemented("Staff account details"));
+router.put("/staff-accounts/:userId", notImplemented("Staff account update"));
+router.patch("/staff-accounts/:userId/status", notImplemented("Staff account status"));
+router.post("/staff-accounts/:userId/reset-password", notImplemented("Staff password reset"));
 
 
 /* =====================================================
    OWNERS
-   Requests are forwarded to the C# Bridge.
    ===================================================== */
 
-// GET /api/owners
-// Retrieve all owners.
-router.get("/owners", (req, res) => {
-    return proxyOwnerRequest(
-        req,
-        res,
-        "/api/owners"
-    );
-});
+router.get("/owners", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/owners")
+);
 
-// POST /api/owners
-// Create an owner.
-router.post("/owners", (req, res) => {
-    return proxyOwnerRequest(
-        req,
-        res,
-        "/api/owners"
-    );
-});
+router.post("/owners", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/owners")
+);
 
-// GET /api/owners/:ownerId
-// Retrieve one owner.
-router.get("/owners/:ownerId", (req, res) => {
-    return proxyOwnerRequest(
+router.get("/owners/:ownerId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/owners/${encodeURIComponent(req.params.ownerId)}`
-    );
-});
+    )
+);
 
-// PUT /api/owners/:ownerId
-// Update an owner.
-router.put("/owners/:ownerId", (req, res) => {
-    return proxyOwnerRequest(
+router.put("/owners/:ownerId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/owners/${encodeURIComponent(req.params.ownerId)}`
-    );
-});
+    )
+);
 
-// DELETE /api/owners/:ownerId
-// Delete an owner.
-router.delete("/owners/:ownerId", (req, res) => {
-    return proxyOwnerRequest(
+router.delete("/owners/:ownerId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/owners/${encodeURIComponent(req.params.ownerId)}`
-    );
-});
+    )
+);
 
 
 /* =====================================================
    PETS
    ===================================================== */
 
-router.get("/pets", (req, res) => {
-    return proxyOwnerRequest(
-        req,
-        res,
-        "/api/pets"
-    );
-});
+router.get("/pets", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/pets")
+);
 
-router.get("/pets/:petId", (req, res) => {
-    return proxyOwnerRequest(
-        req,
-        res,
-        `/api/pets/${req.params.petId}`
-    );
-});
-
-// =========================
-// PETS API - CREATE
-// =========================
-
-router.post("/pets", (req, res) => {
-    return proxyOwnerRequest(
-        req,
-        res,
-        "/api/pets"
-    );
-});
-
-// =========================
-// PETS API - UPDATE
-// =========================
-
-router.put("/pets/:petId", (req, res) => {
-    return proxyOwnerRequest(
+router.get("/pets/:petId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/pets/${encodeURIComponent(req.params.petId)}`
-    );
-});
+    )
+);
 
-// =========================
-// PETS API - DELETE
-// =========================
+router.post("/pets", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/pets")
+);
 
-router.delete("/pets/:petId", (req, res) => {
-    return proxyOwnerRequest(
+router.put("/pets/:petId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/pets/${encodeURIComponent(req.params.petId)}`
-    );
-});
+    )
+);
 
-
+router.delete("/pets/:petId", (req, res) =>
+    proxyBridgeRequest(
+        req,
+        res,
+        `/api/pets/${encodeURIComponent(req.params.petId)}`
+    )
+);
 
 
 /* =====================================================
    MEDICAL RECORDS
    ===================================================== */
 
-router.get(
-    "/medical-records",
-    notImplemented("Medical record listing")
+router.get("/medical-records", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/medical-records")
 );
 
-router.post(
-    "/medical-records",
-    notImplemented("Medical record creation")
+router.post("/medical-records", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/medical-records")
 );
 
-router.get(
-    "/medical-records/:recordId",
-    notImplemented("Medical record details")
+router.get("/medical-records/:recordId", (req, res) =>
+    proxyBridgeRequest(
+        req,
+        res,
+        `/api/medical-records/${encodeURIComponent(req.params.recordId)}`
+    )
 );
 
-router.put(
-    "/medical-records/:recordId",
-    notImplemented("Medical record update")
+router.put("/medical-records/:recordId", (req, res) =>
+    proxyBridgeRequest(
+        req,
+        res,
+        `/api/medical-records/${encodeURIComponent(req.params.recordId)}`
+    )
 );
 
-router.delete(
-    "/medical-records/:recordId",
-    notImplemented("Medical record deletion")
+router.delete("/medical-records/:recordId", (req, res) =>
+    proxyBridgeRequest(
+        req,
+        res,
+        `/api/medical-records/${encodeURIComponent(req.params.recordId)}`
+    )
 );
+
 
 /* =====================================================
    VACCINATIONS
    ===================================================== */
 
-// GET /api/vaccinations
-// Retrieve all vaccination records.
-router.get("/vaccinations", (req, res) => {
-    return proxyOwnerRequest(
-        req,
-        res,
-        "/api/vaccinations"
-    );
-});
+router.get("/vaccinations", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/vaccinations")
+);
 
-// POST /api/vaccinations
-// Create a vaccination record.
-router.post("/vaccinations", (req, res) => {
-    return proxyOwnerRequest(
-        req,
-        res,
-        "/api/vaccinations"
-    );
-});
+router.post("/vaccinations", (req, res) =>
+    proxyBridgeRequest(req, res, "/api/vaccinations")
+);
 
-// GET /api/vaccinations/:vaccinationId
-// Retrieve one vaccination record.
-router.get("/vaccinations/:vaccinationId", (req, res) => {
-    return proxyOwnerRequest(
+router.get("/vaccinations/:vaccinationId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/vaccinations/${encodeURIComponent(req.params.vaccinationId)}`
-    );
-});
+    )
+);
 
-// PUT /api/vaccinations/:vaccinationId
-// Update a vaccination record.
-router.put("/vaccinations/:vaccinationId", (req, res) => {
-    return proxyOwnerRequest(
+router.put("/vaccinations/:vaccinationId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/vaccinations/${encodeURIComponent(req.params.vaccinationId)}`
-    );
-});
+    )
+);
 
-// DELETE /api/vaccinations/:vaccinationId
-// Delete a vaccination record.
-router.delete("/vaccinations/:vaccinationId", (req, res) => {
-    return proxyOwnerRequest(
+router.delete("/vaccinations/:vaccinationId", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/vaccinations/${encodeURIComponent(req.params.vaccinationId)}`
-    );
-});
+    )
+);
 
-// GET /api/pets/:petId/vaccinations
-// Retrieve the vaccination history for one pet.
-router.get("/pets/:petId/vaccinations", (req, res) => {
-    return proxyOwnerRequest(
+router.get("/pets/:petId/vaccinations", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/pets/${encodeURIComponent(req.params.petId)}/vaccinations`
-    );
-});
+    )
+);
 
-// Look up a staff account by username.
-router.get("/users/by-username/:username", (req, res) => {
-    return proxyOwnerRequest(
+
+/* =====================================================
+   USER LOOKUP
+   These routes require matching endpoints in the Bridge.
+   ===================================================== */
+
+router.get("/users/by-username/:username", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/users/by-username/${encodeURIComponent(req.params.username)}`
-    );
-});
+    )
+);
 
-
- // Look up a staff account by numeric UserID.
-router.get("/users/by-id/:userID", (req, res) => {
-    return proxyOwnerRequest(
+router.get("/users/by-id/:userID", (req, res) =>
+    proxyBridgeRequest(
         req,
         res,
         `/api/users/by-id/${encodeURIComponent(req.params.userID)}`
-    );
-});
-
+    )
+);
 
 
 /* =====================================================
    ONLINE USERS
-   Read-only monitoring and session control.
    ===================================================== */
 
-router.get(
-    "/online-users",
-    notImplemented("Online user monitoring")
-);
+router.get("/online-users", notImplemented("Online user monitoring"));
 
 router.post(
     "/online-users/:sessionId/disconnect",
@@ -394,34 +308,18 @@ router.post(
 
 /* =====================================================
    AUDIT LOGS
-   Read-only for the Administrator.
-   No edit or delete routes are provided.
    ===================================================== */
 
-router.get(
-    "/audit-logs",
-    notImplemented("Audit log listing")
-);
-
-router.get(
-    "/audit-logs/:logId",
-    notImplemented("Audit log details")
-);
+router.get("/audit-logs", notImplemented("Audit log listing"));
+router.get("/audit-logs/:logId", notImplemented("Audit log details"));
 
 
 /* =====================================================
    REPORTS
    ===================================================== */
 
-router.get(
-    "/reports/summary",
-    notImplemented("Report summary")
-);
-
-router.get(
-    "/reports/:reportType",
-    notImplemented("Report generation")
-);
+router.get("/reports/summary", notImplemented("Report summary"));
+router.get("/reports/:reportType", notImplemented("Report generation"));
 
 
 /* =====================================================
@@ -439,9 +337,36 @@ router.put(
 );
 
 
+async function proxyLogin(req, res) {
+    try {
+        const response = await fetch(`${BRIDGE_URL}/api/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(req.body)
+        });
+
+        const data = await response.json();
+        return res.status(response.status).json(data);
+    } catch (error) {
+        console.error("Login proxy error:", error);
+
+        return res.status(502).json({
+            success: false,
+            message: "Unable to connect to the login service."
+        });
+    }
+}
+
+router.post("/login", proxyLogin);
+router.post("/auth/login", proxyLogin);
+
+
+
 /* =====================================================
    UNKNOWN API ROUTE
-   Keep this handler last.
+   MUST REMAIN LAST
    ===================================================== */
 
 router.use((req, res) => {

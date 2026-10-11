@@ -9,10 +9,7 @@ const role =
     sessionStorage.getItem("demoRole");
 
 
-const allowedRoles = [
-    "Front Desk",
-    "Veterinarian"
-];
+const allowedRoles = ["Front Desk", "Veterinarian", "Staff"];
 
 
 if (
@@ -125,113 +122,91 @@ if (logoutButton) {
 }
 
 
-// =========================
-// STORAGE KEY
-// =========================
+/* =========================
+   OWNER DATA / API
+   ========================= */
 
-const OWNER_STORAGE_KEY =
-    "vetPetOwners";
+const OWNER_STORAGE_KEY = "vetPetOwners";
 
+// The displayed Owner ID is friendly; databaseId is the real MySQL ID.
+let owners = [];
 
-// =========================
-// DEMO INITIAL RECORD
-// =========================
-
-const defaultOwners = [
-
-    {
-        ownerId: "OWN-0001",
-
-        firstName: "Juan",
-
-        middleName: "Dela",
-
-        lastName: "Cruz",
-
-        nameExtension: "",
-
-        contactNumber: "09123456789",
-
-        email: "juan@example.com",
-
-        address: "Tacloban City",
-
-        status: "Active"
-
-    }
-
-];
-
-
-// =========================
-// LOAD OWNERS
-// =========================
-
-function loadOwners() {
-
-    const savedOwners =
-        localStorage.getItem(
-            OWNER_STORAGE_KEY
-        );
-
-
-    if (savedOwners) {
-
-        try {
-
-            const owners =
-                JSON.parse(
-                    savedOwners
-                );
-
-
-            if (Array.isArray(owners)) {
-                return owners;
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Unable to read saved owners:",
-                error
-            );
-
-        }
-
-    }
-
-
-    localStorage.setItem(
-        OWNER_STORAGE_KEY,
-        JSON.stringify(defaultOwners)
+function mapApiOwner(apiOwner) {
+    const databaseId = Number(
+        apiOwner.ownerID ?? apiOwner.ownerId ?? apiOwner.id
     );
 
+    if (!Number.isInteger(databaseId) || databaseId <= 0) {
+        throw new Error("An owner record has an invalid database ID.");
+    }
 
-    return [...defaultOwners];
-
+    return {
+        ownerId: `OWN-${String(databaseId).padStart(4, "0")}`,
+        databaseId,
+        firstName: apiOwner.firstName ?? "",
+        middleName: apiOwner.middleName ?? "",
+        lastName: apiOwner.lastName ?? "",
+        nameExtension: apiOwner.nameExtension ?? "",
+        contactNumber: apiOwner.contactNumber ?? "",
+        email: apiOwner.email ?? "",
+        address: apiOwner.address ?? "",
+        status: apiOwner.status ?? "Active",
+        createdAt: apiOwner.createdAt ?? ""
+    };
 }
 
-
-// =========================
-// SAVE OWNERS
-// =========================
-
+// Temporary compatibility for the existing form handlers.
+// We will replace local-only saving when we connect CRUD.
 function saveOwners() {
-
     localStorage.setItem(
         OWNER_STORAGE_KEY,
         JSON.stringify(owners)
     );
-
 }
 
+async function loadOwnersFromApi() {
+    try {
+        const response = await fetch("/api/owners");
 
-// =========================
-// OWNER DATA
-// =========================
+        const result = await response.json();
 
-let owners =
-    loadOwners();
+        if (!response.ok || result.success !== true ||
+            !Array.isArray(result.data)) {
+            throw new Error(
+                result.message ||
+                result.title ||
+                "The Owner API returned an invalid response."
+            );
+        }
+
+        owners = result.data.map(mapApiOwner);
+
+        renderOwners();
+
+        console.log(
+            `Loaded ${owners.length} owner records from MySQL.`,
+            owners
+        );
+    } catch (error) {
+        console.error("Unable to load owners from the database:", error);
+
+        owners = [];
+        updateSummary();
+        visibleOwnerCount.textContent = "0";
+
+        ownerTableBody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    Unable to load owners. Check the Node.js server,
+                    C# Bridge, and database connection, then refresh.
+                </td>
+            </tr>
+        `;
+
+        ownerEmptyState.style.display = "none";
+    }
+}
+
 
 
 // =========================
@@ -963,135 +938,154 @@ function validateOwner(owner) {
 
 ownerForm.addEventListener(
     "submit",
-    (event) => {
-
+    async (event) => {
         event.preventDefault();
 
-
-        const formData =
-            getFormData();
-
-
-        const validationError =
-            validateOwner(
-                formData
-            );
-
+        const formData = getFormData();
+        const validationError = validateOwner(formData);
 
         if (validationError) {
-
-            ownerFormMessage.textContent =
-                validationError;
-
-            ownerFormMessage.style.color =
-                "#c0392b";
-
+            ownerFormMessage.textContent = validationError;
+            ownerFormMessage.style.color = "#c0392b";
             return;
-
         }
 
-
-        // =========================
-        // UPDATE
-        // =========================
-
+       
+        // UPDATE — SAVE CHANGES TO MYSQL
         if (editingOwnerId) {
-
-            const ownerIndex =
-                owners.findIndex(
-                    owner =>
-                        owner.ownerId ===
-                        editingOwnerId
-                );
-
-
-            if (ownerIndex === -1) {
-
-                ownerFormMessage.textContent =
-                    "Owner record could not be found.";
-
-                ownerFormMessage.style.color =
-                    "#c0392b";
-
-                return;
-
-            }
-
-
-            owners[ownerIndex] = {
-
-                ...owners[ownerIndex],
-
-                ...formData
-
-            };
-
-
-            saveOwners();
-
-            renderOwners();
-
-
-            ownerFormMessage.textContent =
-                "Owner record updated successfully.";
-
-            ownerFormMessage.style.color =
-                "#2a9d8f";
-
-
-        }
-
-        // =========================
-        // CREATE
-        // =========================
-
-        else {
-
-            const newOwner = {
-
-                ownerId:
-                    generateOwnerId(),
-
-                ...formData
-
-            };
-
-
-            owners.push(
-                newOwner
+            const owner = owners.find(
+                item => item.ownerId === editingOwnerId
             );
 
+            if (!owner || !Number.isInteger(owner.databaseId)) {
+                ownerFormMessage.textContent =
+                    "Owner record could not be identified.";
 
-            saveOwners();
+                ownerFormMessage.style.color = "#c0392b";
+                return;
+            }
 
-            renderOwners();
+            try {
+                saveOwnerButton.disabled = true;
+                saveOwnerButton.textContent = "Updating...";
 
+                const response = await fetch(
+                    `/api/owners/${owner.databaseId}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify(formData)
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || result.success !== true) {
+                    throw new Error(
+                        result.detail ||
+                        result.message ||
+                        "Unable to update the owner."
+                    );
+                }
+
+                await loadOwnersFromApi();
+
+                ownerFormMessage.textContent =
+                    "Owner record updated successfully.";
+
+                ownerFormMessage.style.color = "#2a9d8f";
+
+                console.log(
+                    "Owner updated successfully. Database ID:",
+                    owner.databaseId
+                );
+
+                setTimeout(closeOwnerDialog, 600);
+
+            } catch (error) {
+                console.error("Unable to update owner:", error);
+
+                ownerFormMessage.textContent =
+                    error.message || "Unable to update the owner.";
+
+                ownerFormMessage.style.color = "#c0392b";
+
+            } finally {
+                saveOwnerButton.disabled = false;
+                saveOwnerButton.textContent = "Update Owner";
+            }
+
+            return;
+        }
+
+
+        // CREATE — SAVE OWNER TO MYSQL
+        try {
+            saveOwnerButton.disabled = true;
+            saveOwnerButton.textContent = "Saving...";
+
+            const response = await fetch("/api/owners", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || result.success !== true) {
+                throw new Error(
+                    result.detail ||
+                    result.message ||
+                    "Unable to save the owner."
+                );
+            }
+
+            console.log(
+                "Owner saved to MySQL. Database ID:",
+                result.ownerId
+            );
+
+            await loadOwnersFromApi();
 
             ownerFormMessage.textContent =
                 "Owner record added successfully.";
 
-            ownerFormMessage.style.color =
-                "#2a9d8f";
+            ownerFormMessage.style.color = "#2a9d8f";
 
+            setTimeout(closeOwnerDialog, 600);
+
+        } catch (error) {
+            console.error("Unable to add owner:", error);
+
+            ownerFormMessage.textContent =
+                error.message || "Unable to save the owner.";
+
+            ownerFormMessage.style.color = "#c0392b";
+
+        } finally {
+            saveOwnerButton.disabled = false;
+            saveOwnerButton.textContent = "Save Owner";
         }
-
-
-        setTimeout(
-            closeOwnerDialog,
-            600
-        );
-
     }
 );
+
 
 
 // =========================
 // TABLE ACTIONS
 // =========================
 
+
 ownerTableBody.addEventListener(
     "click",
-    (event) => {
+    async (event) => {
+
 
         const button =
             event.target.closest(
@@ -1221,42 +1215,88 @@ ownerTableBody.addEventListener(
 
 
         // =========================
-        // DELETE
+        // DELETE — REMOVE FROM MYSQL
+        // =========================
+
+        // =========================
+        // DELETE — PROTECT PET RECORDS
         // =========================
 
         if (action === "delete") {
-
-            const confirmed =
-                confirm(
-
-                    `Delete owner record?\n\n` +
-                    `${buildFullName(owner)}`
-
-                );
-
+            const confirmed = confirm(
+                `Delete owner record?\n\n${buildFullName(owner)}`
+            );
 
             if (!confirmed) {
                 return;
             }
 
+            if (!Number.isInteger(owner.databaseId)) {
+                alert(
+                    "Unable to delete this owner because the database ID is missing."
+                );
+                return;
+            }
 
-            owners =
-                owners.filter(
-                    item =>
-                        item.ownerId !==
-                        ownerId
+            try {
+                const response = await fetch(
+                    `/api/owners/${owner.databaseId}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
                 );
 
+                const result = await response.json();
 
-            saveOwners();
+                if (!response.ok || result.success !== true) {
+                    const message =
+                        result.detail ||
+                        result.message ||
+                        "";
 
-            renderOwners();
+                    const isForeignKeyError =
+                        /foreign key constraint fails|fk_pets_owner/i.test(message);
 
+                    if (isForeignKeyError) {
+                        alert(
+                            "This owner cannot be deleted because they have registered pet records.\n\n" +
+                            "The pet and vaccination records will be preserved. " +
+                            "If the owner should no longer be active, consider changing their status instead."
+                        );
+                        return;
+                    }
+
+                    throw new Error(
+                        message || "Unable to delete the owner."
+                    );
+                }
+
+                await loadOwnersFromApi();
+
+                alert("Owner record deleted successfully.");
+
+                console.log(
+                    "Owner deleted successfully. Database ID:",
+                    owner.databaseId
+                );
+
+            } catch (error) {
+                console.error("Unable to delete owner:", error);
+
+                alert(
+                    error.message ||
+                    "Unable to delete the owner. Please try again."
+                );
+            }
+
+            return;
         }
 
     }
 );
-
 
 // =========================
 // SEARCH
@@ -1269,7 +1309,7 @@ ownerSearch.addEventListener(
 
 
 // =========================
-// INITIAL RENDER
+// INITIAL LOAD FROM DATABASE
 // =========================
 
-renderOwners();
+loadOwnersFromApi();

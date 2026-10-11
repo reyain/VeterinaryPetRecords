@@ -6,7 +6,7 @@
 const username = sessionStorage.getItem("demoUsername");
 const role = sessionStorage.getItem("demoRole");
 
-const allowedRoles = ["Front Desk", "Veterinarian"];
+const allowedRoles = ["Front Desk", "Veterinarian", "Staff"];
 
 if (!username || !allowedRoles.includes(role)) {
     window.location.href = "../../index.html";

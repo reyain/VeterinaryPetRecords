@@ -1475,5 +1475,558 @@ app.MapDelete(
 
 
 
+/* ==========================================
+   MEDICAL RECORDS API - GET ALL
+   ========================================== */
+
+app.MapGet("/api/medical-records", () =>
+{
+    try
+    {
+        object? records = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.MedicalRecordService",
+            "GetAllMedicalRecords"
+        );
+
+        return Results.Ok(new
+        {
+            success = true,
+            data = records
+        });
+    }
+    catch (Exception error)
+    {
+        var root = CoreDllInvoker.GetRootCause(error);
+        Console.Error.WriteLine(error);
+
+        return Results.Problem(
+            title: "Unable to retrieve medical records",
+            detail: root.Message,
+            statusCode: 500
+        );
+    }
+});
+
+
+/* ==========================================
+   MEDICAL RECORDS API - GET ONE
+   ========================================== */
+
+app.MapGet(
+    "/api/medical-records/{medicalRecordId:int}",
+    (int medicalRecordId) =>
+{
+    try
+    {
+        object? recordsResult = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.MedicalRecordService",
+            "GetAllMedicalRecords"
+        );
+
+        if (recordsResult is not System.Collections.IEnumerable records)
+        {
+            return Results.Problem(
+                title: "Unable to retrieve medical record",
+                detail: "The Core DLL did not return a valid medical record list.",
+                statusCode: 500
+            );
+        }
+
+        foreach (object? record in records)
+        {
+            if (record == null)
+                continue;
+
+            object? idValue = record.GetType()
+                .GetProperty("MedicalRecordID")?
+                .GetValue(record);
+
+            if (idValue != null &&
+                Convert.ToInt32(idValue) == medicalRecordId)
+            {
+                return Results.Ok(new
+                {
+                    success = true,
+                    data = record
+                });
+            }
+        }
+
+        return Results.NotFound(new
+        {
+            success = false,
+            message = "Medical record not found."
+        });
+    }
+    catch (Exception error)
+    {
+        var root = CoreDllInvoker.GetRootCause(error);
+        Console.Error.WriteLine(error);
+
+        return Results.Problem(
+            title: "Unable to retrieve medical record",
+            detail: root.Message,
+            statusCode: 500
+        );
+    }
+});
+
+
+/* ==========================================
+   MEDICAL RECORDS API - ADD
+   ========================================== */
+
+app.MapPost("/api/medical-records", (JsonElement payload) =>
+{
+    try
+    {
+        object record = CoreDllInvoker.CreateModel(
+            "VeterinaryPetRecords.Core.Models.MedicalRecord",
+            payload
+        );
+
+        Type modelType = record.GetType();
+
+        int petId = Convert.ToInt32(
+            modelType.GetProperty("PetID")?.GetValue(record) ?? 0
+        );
+
+        int userId = Convert.ToInt32(
+            modelType.GetProperty("UserID")?.GetValue(record) ?? 0
+        );
+
+        DateTime visitDate = Convert.ToDateTime(
+            modelType.GetProperty("VisitDate")?.GetValue(record)
+                ?? default(DateTime)
+        );
+
+        string diagnosis = Convert.ToString(
+            modelType.GetProperty("Diagnosis")?.GetValue(record)
+        ) ?? "";
+
+        if (petId <= 0 || userId <= 0)
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "A valid PetID and UserID are required."
+            });
+        }
+
+        if (visitDate == default(DateTime))
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "A valid VisitDate is required."
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(diagnosis))
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "Diagnosis is required."
+            });
+        }
+
+        object? petsResult = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.PetService",
+            "GetAllPets"
+        );
+
+        bool petExists = false;
+
+        if (petsResult is System.Collections.IEnumerable pets)
+        {
+            foreach (object? pet in pets)
+            {
+                if (pet == null)
+                    continue;
+
+                int existingPetId = Convert.ToInt32(
+                    pet.GetType().GetProperty("PetID")?.GetValue(pet) ?? 0
+                );
+
+                if (existingPetId == petId)
+                {
+                    petExists = true;
+                    break;
+                }
+            }
+        }
+
+        if (!petExists)
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "The specified pet does not exist."
+            });
+        }
+
+        object? staff = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.UserService",
+            "GetUserByID",
+            userId
+        );
+
+        if (staff == null)
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "The specified staff account does not exist."
+            });
+        }
+
+        Type staffType = staff.GetType();
+
+        string staffStatus = Convert.ToString(
+            staffType.GetProperty("Status")?.GetValue(staff)
+        ) ?? "";
+
+        if (!staffStatus.Equals(
+            "Active",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "The specified staff account is inactive."
+            });
+        }
+
+        object? createdId = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.MedicalRecordService",
+            "AddMedicalRecord",
+            record
+        );
+
+        return Results.Json(
+            new
+            {
+                success = true,
+                message = "Medical record added successfully.",
+                medicalRecordId = createdId
+            },
+            statusCode: 201
+        );
+    }
+    catch (Exception error)
+    {
+        var root = CoreDllInvoker.GetRootCause(error);
+        Console.Error.WriteLine(error);
+
+        return Results.Problem(
+            title: "Unable to add medical record",
+            detail: root.Message,
+            statusCode: 500
+        );
+    }
+});
+
+
+/* ==========================================
+   MEDICAL RECORDS API - UPDATE
+   ========================================== */
+
+app.MapPut(
+    "/api/medical-records/{medicalRecordId:int}",
+    (int medicalRecordId, JsonElement payload) =>
+{
+    try
+    {
+        object record = CoreDllInvoker.CreateModel(
+            "VeterinaryPetRecords.Core.Models.MedicalRecord",
+            payload
+        );
+
+        CoreDllInvoker.SetIdentifier(
+            record,
+            medicalRecordId,
+            "MedicalRecordID",
+            "MedicalRecordId",
+            "Id"
+        );
+
+        Type modelType = record.GetType();
+
+        int petId = Convert.ToInt32(
+            modelType.GetProperty("PetID")?.GetValue(record) ?? 0
+        );
+
+        int userId = Convert.ToInt32(
+            modelType.GetProperty("UserID")?.GetValue(record) ?? 0
+        );
+
+        DateTime visitDate = Convert.ToDateTime(
+            modelType.GetProperty("VisitDate")?.GetValue(record)
+                ?? default(DateTime)
+        );
+
+        string diagnosis = Convert.ToString(
+            modelType.GetProperty("Diagnosis")?.GetValue(record)
+        ) ?? "";
+
+        if (petId <= 0 || userId <= 0 ||
+            visitDate == default(DateTime) ||
+            string.IsNullOrWhiteSpace(diagnosis))
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "Valid PetID, UserID, VisitDate, and Diagnosis are required."
+            });
+        }
+
+        object? petsResult = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.PetService",
+            "GetAllPets"
+        );
+
+        bool petExists = false;
+
+        if (petsResult is System.Collections.IEnumerable pets)
+        {
+            foreach (object? pet in pets)
+            {
+                if (pet == null)
+                    continue;
+
+                int existingPetId = Convert.ToInt32(
+                    pet.GetType().GetProperty("PetID")?.GetValue(pet) ?? 0
+                );
+
+                if (existingPetId == petId)
+                {
+                    petExists = true;
+                    break;
+                }
+            }
+        }
+
+        if (!petExists)
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "The specified pet does not exist."
+            });
+        }
+
+        object? staff = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.UserService",
+            "GetUserByID",
+            userId
+        );
+
+        if (staff == null)
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "The specified staff account does not exist."
+            });
+        }
+
+        string staffStatus = Convert.ToString(
+            staff.GetType().GetProperty("Status")?.GetValue(staff)
+        ) ?? "";
+
+        if (!staffStatus.Equals(
+            "Active",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "The specified staff account is inactive."
+            });
+        }
+
+        object? result = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.MedicalRecordService",
+            "UpdateMedicalRecord",
+            record
+        );
+
+        bool updated = result is bool value && value;
+
+        if (!updated)
+        {
+            return Results.NotFound(new
+            {
+                success = false,
+                message = "Medical record was not found or was not updated."
+            });
+        }
+
+        return Results.Ok(new
+        {
+            success = true,
+            message = "Medical record updated successfully."
+        });
+    }
+    catch (Exception error)
+    {
+        var root = CoreDllInvoker.GetRootCause(error);
+        Console.Error.WriteLine(error);
+
+        return Results.Problem(
+            title: "Unable to update medical record",
+            detail: root.Message,
+            statusCode: 500
+        );
+    }
+});
+
+
+/* ==========================================
+   MEDICAL RECORDS API - DELETE
+   ========================================== */
+
+app.MapDelete(
+    "/api/medical-records/{medicalRecordId:int}",
+    (int medicalRecordId) =>
+{
+    try
+    {
+        object? result = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.MedicalRecordService",
+            "DeleteMedicalRecord",
+            medicalRecordId
+        );
+
+        bool deleted = result is bool value && value;
+
+        if (!deleted)
+        {
+            return Results.NotFound(new
+            {
+                success = false,
+                message = "Medical record not found."
+            });
+        }
+
+        return Results.Ok(new
+        {
+            success = true,
+            message = "Medical record deleted successfully."
+        });
+    }
+    catch (Exception error)
+    {
+        var root = CoreDllInvoker.GetRootCause(error);
+        Console.Error.WriteLine(error);
+
+        return Results.Problem(
+            title: "Unable to delete medical record",
+            detail: root.Message,
+            statusCode: 500
+        );
+    }
+});
+
+
+
+
+/* ==========================================
+   AUTHENTICATION API - LOGIN
+   ========================================== */
+
+app.MapPost("/api/login", (JsonElement payload) =>
+{
+    try
+    {
+        string username = payload.TryGetProperty("username", out var usernameValue)
+            ? usernameValue.GetString()?.Trim() ?? ""
+            : "";
+
+        string password = payload.TryGetProperty("password", out var passwordValue)
+            ? passwordValue.GetString() ?? ""
+            : "";
+
+        if (string.IsNullOrWhiteSpace(username) ||
+            string.IsNullOrWhiteSpace(password))
+        {
+            return Results.BadRequest(new
+            {
+                success = false,
+                message = "Username and password are required."
+            });
+        }
+
+        object? user = CoreDllInvoker.Invoke(
+            "VeterinaryPetRecords.Core.Services.UserService",
+            "GetUserByUsername",
+            username
+        );
+
+        if (user == null)
+        {
+            return Results.Json(new
+            {
+                success = false,
+                message = "Invalid username or password."
+            }, statusCode: 401);
+        }
+
+        Type userType = user.GetType();
+
+        string storedPassword = Convert.ToString(
+            userType.GetProperty("Password")?.GetValue(user)
+        ) ?? "";
+
+        string status = Convert.ToString(
+            userType.GetProperty("Status")?.GetValue(user)
+        ) ?? "";
+
+        if (!string.Equals(password, storedPassword, StringComparison.Ordinal))
+        {
+            return Results.Json(new
+            {
+                success = false,
+                message = "Invalid username or password."
+            }, statusCode: 401);
+        }
+
+        if (!status.Equals("Active", StringComparison.OrdinalIgnoreCase))
+        {
+            return Results.Json(new
+            {
+                success = false,
+                message = "This account is inactive."
+            }, statusCode: 403);
+        }
+
+        return Results.Ok(new
+        {
+            success = true,
+            message = "Login successful.",
+            data = new
+            {
+                userId = userType.GetProperty("UserID")?.GetValue(user),
+                username = userType.GetProperty("Username")?.GetValue(user),
+                fullName = userType.GetProperty("FullName")?.GetValue(user),
+                role = userType.GetProperty("Role")?.GetValue(user)
+            }
+        });
+    }
+    catch (Exception error)
+    {
+        var root = CoreDllInvoker.GetRootCause(error);
+        Console.Error.WriteLine(error);
+
+        return Results.Problem(
+            title: "Unable to log in",
+            detail: root.Message,
+            statusCode: 500
+        );
+    }
+});
+
+
 
 app.Run();

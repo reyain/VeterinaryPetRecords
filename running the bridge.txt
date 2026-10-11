@@ -1,0 +1,14 @@
+cd "C:\Users\reyai\OneDrive\Desktop\VeterinaryPetRecordsWeb\bridge\VeterinaryPetRecords.Bridge"
+
+dotnet run
+
+
+dotnet build ".\VeterinaryPetRecords.Bridge.csproj"
+
+
+dotnet run --no-build
+
+
+
+// this is for adding the overdue date paste it in to the brower console
+calculateVaccinationStatus("2020-01-01")

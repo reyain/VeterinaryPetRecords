@@ -1,399 +1,194 @@
-const loginForm =
-    document.getElementById("loginForm");
 
-const loginMessage =
-    document.getElementById("loginMessage");
+const loginForm = document.getElementById("loginForm");
+const loginMessage = document.getElementById("loginMessage");
 
+loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-loginForm.addEventListener(
-    "submit",
-    (event) => {
+    /* =====================================================
+       GET LOGIN VALUES
+    ===================================================== */
 
-        event.preventDefault();
+    const username = document
+        .getElementById("username")
+        .value
+        .trim()
+        .toLowerCase();
 
+    const password = document
+        .getElementById("password")
+        .value;
 
+    /* =====================================================
+       VALIDATION
+    ===================================================== */
+
+    if (!username || !password) {
+        loginMessage.style.color = "#c0392b";
+        loginMessage.textContent =
+            "Please enter your username and password.";
+        return;
+    }
+
+    /* =====================================================
+       PREVENT MULTIPLE LOGIN REQUESTS
+    ===================================================== */
+
+    const submitButton = loginForm.querySelector(
+        'button[type="submit"], input[type="submit"]'
+    );
+
+    if (submitButton) {
+        submitButton.disabled = true;
+    }
+
+    loginMessage.style.color = "#555";
+    loginMessage.textContent = "Signing in...";
+
+    try {
         /* =====================================================
-           GET LOGIN VALUES
+           AUTHENTICATE THROUGH THE BACKEND AND MYSQL
         ===================================================== */
 
-        const username =
-            document
-                .getElementById("username")
-                .value
-                .trim()
-                .toLowerCase();
-
-        const password =
-            document
-                .getElementById("password")
-                .value;
-
-
-        /* =====================================================
-           VALIDATION
-        ===================================================== */
-
-        if (!username || !password) {
-
-            loginMessage.style.color =
-                "#c0392b";
-
-            loginMessage.textContent =
-                "Please enter your username and password.";
-
-            return;
-        }
-
-
-        /* =====================================================
-           TEMPORARY ADMINISTRATOR ACCOUNT
-        ===================================================== */
-
-        if (
-            username === "admin" &&
-            password === "admin123"
-        ) {
-
-            const loggedInUser = {
-
-                userId: "ADMIN-0001",
-
-                username: "admin",
-
-                fullName: "Administrator",
-
-                role: "Administrator"
-
-            };
-
-
-            /*
-                MAIN SESSION
-            */
-
-            sessionStorage.setItem(
-                "vetCurrentUser",
-                JSON.stringify(loggedInUser)
-            );
-
-
-            /*
-                LEGACY SESSION VALUES
-                Kept temporarily so older client
-                scripts do not reject the session.
-            */
-
-            sessionStorage.setItem(
-                "demoUsername",
-                "admin"
-            );
-
-            sessionStorage.setItem(
-                "demoRole",
-                "Administrator"
-            );
-
-
-            loginMessage.style.color =
-                "#2a9d8f";
-
-            loginMessage.textContent =
-                "Login successful. Redirecting...";
-
-
-            setTimeout(() => {
-
-                window.location.href =
-                    "server/pages/dashboard.html";
-
-            }, 500);
-
-
-            return;
-        }
-
-
-        /* =====================================================
-           LOAD STAFF ACCOUNTS
-        ===================================================== */
-
-        let staffAccounts = [];
-
-
-        const savedStaffAccounts =
-            localStorage.getItem(
-                "vetStaffAccounts"
-            );
-
-
-        if (savedStaffAccounts) {
-
-            try {
-
-                const parsed =
-                    JSON.parse(
-                        savedStaffAccounts
-                    );
-
-
-                if (
-                    Array.isArray(parsed)
-                ) {
-
-                    staffAccounts =
-                        parsed;
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to read staff accounts:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        /* =====================================================
-           FALLBACK STAFF ACCOUNTS
-        ===================================================== */
-
-        if (
-            staffAccounts.length === 0
-        ) {
-
-            staffAccounts = [
-
-                {
-                    userId:
-                        "USR-0001",
-
-                    username:
-                        "frontdesk",
-
-                    password:
-                        "front123",
-
-                    fullName:
-                        "Front Desk",
-
-                    role:
-                        "Front Desk",
-
-                    status:
-                        "Active"
-
+        const response = await fetch(
+            "http://localhost:3000/api/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            }
+        );
 
-                {
-                    userId:
-                        "USR-0002",
-
-                    username:
-                        "veterinarian",
-
-                    password:
-                        "vet123",
-
-                    fullName:
-                        "Veterinarian",
-
-                    role:
-                        "Veterinarian",
-
-                    status:
-                        "Active"
-
-                }
-
-            ];
-
-        }
-
+        const result = await response.json();
 
         /* =====================================================
-           FIND STAFF USERNAME
+           HANDLE LOGIN FAILURE
         ===================================================== */
 
-        const staffAccount =
-            staffAccounts.find(
-                account => {
-
-                    const storedUsername =
-                        String(
-                            account.username || ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-
-                    return (
-                        storedUsername ===
-                        username
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-           ACCOUNT NOT FOUND
-        ===================================================== */
-
-        if (!staffAccount) {
-
-            loginMessage.style.color =
-                "#c0392b";
-
+        if (
+            !response.ok ||
+            result.success !== true ||
+            !result.data
+        ) {
+            loginMessage.style.color = "#c0392b";
             loginMessage.textContent =
+                result.message ||
                 "Invalid username or password.";
-
             return;
         }
 
-
         /* =====================================================
-           CHECK STATUS
+           VALIDATE DATABASE USER ID
         ===================================================== */
 
-        const accountStatus =
-            String(
-                staffAccount.status ||
-                "Active"
-            )
-            .trim()
-            .toLowerCase();
-
+        const databaseUserId = Number(result.data.userId);
 
         if (
-            accountStatus === "inactive"
+            !Number.isInteger(databaseUserId) ||
+            databaseUserId <= 0
         ) {
-
-            loginMessage.style.color =
-                "#c0392b";
-
+            loginMessage.style.color = "#c0392b";
             loginMessage.textContent =
-                "This account is inactive. Please contact the Administrator.";
-
+                "Login failed because the database user ID is invalid.";
             return;
         }
 
-
         /* =====================================================
-           CHECK PASSWORD
+           GET AUTHENTICATED USER DETAILS
         ===================================================== */
 
-        if (
-            String(
-                staffAccount.password || ""
-            ) !== password
-        ) {
-
-            loginMessage.style.color =
-                "#c0392b";
-
-            loginMessage.textContent =
-                "Invalid username or password.";
-
-            return;
-        }
-
-
-        /* =====================================================
-           CHECK ROLE
-        ===================================================== */
-
-        const role =
-            String(
-                staffAccount.role || ""
-            )
-            .trim();
-
-
-        if (
-            role !== "Front Desk" &&
-            role !== "Veterinarian"
-        ) {
-
-            loginMessage.style.color =
-                "#c0392b";
-
-            loginMessage.textContent =
-                "This account does not have Client System access.";
-
-            return;
-        }
-
-
-        /* =====================================================
-           CREATE COMMON SESSION
-        ===================================================== */
+        const role = String(result.data.role || "").trim();
 
         const loggedInUser = {
-
-            userId:
-                staffAccount.userId || "",
-
-            username:
-                staffAccount.username,
-
-            fullName:
-                staffAccount.fullName ||
-                staffAccount.username,
-
-            role:
-                role
-
+            userId: databaseUserId,
+            username: result.data.username,
+            fullName: result.data.fullName,
+            role: role
         };
 
-
         /* =====================================================
-           SAVE MAIN SESSION
+           DETERMINE THE USER'S ACCESS
         ===================================================== */
 
+        const normalizedRole = role.toLowerCase();
+
+        const isAdministrator =
+            normalizedRole === "admin" ||
+            normalizedRole === "administrator";
+
+        const isClientStaff =
+            normalizedRole === "staff" ||
+            normalizedRole === "front desk" ||
+            normalizedRole === "veterinarian";
+
+        if (!isAdministrator && !isClientStaff) {
+            loginMessage.style.color = "#c0392b";
+            loginMessage.textContent =
+                "This account does not have permission to access the system.";
+            return;
+        }
+
+        /* =====================================================
+           SAVE AUTHENTICATED SESSION
+        ===================================================== */
+
+        // Remove any previous temporary or demo session.
+        sessionStorage.removeItem("vetCurrentUser");
+        sessionStorage.removeItem("demoUsername");
+        sessionStorage.removeItem("demoRole");
+
+        // Store the real numeric user ID returned by MySQL.
         sessionStorage.setItem(
             "vetCurrentUser",
             JSON.stringify(loggedInUser)
         );
 
-
-        /* =====================================================
-           SAVE LEGACY SESSION VALUES
-           For compatibility with older client scripts
-        ===================================================== */
-
+        // Retain these values for older frontend scripts.
         sessionStorage.setItem(
             "demoUsername",
-            staffAccount.username
+            loggedInUser.username
         );
-
 
         sessionStorage.setItem(
             "demoRole",
-            staffAccount.role
+            loggedInUser.role
         );
-
 
         /* =====================================================
            LOGIN SUCCESS
         ===================================================== */
 
-        loginMessage.style.color =
-            "#2a9d8f";
-
+        loginMessage.style.color = "#2a9d8f";
         loginMessage.textContent =
             "Login successful. Redirecting...";
 
+        /* =====================================================
+           REDIRECT BY ROLE
+        ===================================================== */
 
-        setTimeout(() => {
+        
+        if (isAdministrator) {
+            window.location.href = "/server/pages/dashboard.html";
+        } else {
+            window.location.href = "/client/pages/dashboard.html";
+        }
 
-            window.location.href =
-                "client/pages/dashboard.html";
 
-        }, 500);
+    } catch (error) {
+        console.error("Login error:", error);
 
+        loginMessage.style.color = "#c0392b";
+        loginMessage.textContent =
+            "Unable to connect to the login service. Make sure the Node.js backend and C# Bridge are running.";
+
+    } finally {
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
     }
-);
+});

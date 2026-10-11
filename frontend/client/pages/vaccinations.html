@@ -453,20 +453,27 @@
 
                     <!-- SEARCH -->
 
-                    <div class="vaccination-search">
+                    <div class="vaccination-filters">
+                <input
+                    type="search"
+                    id="vaccinationSearch"
+                    placeholder="Search by pet or vaccine name..."
+                    aria-label="Search vaccination records"
+                />
 
-                        <span>
-                            ⌕
-                        </span>
+                <select id="vaccinationPetFilter" aria-label="Filter by pet">
+                    <option value="">All Pets</option>
+                </select>
 
-                        <input
-                            type="text"
-                            id="vaccinationSearch"
-                            class="clay-input"
-                            placeholder="Search by pet, owner, vaccine, veterinarian, or status..."
-                        >
-
-                    </div>
+                <select id="vaccinationStatusFilter" aria-label="Filter by vaccination status">
+                    <option value="">All Statuses</option>
+                    <option value="Overdue">Overdue</option>
+                    <option value="Due Today">Due Today</option>
+                    <option value="Due Soon">Due Soon</option>
+                    <option value="Up to Date">Up to Date</option>
+                    <option value="No Due Date Set">No Due Date Set</option>
+                </select>
+            </div>
 
 
                     <!-- RECORD COUNTER -->
@@ -762,12 +769,7 @@
                                         Next Due Date
                                     </label>
 
-                                    <input
-                                        type="date"
-                                        id="nextDueDate"
-                                        class="clay-input"
-                                        required
-                                    >
+                                    <input type="date" id="nextDueDate">
 
                                     <small>
                                         Used to determine vaccination status
@@ -889,6 +891,35 @@
 
                 </div>
 
+            </div>
+
+            <!-- =================================================
+                 SEARCH / FILTER BAR !-->
+                        
+            
+            <!-- =================================================
+                 View Form !-->
+
+
+            <div id="vaccinationViewModal" class="vaccination-modal" style="display: none;">
+                <div class="vaccination-modal-content vaccination-view-content">
+                    <div class="vaccination-modal-header">
+                        <h2>Vaccination Record Details</h2>
+                        <button
+                            type="button"
+                            id="closeVaccinationView"
+                            aria-label="Close vaccination details"
+                        >&times;</button>
+                    </div>
+
+                    <div id="vaccinationViewDetails" class="vaccination-view-details"></div>
+
+                    <div class="vaccination-modal-footer">
+                        <button type="button" id="closeVaccinationViewFooter">
+                            Close
+                        </button>
+                    </div>
+                </div>
             </div>
 
 

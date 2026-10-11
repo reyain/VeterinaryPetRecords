@@ -9,10 +9,7 @@ const role =
     sessionStorage.getItem("demoRole");
 
 
-const allowedRoles = [
-    "Front Desk",
-    "Veterinarian"
-];
+const allowedRoles = ["Front Desk", "Veterinarian", "Staff"];
 
 
 if (
@@ -529,6 +526,9 @@ const vaccinationSearch =
     document.getElementById(
         "vaccinationSearch"
     );
+const vaccinationPetFilter = document.getElementById("vaccinationPetFilter");
+const vaccinationStatusFilter = document.getElementById("vaccinationStatusFilter");
+
 
 const totalVaccinationCount =
     document.getElementById(
@@ -807,22 +807,23 @@ function escapeHtml(
 // DATE STATUS
 // =========================
 
+
 function calculateVaccinationStatus(dueDate) {
-    if (!dueDate) {
-        return "Up to Date";
+    if (!dueDate) return "No Due Date Set";
+
+    const dateText = String(dueDate).substring(0, 10);
+    const parts = dateText.split("-").map(Number);
+
+    if (
+        parts.length !== 3 ||
+        !parts[0] ||
+        !parts[1] ||
+        !parts[2]
+    ) {
+        return "No Due Date Set";
     }
 
-    const [year, month, day] = String(dueDate)
-        .substring(0, 10)
-        .split("-")
-        .map(Number);
-
-    if (!year || !month || !day) {
-        return "Up to Date";
-    }
-
-    // Compare calendar dates in UTC to avoid daylight-saving
-    // and time-zone differences affecting the result.
+    const [year, month, day] = parts;
     const dueTime = Date.UTC(year, month - 1, day);
 
     const now = new Date();
@@ -836,20 +837,13 @@ function calculateVaccinationStatus(dueDate) {
         (dueTime - todayTime) / 86400000
     );
 
-    if (days < 0) {
-        return "Overdue";
-    }
-
-    if (days === 0) {
-        return "Due Today";
-    }
-
-    if (days <= 30) {
-        return "Due Soon";
-    }
+    if (days < 0) return "Overdue";
+    if (days === 0) return "Due Today";
+    if (days <= 30) return "Due Soon";
 
     return "Up to Date";
 }
+
 
 
 
@@ -863,7 +857,8 @@ function applyStatusClass(element, status) {
         "up-to-date-status",
         "due-soon-status",
         "due-today-status",
-        "overdue-status"
+        "overdue-status",
+        "no-due-date-status"
     );
 
     if (status === "Up to Date") {
@@ -874,6 +869,8 @@ function applyStatusClass(element, status) {
         element.classList.add("due-soon-status");
     } else if (status === "Overdue") {
         element.classList.add("overdue-status");
+    } else if (status === "No Due Date Set") {
+        element.classList.add("no-due-date-status");
     }
 }
 
@@ -883,9 +880,7 @@ function applyStatusClass(element, status) {
 // =========================
 
 function updateStatusPreview() {
-    const status = calculateVaccinationStatus(
-        nextDueDate.value
-    );
+    const status = calculateVaccinationStatus(nextDueDate.value);
 
     statusPreview.textContent = status;
 
@@ -893,7 +888,8 @@ function updateStatusPreview() {
         "preview-up-to-date",
         "preview-due-soon",
         "preview-due-today",
-        "preview-overdue"
+        "preview-overdue",
+        "preview-no-due-date"
     );
 
     if (status === "Up to Date") {
@@ -904,8 +900,11 @@ function updateStatusPreview() {
         statusPreview.classList.add("preview-due-soon");
     } else if (status === "Overdue") {
         statusPreview.classList.add("preview-overdue");
+    } else if (status === "No Due Date Set") {
+        statusPreview.classList.add("preview-no-due-date");
     }
 }
+
 
 
 // =========================
@@ -987,283 +986,161 @@ function getPetIcon(
 // =========================
 
 function renderVaccinations() {
+    const searchValue = vaccinationSearch.value
+        .toLowerCase()
+        .trim();
 
+    const selectedPetId = vaccinationPetFilter
+        ? vaccinationPetFilter.value
+        : "";
 
-    const searchValue =
-        vaccinationSearch.value
-            .toLowerCase()
-            .trim();
+    const selectedStatus = vaccinationStatusFilter
+        ? vaccinationStatusFilter.value
+        : "";
 
+    vaccinationTableBody.innerHTML = "";
 
-    vaccinationTableBody.innerHTML =
-        "";
-
-
-    const filteredVaccinations =
-        vaccinations.filter(
-            (vaccination) => {
-
-                const pet =
-                    getPet(
-                        vaccination.petId
-                    );
-
-
-                const petName =
-                    pet
-                        ? pet.petName
-                        : "Unknown Pet";
-
-
-                const ownerName =
-                    getOwnerNameFromPet(
-                        pet
-                    );
-
-
-                const status =
-                    calculateVaccinationStatus(
-                        vaccination.nextDueDate
-                    );
-
-
-                const searchableText =
-                    [
-                        vaccination.vaccinationId,
-                        petName,
-                        ownerName,
-                        vaccination.vaccineName,
-                        vaccination.dateGiven,
-                        vaccination.nextDueDate,
-                        vaccination.veterinarian,
-                        vaccination.remarks,
-                        status
-                    ]
-                    .join(" ")
-                    .toLowerCase();
-
-
-                return searchableText.includes(
-                    searchValue
-                );
-
-            }
-        );
-
-
-    filteredVaccinations.forEach(
+    const filteredVaccinations = vaccinations.filter(
         (vaccination) => {
+            const pet = getPet(vaccination.petId);
 
-            const pet =
-                getPet(
-                    vaccination.petId
-                );
+            const petName = pet
+                ? pet.petName
+                : "Unknown Pet";
 
+            const ownerName = getOwnerNameFromPet(pet);
 
-            const petName =
-                pet
-                    ? pet.petName
-                    : "Unknown Pet";
+            const status = calculateVaccinationStatus(
+                vaccination.nextDueDate
+            );
 
-
-            const ownerName =
-                getOwnerNameFromPet(
-                    pet
-                );
-
-
-            const status =
-                calculateVaccinationStatus(
-                    vaccination.nextDueDate
-                );
-
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            const icon =
-                getPetIcon(
-                    pet
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(
-                        vaccination.vaccinationId
-                    )}
-                </td>
-
-
-                <td>
-
-                    <div
-                        class="vaccination-pet-cell"
-                    >
-
-                        <div
-                            class="vaccination-pet-avatar"
-                        >
-                            ${icon}
-                        </div>
-
-                        <div>
-
-                            <strong>
-                                ${escapeHtml(
-                                    petName
-                                )}
-                            </strong>
-
-                            <small>
-                                ${escapeHtml(
-                                    vaccination.petId
-                                )}
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </td>
-
-
-                <td>
-                    ${escapeHtml(
-                        ownerName
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHtml(
-                        vaccination.vaccineName
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHtml(
-                        vaccination.dateGiven
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHtml(
-                        vaccination.nextDueDate
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHtml(
-                        vaccination.veterinarian
-                    )}
-                </td>
-
-
-                <td>
-
-                    <span
-                        class="vaccination-status"
-                    >
-                        ${escapeHtml(
-                            status
-                        )}
-                    </span>
-
-                </td>
-
-
-                <td>
-
-                    <div
-                        class="vaccination-actions"
-                    >
-
-                        <button
-                            type="button"
-                            class="vaccination-action vaccination-view-action"
-                            data-action="view"
-                            data-id="${escapeHtml(
-                                vaccination.vaccinationId
-                            )}"
-                            title="View vaccination"
-                        >
-                            👁
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="vaccination-action vaccination-edit-action"
-                            data-action="edit"
-                            data-id="${escapeHtml(
-                                vaccination.vaccinationId
-                            )}"
-                            title="Edit vaccination"
-                        >
-                            ✎
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="vaccination-action vaccination-delete-action"
-                            data-action="delete"
-                            data-id="${escapeHtml(
-                                vaccination.vaccinationId
-                            )}"
-                            title="Delete vaccination"
-                        >
-                            🗑
-                        </button>
-
-                    </div>
-
-                </td>
-
-            `;
-
-
-            const statusElement =
-                row.querySelector(
-                    ".vaccination-status"
-                );
-
-
-            applyStatusClass(
-                statusElement,
+            const searchableText = [
+                vaccination.vaccinationId,
+                petName,
+                ownerName,
+                vaccination.vaccineName,
+                vaccination.dateGiven,
+                vaccination.nextDueDate,
+                vaccination.veterinarian,
+                vaccination.remarks,
                 status
+            ]
+                .join(" ")
+                .toLowerCase();
+
+            const matchesSearch =
+                searchableText.includes(searchValue);
+
+            const matchesPet =
+                !selectedPetId ||
+                String(vaccination.petId) === selectedPetId;
+
+            const matchesStatus =
+                !selectedStatus ||
+                status === selectedStatus;
+
+            return (
+                matchesSearch &&
+                matchesPet &&
+                matchesStatus
             );
-
-
-            vaccinationTableBody.appendChild(
-                row
-            );
-
         }
     );
 
+    filteredVaccinations.forEach((vaccination) => {
+        const pet = getPet(vaccination.petId);
+
+        const petName = pet
+            ? pet.petName
+            : "Unknown Pet";
+
+        const ownerName = getOwnerNameFromPet(pet);
+
+        const status = calculateVaccinationStatus(
+            vaccination.nextDueDate
+        );
+
+        const row = document.createElement("tr");
+        const icon = getPetIcon(pet);
+
+        row.innerHTML = `
+            <td>
+                ${escapeHtml(vaccination.vaccinationId)}
+            </td>
+
+            <td>
+                <div class="vaccination-pet-cell">
+                    <div class="vaccination-pet-avatar">
+                        ${icon}
+                    </div>
+                    <div>
+                        <strong>${escapeHtml(petName)}</strong>
+                        <small>${escapeHtml(vaccination.petId)}</small>
+                    </div>
+                </div>
+            </td>
+
+            <td>${escapeHtml(ownerName)}</td>
+            <td>${escapeHtml(vaccination.vaccineName)}</td>
+            <td>${escapeHtml(vaccination.dateGiven)}</td>
+            <td>${escapeHtml(vaccination.nextDueDate || "—")}</td>
+            <td>${escapeHtml(vaccination.veterinarian)}</td>
+
+            <td>
+                <span class="vaccination-status">
+                    ${escapeHtml(status)}
+                </span>
+            </td>
+
+            <td>
+                <div class="vaccination-actions">
+                    <button
+                        type="button"
+                        class="vaccination-action vaccination-view-action"
+                        data-action="view"
+                        data-id="${escapeHtml(vaccination.vaccinationId)}"
+                        title="View vaccination"
+                    >👁</button>
+
+                    <button
+                        type="button"
+                        class="vaccination-action vaccination-edit-action"
+                        data-action="edit"
+                        data-id="${escapeHtml(vaccination.vaccinationId)}"
+                        title="Edit vaccination"
+                    >✎</button>
+
+                    <button
+                        type="button"
+                        class="vaccination-action vaccination-delete-action"
+                        data-action="delete"
+                        data-id="${escapeHtml(vaccination.vaccinationId)}"
+                        title="Delete vaccination"
+                    >🗑</button>
+                </div>
+            </td>
+        `;
+
+        const statusElement = row.querySelector(
+            ".vaccination-status"
+        );
+
+        applyStatusClass(statusElement, status);
+
+        vaccinationTableBody.appendChild(row);
+    });
 
     vaccinationEmptyState.style.display =
         filteredVaccinations.length === 0
             ? "block"
             : "none";
 
-
     visibleVaccinationCount.textContent =
         filteredVaccinations.length;
 
-
     updateSummary();
-
 }
+
 
 
 // =========================
@@ -1277,40 +1154,29 @@ let dueToday = 0;
 let overdue = 0;
 
 
-    vaccinations.forEach(
-        (vaccination) => {
+    
+    
+function updateSummary() {
+    let dueSoon = 0;
+    let dueToday = 0;
+    let overdue = 0;
 
-            const status =
-                calculateVaccinationStatus(
-                    vaccination.nextDueDate
-                );
+    vaccinations.forEach((vaccination) => {
+        const status = calculateVaccinationStatus(
+            vaccination.nextDueDate
+        );
 
+        if (status === "Due Soon") dueSoon++;
+        if (status === "Due Today") dueToday++;
+        if (status === "Overdue") overdue++;
+    });
 
-            if (
-                status ===
-                "Due Soon"
-            ) {
+    totalVaccinationCount.textContent = vaccinations.length;
+    dueSoonCount.textContent = dueSoon;
+    dueTodayCount.textContent = dueToday;
+    overdueCount.textContent = overdue;
+}
 
-                dueSoon++;
-
-            }
-
-            if (status === "Due Today") {
-                dueToday++;
-            }
-
-
-            if (
-                status ===
-                "Overdue"
-            ) {
-
-                overdue++;
-
-            }
-
-        }
-    );
 
 
     totalVaccinationCount.textContent =
@@ -1653,11 +1519,6 @@ vaccinationForm.addEventListener("submit", async (event) => {
         return;
     }
 
-    if (!formData.nextDueDate) {
-        showVaccinationMessage("Next due date is required.", "#c0392b");
-        return;
-    }
-
     if (formData.nextDueDate < formData.dateGiven) {
         showVaccinationMessage(
             "Next due date cannot be earlier than the date given.",
@@ -1809,57 +1670,14 @@ vaccinationTableBody.addEventListener(
         // VIEW
         // =========================
 
-        if (
-            action === "view"
-        ) {
-
-            alert(
-
-                "VACCINATION RECORD\n\n" +
-
-                `Vaccination ID: ${
-                    vaccination.vaccinationId
-                }\n` +
-
-                `Pet: ${
-                    petName
-                }\n` +
-
-                `Owner: ${
-                    ownerName
-                }\n` +
-
-                `Vaccine: ${
-                    vaccination.vaccineName
-                }\n` +
-
-                `Date Given: ${
-                    vaccination.dateGiven
-                }\n` +
-
-                `Next Due Date: ${
-                    vaccination.nextDueDate
-                }\n` +
-
-                `Veterinarian: ${
-                    vaccination.veterinarian
-                }\n` +
-
-                `Status: ${
-                    status
-                }\n` +
-
-                `Remarks: ${
-                    vaccination.remarks ||
-                    "None"
-                }`
-
-            );
-
-
+       
+        
+        if (action === "view") {
+            showVaccinationDetails(vaccination, petName, ownerName, status);
             return;
-
         }
+
+
 
 
         // =========================
@@ -1932,10 +1750,13 @@ vaccinationSearch.addEventListener(
     renderVaccinations
 );
 
+vaccinationPetFilter.addEventListener("change", renderVaccinations);
 
-// =========================
-// INITIALIZE
-// =========================
+vaccinationStatusFilter.addEventListener("change", renderVaccinations);
+
+
+
+
 // =========================
 // INITIALIZE FROM DATABASE
 // =========================
@@ -1947,6 +1768,7 @@ async function initializeVaccinationPage() {
             loadOwnersFromApi(),
             loadVaccinationsFromApi()
         ]);
+        populateVaccinationPetFilter();
 
         populatePetDropdown();
         renderVaccinations();
@@ -1971,3 +1793,83 @@ async function initializeVaccinationPage() {
 }
 
 initializeVaccinationPage();
+
+
+function populateVaccinationPetFilter() {
+    if (!vaccinationPetFilter) return;
+
+    const selectedPetId = vaccinationPetFilter.value;
+
+    vaccinationPetFilter.innerHTML =
+        '<option value="">All Pets</option>';
+
+    pets.forEach((pet) => {
+        const option = document.createElement("option");
+
+        option.value = String(pet.petId);
+        option.textContent = pet.petName;
+
+        vaccinationPetFilter.appendChild(option);
+    });
+
+    const petStillExists = Array.from(
+        vaccinationPetFilter.options
+    ).some((option) => option.value === selectedPetId);
+
+    if (petStillExists) {
+        vaccinationPetFilter.value = selectedPetId;
+    }
+}
+
+
+const vaccinationViewModal = document.getElementById("vaccinationViewModal");
+// Keep the modal outside the page layout so it centers in the viewport.
+if (vaccinationViewModal && vaccinationViewModal.parentElement !== document.body) {
+    document.body.appendChild(vaccinationViewModal);
+}
+const vaccinationViewDetails = document.getElementById("vaccinationViewDetails");
+const closeVaccinationView = document.getElementById("closeVaccinationView");
+const closeVaccinationViewFooter = document.getElementById("closeVaccinationViewFooter");
+
+function closeVaccinationViewModal() {
+    vaccinationViewModal.style.display = "none";
+}
+
+closeVaccinationView.addEventListener(
+    "click",
+    closeVaccinationViewModal
+);
+
+closeVaccinationViewFooter.addEventListener(
+    "click",
+    closeVaccinationViewModal
+);
+
+vaccinationViewModal.addEventListener("click", (event) => {
+    if (event.target === vaccinationViewModal) {
+        closeVaccinationViewModal();
+    }
+});
+
+function showVaccinationDetails(vaccination, petName, ownerName, status) {
+    const details = [
+        ["Vaccination ID", vaccination.vaccinationId],
+        ["Pet", petName],
+        ["Owner", ownerName],
+        ["Vaccine", vaccination.vaccineName],
+        ["Date Given", vaccination.dateGiven],
+        ["Next Due Date", vaccination.nextDueDate || "No due date set"],
+        ["Veterinarian", vaccination.veterinarian || "Not available"],
+        ["Status", status],
+        ["Remarks", vaccination.remarks || "None"]
+    ];
+
+    vaccinationViewDetails.innerHTML = details.map(([label, value]) => `
+        <div class="vaccination-detail-item">
+            <span class="vaccination-detail-label">${escapeHtml(label)}</span>
+            <span class="vaccination-detail-value">${escapeHtml(value)}</span>
+        </div>
+    `).join("");
+
+    vaccinationViewModal.style.setProperty("display", "flex", "important");
+}

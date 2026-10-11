@@ -28,10 +28,13 @@ const role =
     are allowed to use the client side.
 */
 
+
 const allowedRoles = [
     "Front Desk",
-    "Veterinarian"
+    "Veterinarian",
+    "Staff"
 ];
+
 
 
 if (
