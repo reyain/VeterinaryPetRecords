@@ -9,10 +9,7 @@ const role =
     sessionStorage.getItem("demoRole");
 
 
-const allowedRoles = [
-    "Front Desk",
-    "Veterinarian"
-];
+const allowedRoles = ["Front Desk", "Veterinarian", "Staff"];
 
 
 if (
@@ -96,126 +93,114 @@ const logoutButton =
     );
 
 
-logoutButton.addEventListener(
-    "click",
-    () => {
+logoutButton.addEventListener("click", async () => {
+    const confirmed = confirm(
+        "Are you sure you want to logout?"
+    );
 
-        const confirmed =
-            confirm(
-                "Are you sure you want to logout?"
-            );
-
-
-        if (confirmed) {
-
-            sessionStorage.clear();
-
-            window.location.href =
-                "../../index.html";
-
-        }
-
+    if (!confirmed) {
+        return;
     }
-);
-
-
-// =========================
-// STORAGE KEYS
-// =========================
-
-const OWNER_STORAGE_KEY =
-    "vetPetOwners";
-
-const PET_STORAGE_KEY =
-    "vetPetPets";
-
-const MEDICAL_STORAGE_KEY =
-    "vetPetMedicalRecords";
-
-const VACCINATION_STORAGE_KEY =
-    "vetPetVaccinations";
-
-
-// =========================
-// SAFE ARRAY LOADER
-// =========================
-
-function loadArray(
-    storageKey
-) {
-
-    const saved =
-        localStorage.getItem(
-            storageKey
-        );
-
-
-    if (!saved) {
-        return [];
-    }
-
 
     try {
+        const response = await fetch("/api/auth/logout", {
+            method: "POST"
+        });
 
-        const parsed =
-            JSON.parse(
-                saved
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok || result?.success !== true) {
+            throw new Error(
+                result?.message || "Server logout failed."
             );
-
-
-        return Array.isArray(parsed)
-            ? parsed
-            : [];
+        }
 
     } catch (error) {
+        console.error("Logout error:", error);
 
-        console.error(
-            `Unable to load ${storageKey}:`,
-            error
+        alert(
+            "Unable to complete logout. Please check your connection and try again."
         );
 
-        return [];
-
+        return;
     }
 
+    sessionStorage.clear();
+    window.location.replace("/index.html");
+});
+
+
+
+/* =========================
+   LIVE API DATA LOADER
+========================= */
+
+const REPORT_API_BASE_URL = "http://localhost:3000/api";
+
+async function fetchReportArray(endpoint) {
+    const response = await fetch(
+        `${REPORT_API_BASE_URL}${endpoint}`
+    );
+
+    const result = await response.json().catch(() => null);
+
+    if (
+        !response.ok ||
+        !result ||
+        result.success !== true ||
+        !Array.isArray(result.data)
+    ) {
+        throw new Error(
+            result?.message || `Unable to load ${endpoint}.`
+        );
+    }
+
+    return result.data;
 }
 
-
-// =========================
-// LOAD ALL DATA
-// =========================
-
-function loadReportData() {
+async function loadReportData() {
+    const [owners, pets, medical, vaccinations] =
+        await Promise.all([
+            fetchReportArray("/owners"),
+            fetchReportArray("/pets"),
+            fetchReportArray("/medical-records"),
+            fetchReportArray("/vaccinations")
+        ]);
 
     return {
+        owners: owners.map(owner => ({
+            ...owner,
+            reportDate: owner.createdAt || null
+        })),
 
-        owners:
-            loadArray(
-                OWNER_STORAGE_KEY
-            ),
+        pets: pets.map(pet => ({
+            ...pet,
+            reportDate: pet.createdAt || null
+        })),
 
-        pets:
-            loadArray(
-                PET_STORAGE_KEY
-            ),
+        medical: medical.map(record => ({
+            ...record,
+            recordDate: record.visitDate || record.createdAt || null
+        })),
 
-        medical:
-            loadArray(
-                MEDICAL_STORAGE_KEY
-            ),
-
-        vaccinations:
-            loadArray(
-                VACCINATION_STORAGE_KEY
-            )
-
+        vaccinations: vaccinations.map(vaccination => ({
+            ...vaccination,
+            dateGiven:
+                vaccination.dateAdministered ||
+                vaccination.createdAt ||
+                null,
+            nextDueDate: vaccination.nextVaccinationDate || null
+        }))
     };
-
 }
 
+let reportData = {
+    owners: [],
+    pets: [],
+    medical: [],
+    vaccinations: []
+};
 
-let reportData =
-    loadReportData();
 
 
 // =========================
@@ -289,119 +274,66 @@ function getPet(
 // VACCINATION STATUS
 // =========================
 
-function calculateVaccinationStatus(
-    nextDueDate
-) {
-
+function calculateVaccinationStatus(nextDueDate) {
     if (!nextDueDate) {
-
         return "Up to Date";
-
     }
 
+    const dueDateOnly = String(nextDueDate).slice(0, 10);
 
-    const today =
-        new Date();
+    const due = new Date(`${dueDateOnly}T00:00:00`);
 
+    if (Number.isNaN(due.getTime())) {
+        return "Unknown";
+    }
 
-    today.setHours(
-        0,
-        0,
-        0,
-        0
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const difference = due.getTime() - today.getTime();
+    const days = Math.ceil(
+        difference / (1000 * 60 * 60 * 24)
     );
 
-
-    const due =
-        new Date(
-            `${nextDueDate}T00:00:00`
-        );
-
-
-    const difference =
-        due.getTime()
-        -
-        today.getTime();
-
-
-    const days =
-        Math.ceil(
-            difference /
-            (
-                1000 *
-                60 *
-                60 *
-                24
-            )
-        );
-
-
     if (days < 0) {
-
         return "Overdue";
-
     }
-
 
     if (days <= 30) {
-
         return "Due Soon";
-
     }
 
-
     return "Up to Date";
-
 }
+
 
 
 // =========================
 // DATE FILTER
 // =========================
 
-function isWithinDateRange(
-    value,
-    startDate,
-    endDate
-) {
-
+function isWithinDateRange(value, startDate, endDate) {
     if (!value) {
-
         return true;
-
     }
-
 
     if (!startDate && !endDate) {
-
         return true;
-
     }
 
+    const recordDate = String(value).slice(0, 10);
 
-    if (
-        startDate &&
-        value < startDate
-    ) {
-
+    if (startDate && recordDate < startDate) {
         return false;
-
     }
 
-
-    if (
-        endDate &&
-        value > endDate
-    ) {
-
+    if (endDate && recordDate > endDate) {
         return false;
-
     }
-
 
     return true;
-
 }
+
 
 
 // =========================
@@ -417,49 +349,40 @@ function getFilteredData() {
         reportEndDate.value;
 
 
-    return {
+    
+return {
+    owners: reportData.owners.filter(owner =>
+        isWithinDateRange(
+            owner.reportDate,
+            startDate,
+            endDate
+        )
+    ),
 
-        owners:
-            reportData.owners.filter(
-                owner =>
-                    isWithinDateRange(
-                        null,
-                        startDate,
-                        endDate
-                    )
-            ),
+    pets: reportData.pets.filter(pet =>
+        isWithinDateRange(
+            pet.reportDate,
+            startDate,
+            endDate
+        )
+    ),
 
-        pets:
-            reportData.pets.filter(
-                pet =>
-                    isWithinDateRange(
-                        null,
-                        startDate,
-                        endDate
-                    )
-            ),
+    medical: reportData.medical.filter(record =>
+        isWithinDateRange(
+            record.recordDate,
+            startDate,
+            endDate
+        )
+    ),
 
-        medical:
-            reportData.medical.filter(
-                record =>
-                    isWithinDateRange(
-                        record.recordDate,
-                        startDate,
-                        endDate
-                    )
-            ),
-
-        vaccinations:
-            reportData.vaccinations.filter(
-                vaccination =>
-                    isWithinDateRange(
-                        vaccination.dateGiven,
-                        startDate,
-                        endDate
-                    )
-            )
-
-    };
+    vaccinations: reportData.vaccinations.filter(vaccination =>
+        isWithinDateRange(
+            vaccination.dateGiven,
+            startDate,
+            endDate
+        )
+    )
+};
 
 }
 
@@ -470,8 +393,6 @@ function getFilteredData() {
 
 function updateSummary() {
 
-    reportData =
-        loadReportData();
 
 
     const filtered =
@@ -882,36 +803,35 @@ function addReportRow(
 // BUILD REPORT
 // =========================
 
-function buildReport() {
+async function buildReport() {
+    try {
+        reportData = await loadReportData();
+    } catch (error) {
+        console.error("Report loading error:", error);
 
-    reportData =
-        loadReportData();
+        reportMessage.textContent =
+            "Unable to load report data. Check that Node.js and the C# Bridge are running.";
 
+        reportMessage.style.color = "#c0392b";
+        return false;
+    }
 
-    const filtered =
-        getFilteredData();
+    const filtered = getFilteredData();
 
+    reportTableBody.innerHTML = "";
 
-    reportTableBody.innerHTML =
-        "";
+    const selectedType = reportType.value || "overview";
+    const isOverview =
+        selectedType === "overview" ||
+        selectedType === "overall";
 
-
-    const selectedType =
-        reportType.value;
-
-
-    if (
-        selectedType ===
-        "overview"
-    ) {
-
+    if (isOverview) {
         addReportRow(
             "Owners",
             filtered.owners.length,
             "Available",
             "Registered pet owner records"
         );
-
 
         addReportRow(
             "Pets",
@@ -920,7 +840,6 @@ function buildReport() {
             "Registered pet records"
         );
 
-
         addReportRow(
             "Medical Records",
             filtered.medical.length,
@@ -928,118 +847,52 @@ function buildReport() {
             "Recorded veterinary medical history"
         );
 
-
         addReportRow(
             "Vaccinations",
             filtered.vaccinations.length,
             "Available",
             "Recorded vaccination history"
         );
-
-    }
-
-
-    if (
-        selectedType ===
-        "owners"
-    ) {
-
+    } else if (selectedType === "owners") {
         addReportRow(
             "Pet Owners",
             filtered.owners.length,
             "Available",
             "Registered owner records"
         );
-
-    }
-
-
-    if (
-        selectedType ===
-        "pets"
-    ) {
-
+    } else if (selectedType === "pets") {
         addReportRow(
             "Registered Pets",
             filtered.pets.length,
             "Available",
             "Registered pet records"
         );
-
-    }
-
-
-    if (
-        selectedType ===
-        "medical"
-    ) {
-
+    } else if (selectedType === "medical") {
         addReportRow(
             "Medical Records",
             filtered.medical.length,
             "Available",
             "Recorded medical history"
         );
+    } else if (selectedType === "vaccinations") {
+        const counts = {
+            "Up to Date": 0,
+            "Due Soon": 0,
+            "Overdue": 0,
+            "Unknown": 0
+        };
 
-    }
+        filtered.vaccinations.forEach(vaccination => {
+            const status = calculateVaccinationStatus(
+                vaccination.nextDueDate
+            );
 
-
-    if (
-        selectedType ===
-        "vaccinations"
-    ) {
-
-        let upToDate =
-            0;
-
-        let dueSoon =
-            0;
-
-        let overdue =
-            0;
-
-
-        filtered.vaccinations.forEach(
-            vaccination => {
-
-                const status =
-                    calculateVaccinationStatus(
-                        vaccination.nextDueDate
-                    );
-
-
-                if (
-                    status ===
-                    "Up to Date"
-                ) {
-
-                    upToDate++;
-
-                }
-
-
-                if (
-                    status ===
-                    "Due Soon"
-                ) {
-
-                    dueSoon++;
-
-                }
-
-
-                if (
-                    status ===
-                    "Overdue"
-                ) {
-
-                    overdue++;
-
-                }
-
+            if (Object.prototype.hasOwnProperty.call(counts, status)) {
+                counts[status]++;
+            } else {
+                counts.Unknown++;
             }
-        );
-
+        });
 
         addReportRow(
             "Vaccinations",
@@ -1048,54 +901,51 @@ function buildReport() {
             "Recorded vaccination history"
         );
 
-
         addReportRow(
             "Up to Date",
-            upToDate,
+            counts["Up to Date"],
             "Current",
             "Vaccinations currently up to date"
         );
 
-
         addReportRow(
             "Due Soon",
-            dueSoon,
+            counts["Due Soon"],
             "Attention",
             "Vaccinations approaching their due date"
         );
 
-
         addReportRow(
             "Overdue",
-            overdue,
+            counts["Overdue"],
             "Overdue",
             "Vaccinations past their due date"
         );
 
+        if (counts.Unknown > 0) {
+            addReportRow(
+                "Unknown Status",
+                counts.Unknown,
+                "Attention",
+                "Vaccination due dates need verification"
+            );
+        }
     }
 
-
-    document.getElementById(
-        "generatedReportTitle"
-    ).textContent =
+    document.getElementById("generatedReportTitle").textContent =
         getReportTitle();
 
-
-    document.getElementById(
-        "generatedReportDescription"
-    ).textContent =
+    document.getElementById("generatedReportDescription").textContent =
         getDateDescription();
 
-
-    document.getElementById(
-        "generatedDate"
-    ).textContent =
+    document.getElementById("generatedDate").textContent =
         new Date().toLocaleString();
-
 
     updateSummary();
 
+    return true;
 }
+
 
 
 // =========================
@@ -1104,7 +954,7 @@ function buildReport() {
 
 generateReportButton.addEventListener(
     "click",
-    () => {
+    async () => {
 
         const startDate =
             reportStartDate.value;
@@ -1130,7 +980,11 @@ generateReportButton.addEventListener(
         }
 
 
-        buildReport();
+       const generated = await buildReport();
+
+            if (!generated) {
+                return;
+            }
 
 
         reportMessage.textContent =
@@ -1150,7 +1004,7 @@ generateReportButton.addEventListener(
 
 resetReportButton.addEventListener(
     "click",
-    () => {
+    async () => {
 
         reportType.value =
             "overview";
@@ -1164,7 +1018,7 @@ resetReportButton.addEventListener(
         reportMessage.textContent =
             "";
 
-        buildReport();
+        await buildReport();
 
     }
 );
@@ -1176,19 +1030,20 @@ resetReportButton.addEventListener(
 
 refreshReportButton.addEventListener(
     "click",
-    () => {
+    async () => {
 
-        reportData =
-            loadReportData();
+        
+        const refreshed = await buildReport();
 
-        buildReport();
-
+        if (!refreshed) {
+            return;
+        }
 
         reportMessage.textContent =
             "Report data refreshed successfully.";
 
-        reportMessage.style.color =
-            "#2a9d8f";
+        reportMessage.style.color = "#2a9d8f";
+
 
     }
 );

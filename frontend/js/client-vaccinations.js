@@ -93,27 +93,42 @@ const logoutButton =
     );
 
 
-logoutButton.addEventListener(
-    "click",
-    () => {
+logoutButton.addEventListener("click", async () => {
+    const confirmed = confirm(
+        "Are you sure you want to logout?"
+    );
 
-        const confirmed =
-            confirm(
-                "Are you sure you want to logout?"
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/auth/logout", {
+            method: "POST"
+        });
+
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok || result?.success !== true) {
+            throw new Error(
+                result?.message || "Server logout failed."
             );
-
-
-        if (confirmed) {
-
-            sessionStorage.clear();
-
-            window.location.href =
-                "../../index.html";
-
         }
 
+    } catch (error) {
+        console.error("Logout error:", error);
+
+        alert(
+            "Unable to complete logout. Please check your connection and try again."
+        );
+
+        return;
     }
-);
+
+    sessionStorage.clear();
+    window.location.replace("/index.html");
+});
+
 
 
 /// =========================

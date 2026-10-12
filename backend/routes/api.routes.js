@@ -93,15 +93,23 @@ router.get("/health", (req, res) => {
    POST /api/login (compatibility route)
    ===================================================== */
 
-router.post("/auth/login", (req, res) => {
-    return proxyBridgeRequest(req, res, "/api/login");
-});
+router.post("/auth/login", proxyLogin);
+router.post("/login", proxyLogin);
+router.post("/auth/logout", logoutSession);
 
-router.post("/login", (req, res) => {
-    return proxyBridgeRequest(req, res, "/api/login");
-});
+// Require a valid server-side login session for all
+// API routes registered below this point.
+router.use((req, res, next) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({
+            success: false,
+            code: "AUTH_REQUIRED",
+            message: "Please log in to access this resource."
+        });
+    }
 
-router.post("/auth/logout", notImplemented("Authentication logout"));
+    next();
+});
 
 
 /* =====================================================
@@ -337,6 +345,7 @@ router.put(
 );
 
 
+
 async function proxyLogin(req, res) {
     try {
         const response = await fetch(`${BRIDGE_URL}/api/login`, {
@@ -344,23 +353,107 @@ async function proxyLogin(req, res) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(req.body)
+            body: JSON.stringify(req.body ?? {})
         });
 
-        const data = await response.json();
-        return res.status(response.status).json(data);
-    } catch (error) {
-        console.error("Login proxy error:", error);
+        const data = await response.json().catch(() => null);
 
-        return res.status(502).json({
+        if (
+            !response.ok ||
+            !data ||
+            data.success !== true ||
+            !data.data
+        ) {
+            return res.status(response.status || 401).json(
+                data || {
+                    success: false,
+                    message: "Invalid login response."
+                }
+            );
+        }
+
+        const userId = Number(data.data.userId);
+        const username = String(data.data.username || "");
+        const fullName = String(data.data.fullName || "");
+        const role = String(data.data.role || "").trim();
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0 ||
+            !username ||
+            !["admin", "administrator", "staff", "front desk", "veterinarian"]
+                .includes(role.toLowerCase())
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "This account is not authorized to access the system."
+            });
+        }
+
+        // Regenerate the session after successful authentication.
+        await new Promise((resolve, reject) => {
+            req.session.regenerate(error => {
+                if (error) reject(error);
+                else resolve();
+            });
+        });
+
+        req.session.user = {
+            userId,
+            username,
+            fullName,
+            role
+        };
+
+        // Ensure the session is stored before reporting login success.
+        await new Promise((resolve, reject) => {
+            req.session.save(error => {
+                if (error) reject(error);
+                else resolve();
+            });
+        });
+
+        // Keep the existing response format for frontend compatibility.
+        return res.status(200).json(data);
+
+    } catch (error) {
+        console.error("Login/session error:", error);
+
+        return res.status(500).json({
             success: false,
-            message: "Unable to connect to the login service."
+            message: "Unable to complete login or save the server session."
         });
     }
 }
 
-router.post("/login", proxyLogin);
-router.post("/auth/login", proxyLogin);
+function logoutSession(req, res) {
+    if (!req.session) {
+        res.clearCookie("vetpet.sid", { path: "/" });
+
+        return res.json({
+            success: true,
+            message: "Logged out successfully."
+        });
+    }
+
+    req.session.destroy(error => {
+        res.clearCookie("vetpet.sid", { path: "/" });
+
+        if (error) {
+            console.error("Logout/session error:", error);
+
+            return res.status(500).json({
+                success: false,
+                message: "Unable to terminate the server session."
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: "Logged out successfully."
+        });
+    });
+}
 
 
 

@@ -25,13 +25,15 @@ document.addEventListener("DOMContentLoaded", () => {
        ADMIN ACCESS CHECK
        ===================================================== */
 
+    const normalizedRole = String(
+    currentUser?.role || ""
+    ).trim().toLowerCase();
+
     if (
         !currentUser ||
-        currentUser.role !== "Administrator"
+        !["admin", "administrator"].includes(normalizedRole)
     ) {
-
-        window.location.href = "../../index.html";
-
+        window.location.replace("/index.html");
         return;
     }
 
@@ -93,14 +95,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     logoutButton.addEventListener(
         "click",
-        () => {
+        async () => {
+            try {
+                const response = await fetch("/api/auth/logout", {
+                    method: "POST"
+                });
 
-            sessionStorage.removeItem(
-                "vetCurrentUser"
-            );
+                if (!response.ok) {
+                    throw new Error("Server logout failed.");
+                }
+            } catch (error) {
+                console.error("Logout error:", error);
+                alert("Unable to complete logout. Please try again.");
+                return;
+            }
 
-            window.location.href =
-                "../../index.html";
+            sessionStorage.clear();
+            window.location.replace("/index.html");
         }
     );
 

@@ -652,4 +652,61 @@ async function initializeMedicalRecords() {
     await loadMedicalRecords();
 }
 
+
+/* =========================
+   SERVER-BACKED LOGOUT
+========================= */
+
+const medicalRecordsLogoutButton =
+    document.getElementById("logoutButton");
+
+if (medicalRecordsLogoutButton) {
+    medicalRecordsLogoutButton.addEventListener(
+        "click",
+        async () => {
+            const confirmed = confirm(
+                "Are you sure you want to logout?"
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    "/api/auth/logout",
+                    {
+                        method: "POST",
+                        credentials: "same-origin"
+                    }
+                );
+
+                const result = await response
+                    .json()
+                    .catch(() => null);
+
+                if (
+                    !response.ok ||
+                    result?.success !== true
+                ) {
+                    throw new Error(
+                        result?.message || "Logout failed."
+                    );
+                }
+
+                sessionStorage.clear();
+                window.location.replace("/index.html");
+
+            } catch (error) {
+                console.error("Logout error:", error);
+
+                alert(
+                    "Unable to logout. Please try again."
+                );
+            }
+        }
+    );
+}
+
+
 initializeMedicalRecords();
