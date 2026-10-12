@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (
         !currentUser ||
-        currentUser.role !== "Administrator"
+        !["admin", "administrator"].includes(String(currentUser.role || "").trim().toLowerCase())
     ) {
 
         window.location.href =
@@ -1360,19 +1360,30 @@ document.addEventListener("DOMContentLoaded", () => {
        LOGOUT
        ===================================================== */
 
-    logoutButton.addEventListener(
-        "click",
-        () => {
+    logoutButton.addEventListener("click", async () => {
+    const confirmed = confirm("Are you sure you want to logout?");
+    if (!confirmed) return;
 
-            sessionStorage.removeItem(
-                "vetCurrentUser"
-            );
+    try {
+        const response = await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "same-origin"
+        });
 
-            window.location.href =
-                "../../index.html";
+        const result = await response.json().catch(() => null);
 
+        if (!response.ok || result?.success !== true) {
+            throw new Error(result?.message || "Logout failed.");
         }
-    );
+
+        sessionStorage.clear();
+        window.location.replace("/index.html");
+
+    } catch (error) {
+        console.error("Logout error:", error);
+        alert("Unable to logout. Please check your connection and try again.");
+    }
+});
 
 
     /* =====================================================

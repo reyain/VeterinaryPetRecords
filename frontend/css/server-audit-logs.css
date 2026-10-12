@@ -737,3 +737,48 @@
     }
 
 }
+
+
+/* API-backed audit log pagination */
+.audit-pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 18px 0 26px;
+}
+
+.audit-pagination-status {
+    color: #78819d;
+    font-size: 13px;
+}
+
+.audit-pagination-button {
+    padding: 10px 16px;
+    border: 1px solid #e3e7f5;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f8f9ff, #e9ecf8);
+    box-shadow:
+        4px 4px 8px #d1d5e5,
+        -4px -4px 8px #ffffff;
+    color: #394663;
+    font: inherit;
+    cursor: pointer;
+}
+
+.audit-pagination-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.audit-pagination-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+@media (max-width: 600px) {
+    .audit-pagination {
+        justify-content: center;
+    }
+}

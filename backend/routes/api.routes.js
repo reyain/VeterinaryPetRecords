@@ -1,6 +1,7 @@
 
 const express = require("express");
-
+const { rateLimit } = require("express-rate-limit");
+const db = require("../config/db");
 const router = express.Router();
 
 /* =====================================================
@@ -26,12 +27,69 @@ function notImplemented(feature) {
     };
 }
 
+/* =====================================================
+   ADMIN-ONLY AUTHORIZATION
+   ===================================================== */
+
+function requireAdmin(req, res, next) {
+    const role = String(
+        req.session?.user?.role || ""
+    ).trim().toLowerCase();
+
+    if (!["admin", "administrator"].includes(role)) {
+        return res.status(403).json({
+            success: false,
+            code: "FORBIDDEN",
+            message: "Administrator access is required."
+        });
+    }
+
+    next();
+}
+
+/* =====================================================
+   STAFF-ONLY AUTHORIZATION
+   ===================================================== */
+
+function requireStaff(req, res, next) {
+    const role = String(
+        req.session?.user?.role || ""
+    ).trim().toLowerCase();
+
+    if (role !== "staff") {
+        return res.status(403).json({
+            success: false,
+            code: "FORBIDDEN",
+            message: "Staff access is required to modify veterinary records."
+        });
+    }
+
+    next();
+}
+
 
 /* =====================================================
    HELPER TO FORWARD REQUESTS TO THE C# BRIDGE
    ===================================================== */
+/* =====================================================
+   LOGIN RATE LIMITING
+   Maximum 10 unsuccessful attempts per IP in 15 minutes
+   ===================================================== */
 
-async function proxyBridgeRequest(req, res, bridgePath) {
+const loginRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 10,
+    skipSuccessfulRequests: true,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        code: "LOGIN_RATE_LIMITED",
+        message: "Too many unsuccessful login attempts. Please try again in 15 minutes."
+    }
+});
+
+async function proxyBridgeRequest(req, res, bridgePath, bodyOverride = undefined) {
     try {
         const options = {
             method: req.method,
@@ -43,7 +101,7 @@ async function proxyBridgeRequest(req, res, bridgePath) {
 
         if (["POST", "PUT", "PATCH"].includes(req.method)) {
             options.headers["Content-Type"] = "application/json";
-            options.body = JSON.stringify(req.body ?? {});
+            options.body = JSON.stringify(bodyOverride ?? req.body ?? {});
         }
 
         const bridgeResponse = await fetch(
@@ -71,6 +129,113 @@ async function proxyBridgeRequest(req, res, bridgePath) {
     }
 }
 
+/* =====================================================
+   SECURE RECORD WRITES
+
+   New records use the logged-in user's ID.
+   Updates preserve the original record's UserID.
+   ===================================================== */
+
+function setTrustedUserId(payload, userId) {
+    for (const key of Object.keys(payload)) {
+        if (key.toLowerCase() === "userid") {
+            delete payload[key];
+        }
+    }
+
+    payload.UserID = userId;
+}
+
+async function proxyRecordWrite(req, res, bridgePath) {
+    const sessionUserId = Number(req.session?.user?.userId);
+
+    if (!Number.isInteger(sessionUserId) || sessionUserId <= 0) {
+        return res.status(401).json({
+            success: false,
+            code: "AUTH_REQUIRED",
+            message: "A valid login session is required."
+        });
+    }
+
+    const payload = { ...(req.body ?? {}) };
+
+    // Never trust a browser-submitted UserID for new records.
+    if (req.method === "POST") {
+        setTrustedUserId(payload, sessionUserId);
+
+        return proxyBridgeRequest(
+            req,
+            res,
+            bridgePath,
+            payload
+        );
+    }
+
+    // For edits, retrieve the existing record from the Bridge
+    // and preserve its original staff attribution.
+    try {
+        const currentResponse = await fetch(
+            `${BRIDGE_URL}${bridgePath}`,
+            {
+                method: "GET",
+                headers: { Accept: "application/json" },
+                signal: AbortSignal.timeout(10000)
+            }
+        );
+
+        const currentBody = await currentResponse
+            .json()
+            .catch(() => null);
+
+        if (!currentResponse.ok) {
+            return res.status(currentResponse.status).json(
+                currentBody ?? {
+                    success: false,
+                    message: "Unable to retrieve the existing record."
+                }
+            );
+        }
+
+        if (!currentBody?.success || !currentBody?.data) {
+            return res.status(502).json({
+                success: false,
+                message: "The Bridge returned an unexpected record response."
+            });
+        }
+
+        const originalUserId = Number(
+            currentBody.data.userID ??
+            currentBody.data.UserID ??
+            currentBody.data.userId
+        );
+
+        if (!Number.isInteger(originalUserId) || originalUserId <= 0) {
+            return res.status(500).json({
+                success: false,
+                message: "The existing record has no valid staff attribution."
+            });
+        }
+
+        // Ignore any UserID supplied by the browser during an edit.
+        setTrustedUserId(payload, originalUserId);
+
+        return proxyBridgeRequest(
+            req,
+            res,
+            bridgePath,
+            payload
+        );
+    } catch (error) {
+        console.error("Secure record write failed:", error.message);
+
+        return res.status(503).json({
+            success: false,
+            code: "BRIDGE_UNAVAILABLE",
+            message: "Unable to verify the existing record with the C# Bridge."
+        });
+    }
+}
+
 
 /* =====================================================
    SYSTEM HEALTH
@@ -93,8 +258,8 @@ router.get("/health", (req, res) => {
    POST /api/login (compatibility route)
    ===================================================== */
 
-router.post("/auth/login", proxyLogin);
-router.post("/login", proxyLogin);
+router.post("/auth/login", loginRateLimiter, proxyLogin);
+router.post("/login", loginRateLimiter, proxyLogin);
 router.post("/auth/logout", logoutSession);
 
 // Require a valid server-side login session for all
@@ -113,15 +278,322 @@ router.use((req, res, next) => {
 
 
 /* =====================================================
-   STAFF ACCOUNTS
+   STAFF ACCOUNTS — ADMIN ONLY
    ===================================================== */
 
-router.get("/staff-accounts", notImplemented("Staff account listing"));
-router.post("/staff-accounts", notImplemented("Staff account creation"));
-router.get("/staff-accounts/:userId", notImplemented("Staff account details"));
-router.put("/staff-accounts/:userId", notImplemented("Staff account update"));
-router.patch("/staff-accounts/:userId/status", notImplemented("Staff account status"));
-router.post("/staff-accounts/:userId/reset-password", notImplemented("Staff password reset"));
+router.get(
+    "/staff-accounts",
+    requireAdmin,
+    notImplemented("Staff account listing")
+);
+
+router.post(
+    "/staff-accounts",
+    requireAdmin,
+    notImplemented("Staff account creation")
+);
+
+router.get(
+    "/staff-accounts/:userId",
+    requireAdmin,
+    notImplemented("Staff account details")
+);
+
+router.put(
+    "/staff-accounts/:userId",
+    requireAdmin,
+    notImplemented("Staff account update")
+);
+
+router.patch(
+    "/staff-accounts/:userId/status",
+    requireAdmin,
+    notImplemented("Staff account status")
+);
+
+router.post(
+    "/staff-accounts/:userId/reset-password",
+    requireAdmin,
+    notImplemented("Staff password reset")
+);
+
+router.get(
+    "/online-users",
+    requireAdmin,
+    notImplemented("Online user monitoring")
+);
+
+router.post(
+    "/online-users/:sessionId/disconnect",
+    requireAdmin,
+    notImplemented("User session disconnection")
+);
+
+
+
+/* =====================================================
+   AUDIT LOGS — ADMINISTRATOR ONLY
+   ===================================================== */
+
+/* =====================================================
+   AUDIT LOGS — ADMINISTRATOR ONLY
+   ===================================================== */
+
+const auditModulePatterns = {
+    owners: "%owner%",
+    pets: "%pet%",
+    "medical records": "%medical%",
+    vaccinations: "%vaccin%",
+    "staff accounts": "%staff%",
+    authentication: "%auth%"
+};
+
+router.get("/audit-logs/summary", requireAdmin, async (req, res) => {
+    try {
+        const [rows] = await db.execute(`
+            SELECT
+                COUNT(*) AS total,
+                COALESCE(SUM(DATE(created_at) = CURDATE()), 0) AS today,
+                COALESCE(SUM(action = 'CREATE'), 0) AS creates,
+                COALESCE(SUM(action = 'UPDATE'), 0) AS updates,
+                COALESCE(SUM(action = 'DELETE'), 0) AS deletes
+            FROM audit_logs
+        `);
+
+        const row = rows[0] || {};
+
+        return res.json({
+            success: true,
+            data: {
+                total: Number(row.total || 0),
+                today: Number(row.today || 0),
+                creates: Number(row.creates || 0),
+                updates: Number(row.updates || 0),
+                deletes: Number(row.deletes || 0)
+            }
+        });
+    } catch (error) {
+        console.error("Audit summary failed:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve the audit summary."
+        });
+    }
+});
+
+router.get("/audit-logs", requireAdmin, async (req, res) => {
+    try {
+        const page = Math.max(
+            1,
+            Number.parseInt(String(req.query.page ?? "1"), 10) || 1
+        );
+
+        const limit = Math.min(
+            100,
+            Math.max(
+                1,
+                Number.parseInt(String(req.query.limit ?? "25"), 10) || 25
+            )
+        );
+
+        const search = String(req.query.search ?? "").trim().slice(0, 100);
+        const action = String(req.query.action ?? "").trim().toUpperCase();
+        const moduleKey = String(req.query.module ?? "").trim().toLowerCase();
+        const role = String(req.query.role ?? "").trim().toLowerCase();
+        const date = String(req.query.date ?? "").trim();
+
+        const allowedActions = new Set([
+            "LOGIN", "LOGOUT", "CREATE", "UPDATE", "DELETE"
+        ]);
+
+        if (action && !allowedActions.has(action)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid audit action filter."
+            });
+        }
+
+        if (moduleKey && moduleKey !== "all" && !auditModulePatterns[moduleKey]) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid audit module filter."
+            });
+        }
+
+        if (role && role !== "all" && !["admin", "staff"].includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user role filter."
+            });
+        }
+
+        if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            return res.status(400).json({
+                success: false,
+                message: "Date must use YYYY-MM-DD format."
+            });
+        }
+
+        const conditions = [];
+        const params = [];
+
+        if (search) {
+            const pattern = `%${search}%`;
+
+            conditions.push(`(
+                CAST(al.audit_id AS CHAR) LIKE ?
+                OR CAST(al.user_id AS CHAR) LIKE ?
+                OR COALESCE(u.username, '') LIKE ?
+                OR COALESCE(u.full_name, '') LIKE ?
+                OR al.action LIKE ?
+                OR al.module LIKE ?
+                OR COALESCE(al.description, '') LIKE ?
+                OR COALESCE(al.computer_name, '') LIKE ?
+                OR COALESCE(al.client_ip, '') LIKE ?
+            )`);
+
+            params.push(
+                pattern, pattern, pattern, pattern, pattern,
+                pattern, pattern, pattern, pattern
+            );
+        }
+
+        if (action) {
+            conditions.push("al.action = ?");
+            params.push(action);
+        }
+
+        if (moduleKey && moduleKey !== "all") {
+            conditions.push("LOWER(al.module) LIKE ?");
+            params.push(auditModulePatterns[moduleKey]);
+        }
+
+        if (role && role !== "all") {
+            conditions.push("LOWER(COALESCE(u.role, '')) = ?");
+            params.push(role);
+        }
+
+        if (date) {
+            conditions.push("DATE(al.created_at) = ?");
+            params.push(date);
+        }
+
+        const whereClause = conditions.length
+            ? `WHERE ${conditions.join(" AND ")}`
+            : "";
+
+        const [countRows] = await db.execute(
+            `SELECT COUNT(*) AS total
+             FROM audit_logs al
+             LEFT JOIN users u ON u.user_id = al.user_id
+             ${whereClause}`,
+            params
+        );
+
+        const total = Number(countRows[0]?.total ?? 0);
+        const totalPages = Math.ceil(total / limit);
+        const offset = (page - 1) * limit;
+
+        const [rows] = await db.execute(
+            `SELECT
+                al.audit_id AS auditID,
+                al.user_id AS userID,
+                u.username AS username,
+                u.full_name AS fullName,
+                u.role AS role,
+                al.action AS action,
+                al.module AS module,
+                al.record_id AS recordID,
+                al.description AS description,
+                al.client_type AS clientType,
+                al.computer_name AS computerName,
+                al.client_ip AS clientIP,
+                al.created_at AS createdAt
+             FROM audit_logs al
+             LEFT JOIN users u ON u.user_id = al.user_id
+             ${whereClause}
+             ORDER BY al.created_at DESC, al.audit_id DESC
+             LIMIT ? OFFSET ?`,
+            [...params, limit, offset]
+        );
+
+        return res.json({
+            success: true,
+            data: rows,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages
+            }
+        });
+    } catch (error) {
+        console.error("Audit log listing failed:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve audit logs."
+        });
+    }
+});
+
+router.get("/audit-logs/:logId", requireAdmin, async (req, res) => {
+    try {
+        const logId = Number(req.params.logId);
+
+        if (!Number.isSafeInteger(logId) || logId <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "A valid audit log ID is required."
+            });
+        }
+
+        const [rows] = await db.execute(
+            `SELECT
+                al.audit_id AS auditID,
+                al.user_id AS userID,
+                u.username AS username,
+                u.full_name AS fullName,
+                u.role AS role,
+                al.action AS action,
+                al.module AS module,
+                al.record_id AS recordID,
+                al.description AS description,
+                al.old_values AS oldValues,
+                al.new_values AS newValues,
+                al.client_type AS clientType,
+                al.computer_name AS computerName,
+                al.client_ip AS clientIP,
+                al.created_at AS createdAt
+             FROM audit_logs al
+             LEFT JOIN users u ON u.user_id = al.user_id
+             WHERE al.audit_id = ?
+             LIMIT 1`,
+            [logId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Audit log entry was not found."
+            });
+        }
+
+        return res.json({
+            success: true,
+            data: rows[0]
+        });
+    } catch (error) {
+        console.error("Audit log details failed:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve audit log details."
+        });
+    }
+});
+
 
 
 /* =====================================================
@@ -206,10 +678,6 @@ router.get("/medical-records", (req, res) =>
     proxyBridgeRequest(req, res, "/api/medical-records")
 );
 
-router.post("/medical-records", (req, res) =>
-    proxyBridgeRequest(req, res, "/api/medical-records")
-);
-
 router.get("/medical-records/:recordId", (req, res) =>
     proxyBridgeRequest(
         req,
@@ -218,15 +686,21 @@ router.get("/medical-records/:recordId", (req, res) =>
     )
 );
 
-router.put("/medical-records/:recordId", (req, res) =>
-    proxyBridgeRequest(
+router.post("/medical-records", requireStaff, (req, res) =>
+    proxyRecordWrite(req, res, "/api/medical-records")
+);
+
+router.put("/medical-records/:recordId", requireStaff, (req, res) =>
+    proxyRecordWrite(
         req,
         res,
         `/api/medical-records/${encodeURIComponent(req.params.recordId)}`
     )
 );
 
-router.delete("/medical-records/:recordId", (req, res) =>
+
+
+router.delete("/medical-records/:recordId", requireStaff, (req, res) =>
     proxyBridgeRequest(
         req,
         res,
@@ -243,8 +717,8 @@ router.get("/vaccinations", (req, res) =>
     proxyBridgeRequest(req, res, "/api/vaccinations")
 );
 
-router.post("/vaccinations", (req, res) =>
-    proxyBridgeRequest(req, res, "/api/vaccinations")
+router.post("/vaccinations", requireStaff, (req, res) =>
+    proxyRecordWrite(req, res, "/api/vaccinations")
 );
 
 router.get("/vaccinations/:vaccinationId", (req, res) =>
@@ -255,15 +729,15 @@ router.get("/vaccinations/:vaccinationId", (req, res) =>
     )
 );
 
-router.put("/vaccinations/:vaccinationId", (req, res) =>
-    proxyBridgeRequest(
+router.put("/vaccinations/:vaccinationId", requireStaff, (req, res) =>
+    proxyRecordWrite(
         req,
         res,
         `/api/vaccinations/${encodeURIComponent(req.params.vaccinationId)}`
     )
 );
 
-router.delete("/vaccinations/:vaccinationId", (req, res) =>
+router.delete("/vaccinations/:vaccinationId", requireStaff, (req, res) =>
     proxyBridgeRequest(
         req,
         res,
@@ -302,47 +776,6 @@ router.get("/users/by-id/:userID", (req, res) =>
 );
 
 
-/* =====================================================
-   ONLINE USERS
-   ===================================================== */
-
-router.get("/online-users", notImplemented("Online user monitoring"));
-
-router.post(
-    "/online-users/:sessionId/disconnect",
-    notImplemented("User session disconnection")
-);
-
-
-/* =====================================================
-   AUDIT LOGS
-   ===================================================== */
-
-router.get("/audit-logs", notImplemented("Audit log listing"));
-router.get("/audit-logs/:logId", notImplemented("Audit log details"));
-
-
-/* =====================================================
-   REPORTS
-   ===================================================== */
-
-router.get("/reports/summary", notImplemented("Report summary"));
-router.get("/reports/:reportType", notImplemented("Report generation"));
-
-
-/* =====================================================
-   SERVER CONFIGURATION
-   ===================================================== */
-
-router.get(
-    "/server-configuration",
-    notImplemented("Server configuration retrieval")
-);
-
-router.put(
-    "/server-configuration",
-    notImplemented("Server configuration update")
-);
 
 
 

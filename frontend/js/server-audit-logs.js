@@ -1,904 +1,454 @@
+
 /* =========================================================
    SERVER - AUDIT LOGS
-   Temporary frontend prototype
+   Live MySQL-backed audit log viewer
+   Administrator read-only access
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+    let currentUser = null;
 
-
-    /* =====================================================
-       ELEMENTS
-       ===================================================== */
-
-    const userName =
-        document.getElementById("userName");
-
-    const userRole =
-        document.getElementById("userRole");
-
-    const userAvatar =
-        document.getElementById("userAvatar");
-
-    const logoutButton =
-        document.getElementById("logoutButton");
-
-
-    const refreshButton =
-        document.getElementById(
-            "refreshAuditButton"
+    try {
+        currentUser = JSON.parse(
+            sessionStorage.getItem("vetCurrentUser") || "null"
         );
+    } catch {
+        currentUser = null;
+    }
 
-    const searchInput =
-        document.getElementById(
-            "auditSearch"
-        );
+    const role = String(currentUser?.role || "")
+        .trim()
+        .toLowerCase();
 
-    const moduleFilter =
-        document.getElementById(
-            "auditModuleFilter"
-        );
-
-    const actionFilter =
-        document.getElementById(
-            "auditActionFilter"
-        );
-
-    const roleFilter =
-        document.getElementById(
-            "auditRoleFilter"
-        );
-
-    const dateFilter =
-        document.getElementById(
-            "auditDateFilter"
-        );
-
-    const resetButton =
-        document.getElementById(
-            "resetAuditButton"
-        );
-
-    const tableBody =
-        document.getElementById(
-            "auditTableBody"
-        );
-
-    const emptyState =
-        document.getElementById(
-            "auditEmptyState"
-        );
-
-    const visibleAuditCount =
-        document.getElementById(
-            "visibleAuditCount"
-        );
-
-    const message =
-        document.getElementById(
-            "auditMessage"
-        );
-
-
-    /* SUMMARY ELEMENTS */
-
-    const totalAuditCount =
-        document.getElementById(
-            "totalAuditCount"
-        );
-
-    const todayAuditCount =
-        document.getElementById(
-            "todayAuditCount"
-        );
-
-    const createAuditCount =
-        document.getElementById(
-            "createAuditCount"
-        );
-
-    const updateAuditCount =
-        document.getElementById(
-            "updateAuditCount"
-        );
-
-    const deleteAuditCount =
-        document.getElementById(
-            "deleteAuditCount"
-        );
-
-
-    /* =====================================================
-       ADMIN SESSION CHECK
-       ===================================================== */
-
-    const currentUser = JSON.parse(
-        sessionStorage.getItem(
-            "vetCurrentUser"
-        )
-    );
-
-
-    if (
-        !currentUser ||
-        currentUser.role !== "Administrator"
-    ) {
-
-        window.location.href =
-            "../../index.html";
-
+    if (!currentUser || !["admin", "administrator"].includes(role)) {
+        window.location.replace("/index.html");
         return;
     }
 
+    const getElement = id => document.getElementById(id);
 
-    /* =====================================================
-       DISPLAY ADMINISTRATOR
-       ===================================================== */
+    const userName = getElement("userName");
+    const userRole = getElement("userRole");
+    const userAvatar = getElement("userAvatar");
+    const logoutButton = getElement("logoutButton");
+
+    const refreshButton = getElement("refreshAuditButton");
+    const searchInput = getElement("auditSearch");
+    const moduleFilter = getElement("auditModuleFilter");
+    const actionFilter = getElement("auditActionFilter");
+    const roleFilter = getElement("auditRoleFilter");
+    const dateFilter = getElement("auditDateFilter");
+    const resetButton = getElement("resetAuditButton");
+
+    const tableBody = getElement("auditTableBody");
+    const emptyState = getElement("auditEmptyState");
+    const visibleAuditCount = getElement("visibleAuditCount");
+    const message = getElement("auditMessage");
+
+    const totalAuditCount = getElement("totalAuditCount");
+    const todayAuditCount = getElement("todayAuditCount");
+    const createAuditCount = getElement("createAuditCount");
+    const updateAuditCount = getElement("updateAuditCount");
+    const deleteAuditCount = getElement("deleteAuditCount");
 
     const administratorName =
         currentUser.fullName ||
         currentUser.username ||
         "Administrator";
 
-
-    userName.textContent =
-        administratorName;
-
-    userRole.textContent =
-        "Administrator";
-
+    userName.textContent = administratorName;
+    userRole.textContent = "Administrator";
     userAvatar.textContent =
-        administratorName
-            .charAt(0)
-            .toUpperCase();
+        administratorName.trim().charAt(0).toUpperCase() || "A";
 
-
-    /* =====================================================
-       STORAGE
-       ===================================================== */
-
-    const STORAGE_KEY =
-        "vetAuditLogs";
-
+    let currentPage = 1;
+    const pageSize = 25;
+    let totalPages = 0;
+    let totalMatchingLogs = 0;
+    let requestNumber = 0;
+    let searchTimer = null;
 
     /* =====================================================
-       GET TODAY
+       PAGINATION CONTROLS
        ===================================================== */
 
-    function getTodayString() {
+    const tablePanel = document.querySelector(".audit-table-panel");
+    const pagination = document.createElement("div");
+    pagination.className = "audit-pagination";
+    pagination.setAttribute("aria-label", "Audit log pagination");
 
-        const today =
-            new Date();
+    const previousButton = document.createElement("button");
+    previousButton.type = "button";
+    previousButton.className = "audit-pagination-button";
+    previousButton.textContent = "Previous";
 
-        const year =
-            today.getFullYear();
+    const pageStatus = document.createElement("span");
+    pageStatus.className = "audit-pagination-status";
+    pageStatus.setAttribute("aria-live", "polite");
 
-        const month =
-            String(
-                today.getMonth() + 1
-            ).padStart(2, "0");
+    const nextButton = document.createElement("button");
+    nextButton.type = "button";
+    nextButton.className = "audit-pagination-button";
+    nextButton.textContent = "Next";
 
-        const day =
-            String(
-                today.getDate()
-            ).padStart(2, "0");
+    pagination.append(previousButton, pageStatus, nextButton);
 
-
-        return `${year}-${month}-${day}`;
+    if (tablePanel) {
+        tablePanel.insertAdjacentElement("afterend", pagination);
     }
 
-
     /* =====================================================
-       CREATE DEMO AUDIT LOGS
+       HELPERS
        ===================================================== */
 
-    function createDemoLogs() {
+    function setMessage(text) {
+        message.textContent = text;
+    }
 
-        const saved =
-            localStorage.getItem(
-                STORAGE_KEY
+    function createCell(value) {
+        const cell = document.createElement("td");
+        cell.textContent =
+            value === null || value === undefined || value === ""
+                ? "—"
+                : String(value);
+        return cell;
+    }
+
+    function formatDateTime(value) {
+        if (!value) return "—";
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return String(value);
+        }
+
+        return date.toLocaleString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+        });
+    }
+
+    function updateSummary(data) {
+        totalAuditCount.textContent = data.total ?? 0;
+        todayAuditCount.textContent = data.today ?? 0;
+        createAuditCount.textContent = data.creates ?? 0;
+        updateAuditCount.textContent = data.updates ?? 0;
+        deleteAuditCount.textContent = data.deletes ?? 0;
+    }
+
+    function renderPagination() {
+        const displayPages = Math.max(1, totalPages);
+
+        pageStatus.textContent =
+            `Page ${currentPage} of ${displayPages} · ` +
+            `${totalMatchingLogs} matching logs`;
+
+        previousButton.disabled = currentPage <= 1;
+        nextButton.disabled =
+            totalPages === 0 || currentPage >= totalPages;
+    }
+
+    /* =====================================================
+       RENDER DATABASE RECORDS
+       ===================================================== */
+
+    function renderLogs(logs) {
+        tableBody.replaceChildren();
+
+        for (const log of logs) {
+            const row = document.createElement("tr");
+
+            row.appendChild(createCell(log.auditID));
+            row.appendChild(createCell(formatDateTime(log.createdAt)));
+
+            const userCell = document.createElement("td");
+            const name = document.createElement("strong");
+            const username = document.createElement("small");
+
+            name.textContent =
+                log.fullName || log.username || `User ${log.userID}`;
+
+            username.textContent = log.username
+                ? `@${log.username}`
+                : `User ID: ${log.userID}`;
+
+            userCell.append(name, document.createElement("br"), username);
+            row.appendChild(userCell);
+
+            row.appendChild(createCell(log.role));
+            row.appendChild(createCell(log.module));
+
+            const actionCell = document.createElement("td");
+            const actionBadge = document.createElement("span");
+
+            const actionText = String(log.action || "").toUpperCase();
+            actionBadge.className =
+                `audit-action ${actionText.toLowerCase()}`;
+            actionBadge.textContent = actionText || "—";
+
+            actionCell.appendChild(actionBadge);
+            row.appendChild(actionCell);
+
+            row.appendChild(createCell(log.recordID));
+            row.appendChild(createCell(log.description));
+
+            tableBody.appendChild(row);
+        }
+
+        visibleAuditCount.textContent = logs.length;
+        emptyState.style.display = logs.length === 0 ? "block" : "none";
+    }
+
+    /* =====================================================
+       LOAD SUMMARY
+       ===================================================== */
+
+    async function loadSummary() {
+        const response = await fetch("/api/audit-logs/summary", {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store",
+            headers: { Accept: "application/json" }
+        });
+
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok || result?.success !== true) {
+            throw new Error(
+                result?.message || "Unable to retrieve audit summary."
+            );
+        }
+
+        updateSummary(result.data);
+    }
+
+    /* =====================================================
+       BUILD FILTER QUERY
+       ===================================================== */
+
+    function buildQuery() {
+        const params = new URLSearchParams();
+
+        params.set("page", String(currentPage));
+        params.set("limit", String(pageSize));
+
+        const search = searchInput.value.trim();
+        const moduleName = moduleFilter.value;
+        const action = actionFilter.value;
+        const selectedRole = roleFilter.value;
+        const date = dateFilter.value;
+
+        if (search) {
+            params.set("search", search);
+        }
+
+        if (moduleName && moduleName !== "all") {
+            params.set("module", moduleName.toLowerCase());
+        }
+
+        if (action && action !== "all") {
+            params.set("action", action.toUpperCase());
+        }
+
+        if (selectedRole && selectedRole !== "all") {
+            params.set("role", selectedRole.toLowerCase());
+        }
+
+        if (date) {
+            params.set("date", date);
+        }
+
+        return params;
+    }
+
+    /* =====================================================
+       LOAD LOGS FROM API
+       ===================================================== */
+
+    async function loadLogs(resetPage = false) {
+        if (resetPage) {
+            currentPage = 1;
+        }
+
+        const requestId = ++requestNumber;
+
+        refreshButton.disabled = true;
+        setMessage("Loading audit logs...");
+
+        try {
+            const query = buildQuery();
+
+            const response = await fetch(
+                `/api/audit-logs?${query.toString()}`,
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: { Accept: "application/json" }
+                }
             );
 
+            const result = await response.json().catch(() => null);
 
-        if (saved) {
-
-            try {
-
-                return JSON.parse(saved);
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to read audit logs:",
-                    error
+            if (!response.ok || result?.success !== true) {
+                throw new Error(
+                    result?.message ||
+                    `Unable to load audit logs (HTTP ${response.status}).`
                 );
             }
-        }
 
-
-        const now =
-            new Date();
-
-
-        const createTimestamp =
-            new Date(
-                now.getTime() -
-                90 * 60000
-            );
-
-        const updateTimestamp =
-            new Date(
-                now.getTime() -
-                55 * 60000
-            );
-
-        const medicalTimestamp =
-            new Date(
-                now.getTime() -
-                35 * 60000
-            );
-
-        const vaccinationTimestamp =
-            new Date(
-                now.getTime() -
-                18 * 60000
-            );
-
-        const loginTimestamp =
-            new Date(
-                now.getTime() -
-                120 * 60000
-            );
-
-
-        const demoLogs = [
-
-            {
-                auditId:
-                    "LOG-0001",
-
-                timestamp:
-                    loginTimestamp.toISOString(),
-
-                userId:
-                    "USR-0001",
-
-                username:
-                    "frontdesk",
-
-                fullName:
-                    "Front Desk",
-
-                role:
-                    "Front Desk",
-
-                module:
-                    "Authentication",
-
-                action:
-                    "Login",
-
-                recordId:
-                    "—",
-
-                description:
-                    "Front Desk user logged into the Client System."
-            },
-
-
-            {
-                auditId:
-                    "LOG-0002",
-
-                timestamp:
-                    createTimestamp.toISOString(),
-
-                userId:
-                    "USR-0001",
-
-                username:
-                    "frontdesk",
-
-                fullName:
-                    "Front Desk",
-
-                role:
-                    "Front Desk",
-
-                module:
-                    "Owners",
-
-                action:
-                    "Create",
-
-                recordId:
-                    "OWN-0001",
-
-                description:
-                    "Created a new owner record."
-            },
-
-
-            {
-                auditId:
-                    "LOG-0003",
-
-                timestamp:
-                    updateTimestamp.toISOString(),
-
-                userId:
-                    "USR-0001",
-
-                username:
-                    "frontdesk",
-
-                fullName:
-                    "Front Desk",
-
-                role:
-                    "Front Desk",
-
-                module:
-                    "Pets",
-
-                action:
-                    "Update",
-
-                recordId:
-                    "PET-0001",
-
-                description:
-                    "Updated an existing pet record."
-            },
-
-
-            {
-                auditId:
-                    "LOG-0004",
-
-                timestamp:
-                    medicalTimestamp.toISOString(),
-
-                userId:
-                    "USR-0002",
-
-                username:
-                    "veterinarian",
-
-                fullName:
-                    "Veterinarian",
-
-                role:
-                    "Veterinarian",
-
-                module:
-                    "Medical Records",
-
-                action:
-                    "Create",
-
-                recordId:
-                    "MED-0001",
-
-                description:
-                    "Created a new medical record."
-            },
-
-
-            {
-                auditId:
-                    "LOG-0005",
-
-                timestamp:
-                    vaccinationTimestamp.toISOString(),
-
-                userId:
-                    "USR-0002",
-
-                username:
-                    "veterinarian",
-
-                fullName:
-                    "Veterinarian",
-
-                role:
-                    "Veterinarian",
-
-                module:
-                    "Vaccinations",
-
-                action:
-                    "Create",
-
-                recordId:
-                    "VAC-0001",
-
-                description:
-                    "Created a new vaccination record."
+            if (requestId !== requestNumber) {
+                return;
             }
 
-        ];
+            const logs = Array.isArray(result.data) ? result.data : [];
+            const pageInfo = result.pagination || {};
 
+            currentPage = Number(pageInfo.page) || 1;
+            totalPages = Number(pageInfo.totalPages) || 0;
+            totalMatchingLogs = Number(pageInfo.total) || 0;
 
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(demoLogs)
-        );
+            renderLogs(logs);
+            renderPagination();
 
-
-        return demoLogs;
-    }
-
-
-    /* =====================================================
-       GET LOGS
-       ===================================================== */
-
-    function getLogs() {
-
-        return createDemoLogs();
-
-    }
-
-
-    /* =====================================================
-       SAVE LOGS
-       ===================================================== */
-
-    function saveLogs(logs) {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(logs)
-        );
-    }
-
-
-    /* =====================================================
-       FORMAT DATE AND TIME
-       ===================================================== */
-
-    function formatDateTime(
-        timestamp
-    ) {
-
-        const date =
-            new Date(timestamp);
-
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            return "—";
-        }
-
-
-        return date.toLocaleString(
-            "en-US",
-            {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "numeric",
-                minute: "2-digit"
-            }
-        );
-    }
-
-
-    /* =====================================================
-       ACTION CLASS
-       ===================================================== */
-
-    function getActionClass(
-        action
-    ) {
-
-        return action
-            .toLowerCase()
-            .replace(
-                /\s+/g,
-                "-"
+            setMessage(
+                `Loaded ${logs.length} audit logs on this page.`
             );
-    }
-
-
-    /* =====================================================
-       UPDATE SUMMARY
-       ===================================================== */
-
-    function updateSummary(
-        logs
-    ) {
-
-        const today =
-            getTodayString();
-
-
-        totalAuditCount.textContent =
-            logs.length;
-
-
-        todayAuditCount.textContent =
-            logs.filter(log =>
-                log.timestamp
-                    .startsWith(today)
-            ).length;
-
-
-        createAuditCount.textContent =
-            logs.filter(
-                log =>
-                    log.action === "Create"
-            ).length;
-
-
-        updateAuditCount.textContent =
-            logs.filter(
-                log =>
-                    log.action === "Update"
-            ).length;
-
-
-        deleteAuditCount.textContent =
-            logs.filter(
-                log =>
-                    log.action === "Delete"
-            ).length;
-    }
-
-
-    /* =====================================================
-       RENDER TABLE
-       ===================================================== */
-
-    function renderLogs() {
-
-        const logs =
-            getLogs();
-
-
-        const searchTerm =
-            searchInput.value
-                .trim()
-                .toLowerCase();
-
-        const selectedModule =
-            moduleFilter.value;
-
-        const selectedAction =
-            actionFilter.value;
-
-        const selectedRole =
-            roleFilter.value;
-
-        const selectedDate =
-            dateFilter.value;
-
-
-        const filteredLogs =
-            logs
-                .filter(log => {
-
-                    const matchesSearch =
-                        !searchTerm ||
-                        log.auditId
-                            .toLowerCase()
-                            .includes(searchTerm) ||
-                        log.userId
-                            .toLowerCase()
-                            .includes(searchTerm) ||
-                        log.username
-                            .toLowerCase()
-                            .includes(searchTerm) ||
-                        log.fullName
-                            .toLowerCase()
-                            .includes(searchTerm) ||
-                        log.recordId
-                            .toLowerCase()
-                            .includes(searchTerm) ||
-                        log.description
-                            .toLowerCase()
-                            .includes(searchTerm);
-
-
-                    const matchesModule =
-                        selectedModule === "all" ||
-                        log.module === selectedModule;
-
-
-                    const matchesAction =
-                        selectedAction === "all" ||
-                        log.action === selectedAction;
-
-
-                    const matchesRole =
-                        selectedRole === "all" ||
-                        log.role === selectedRole;
-
-
-                    const logDate =
-                        log.timestamp
-                            .substring(0, 10);
-
-
-                    const matchesDate =
-                        !selectedDate ||
-                        logDate === selectedDate;
-
-
-                    return (
-                        matchesSearch &&
-                        matchesModule &&
-                        matchesAction &&
-                        matchesRole &&
-                        matchesDate
-                    );
-
-                })
-                .sort(
-                    (a, b) =>
-                        new Date(b.timestamp) -
-                        new Date(a.timestamp)
-                );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        filteredLogs.forEach(
-            log => {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                const actionClass =
-                    getActionClass(
-                        log.action
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${escapeHtml(
-                            log.auditId
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatDateTime(
-                            log.timestamp
-                        )}
-                    </td>
-
-                    <td>
-
-                        <strong>
-                            ${escapeHtml(
-                                log.fullName
-                            )}
-                        </strong>
-
-                        <br>
-
-                        <small>
-                            @${escapeHtml(
-                                log.username
-                            )}
-                        </small>
-
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            log.role
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            log.module
-                        )}
-                    </td>
-
-                    <td>
-
-                        <span
-                            class="audit-action ${actionClass}"
-                        >
-                            ${escapeHtml(
-                                log.action
-                            )}
-                        </span>
-
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            log.recordId
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            log.description
-                        )}
-                    </td>
-
-                `;
-
-
-                tableBody.appendChild(
-                    row
-                );
-
+        } catch (error) {
+            if (requestId !== requestNumber) {
+                return;
             }
-        );
 
+            console.error("Audit log loading failed:", error);
 
-        updateSummary(logs);
+            tableBody.replaceChildren();
+            visibleAuditCount.textContent = "0";
+            totalMatchingLogs = 0;
+            totalPages = 0;
 
-
-        visibleAuditCount.textContent =
-            filteredLogs.length;
-
-
-        if (
-            filteredLogs.length === 0
-        ) {
-
-            emptyState.style.display =
-                "block";
-
-        } else {
-
-            emptyState.style.display =
-                "none";
+            emptyState.style.display = "block";
+            setMessage(error.message || "Unable to load audit logs.");
+            renderPagination();
+        } finally {
+            if (requestId === requestNumber) {
+                refreshButton.disabled = false;
+            }
         }
-
     }
 
-
     /* =====================================================
-       ESCAPE HTML
+       FILTER EVENTS
        ===================================================== */
 
-    function escapeHtml(
-        value
-    ) {
+    searchInput.addEventListener("input", () => {
+        clearTimeout(searchTimer);
 
-        return String(value)
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-    }
+        searchTimer = setTimeout(() => {
+            loadLogs(true);
+        }, 300);
+    });
 
+    moduleFilter.addEventListener("change", () => loadLogs(true));
+    actionFilter.addEventListener("change", () => loadLogs(true));
+    roleFilter.addEventListener("change", () => loadLogs(true));
+    dateFilter.addEventListener("change", () => loadLogs(true));
+
+    resetButton.addEventListener("click", () => {
+        clearTimeout(searchTimer);
+
+        searchInput.value = "";
+        moduleFilter.value = "all";
+        actionFilter.value = "all";
+        roleFilter.value = "all";
+        dateFilter.value = "";
+
+        loadLogs(true);
+    });
 
     /* =====================================================
-       RESET FILTERS
+       PAGINATION EVENTS
        ===================================================== */
 
-    resetButton.addEventListener(
-        "click",
-        () => {
-
-            searchInput.value =
-                "";
-
-            moduleFilter.value =
-                "all";
-
-            actionFilter.value =
-                "all";
-
-            roleFilter.value =
-                "all";
-
-            dateFilter.value =
-                "";
-
-            message.textContent =
-                "Filters have been reset.";
-
-            renderLogs();
-
+    previousButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage -= 1;
+            loadLogs();
         }
-    );
+    });
 
-
-    /* =====================================================
-       LIVE FILTERS
-       ===================================================== */
-
-    searchInput.addEventListener(
-        "input",
-        renderLogs
-    );
-
-    moduleFilter.addEventListener(
-        "change",
-        renderLogs
-    );
-
-    actionFilter.addEventListener(
-        "change",
-        renderLogs
-    );
-
-    roleFilter.addEventListener(
-        "change",
-        renderLogs
-    );
-
-    dateFilter.addEventListener(
-        "change",
-        renderLogs
-    );
-
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage += 1;
+            loadLogs();
+        }
+    });
 
     /* =====================================================
        REFRESH
        ===================================================== */
 
-    refreshButton.addEventListener(
-        "click",
-        () => {
+    refreshButton.addEventListener("click", async () => {
+        setMessage("Refreshing audit logs...");
 
-            message.textContent =
-                "Audit logs refreshed.";
-
-            renderLogs();
-
+        try {
+            await loadSummary();
+        } catch (error) {
+            console.error("Audit summary refresh failed:", error);
         }
-    );
 
+        await loadLogs(true);
+    });
 
     /* =====================================================
        LOGOUT
        ===================================================== */
 
-    logoutButton.addEventListener(
-        "click",
-        () => {
-
-            sessionStorage.removeItem(
-                "vetCurrentUser"
-            );
-
-            window.location.href =
-                "../../index.html";
+    logoutButton.addEventListener("click", async () => {
+        if (!confirm("Are you sure you want to logout?")) {
+            return;
         }
-    );
 
+        logoutButton.disabled = true;
+
+        try {
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "same-origin"
+            });
+
+            const result = await response.json().catch(() => null);
+
+            if (!response.ok || result?.success !== true) {
+                throw new Error(result?.message || "Logout failed.");
+            }
+
+            sessionStorage.clear();
+            window.location.replace("/index.html");
+        } catch (error) {
+            console.error("Logout error:", error);
+            alert("Unable to logout. Please try again.");
+            logoutButton.disabled = false;
+        }
+    });
 
     /* =====================================================
        INITIAL LOAD
        ===================================================== */
 
-    renderLogs();
+    async function initialize() {
+        try {
+            await loadSummary();
+        } catch (error) {
+            console.error("Audit summary loading failed:", error);
+            setMessage("Audit logs are loading, but summary counts are unavailable.");
+        }
 
+        await loadLogs(true);
+    }
+
+    initialize();
 });

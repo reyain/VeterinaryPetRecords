@@ -57,38 +57,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
     welcomeMessage.textContent =
         `Welcome, ${name}`;
+/* =====================================================
+   LIVE DASHBOARD DATA
+   ===================================================== */
 
+const staffCount = document.getElementById("staffAccountCount");
+const onlineCount = document.getElementById("onlineUserCount");
+const petCount = document.getElementById("petCount");
+const auditCount = document.getElementById("auditLogCount");
+const webStatus = document.getElementById("webServerStatus");
+const dbStatus = document.getElementById("databaseStatus");
 
-    /* =====================================================
-       TEMPORARY DASHBOARD VALUES
-       ===================================================== */
+// These APIs are not implemented yet.
+staffCount.textContent = "N/A";
+onlineCount.textContent = "N/A";
+auditCount.textContent = "N/A";
 
-    document.getElementById(
-        "staffAccountCount"
-    ).textContent = "0";
+staffCount.title = "Staff account API is not implemented yet.";
+onlineCount.title = "Online user monitoring API is not implemented yet.";
+auditCount.title = "Audit log API is not implemented yet.";
 
-    document.getElementById(
-        "onlineUserCount"
-    ).textContent = "0";
+// Show loading states while checking the live services.
+petCount.textContent = "Loading...";
+webStatus.textContent = "Checking...";
+dbStatus.textContent = "Checking...";
 
-    document.getElementById(
-        "petCount"
-    ).textContent = "0";
+async function fetchDashboardData(url) {
+    const response = await fetch(url, {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+            Accept: "application/json"
+        },
+        cache: "no-store"
+    });
 
-    document.getElementById(
-        "auditLogCount"
-    ).textContent = "0";
+    const result = await response.json().catch(() => null);
 
+    if (!response.ok) {
+        throw new Error(
+            result?.message || `Request failed: HTTP ${response.status}`
+        );
+    }
 
-    /* =====================================================
-       TEMPORARY SERVER STATUS
-       ===================================================== */
+    return result;
+}
 
-    document.getElementById(
-        "databaseStatus"
-    ).textContent = "Not Connected";
+// Check the Node.js application.
+fetchDashboardData("/api/health")
+    .then(result => {
+        webStatus.textContent =
+            result.success && result.status === "running"
+                ? "Running"
+                : "Unavailable";
+    })
+    .catch(error => {
+        console.error("Unable to check web server:", error);
+        webStatus.textContent = "Unavailable";
+    });
 
+// Check the actual MySQL connection.
+fetchDashboardData("/api/test-db")
+    .then(result => {
+        dbStatus.textContent =
+            result.success === true
+                ? "Connected"
+                : "Not Connected";
+    })
+    .catch(error => {
+        console.error("Unable to check database:", error);
+        dbStatus.textContent = "Not Connected";
+    });
 
+// Load the actual registered-pet count.
+fetchDashboardData("/api/pets")
+    .then(result => {
+        if (!result.success || !Array.isArray(result.data)) {
+            throw new Error("Unexpected pets API response.");
+        }
+
+        petCount.textContent = String(result.data.length);
+    })
+    .catch(error => {
+        console.error("Unable to load pet count:", error);
+        petCount.textContent = "Unavailable";
+    });
+    
     /* =====================================================
        LOGOUT
        ===================================================== */

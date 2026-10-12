@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veterinary Records Viewer - Administrator</title>
+
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/server-dashboard.css">
+    <link rel="stylesheet" href="../../css/server-records-viewer.css">
+    <script src="../../js/server-records-viewer.js" defer></script>
+</head>
+
+<body class="server-page">
+<div class="server-layout">
+
+    <aside class="server-sidebar">
+        <div class="server-brand">
+            <div class="server-brand-icon" aria-hidden="true">🐾</div>
+            <div class="server-brand-text">
+                <h2>VetPet Records</h2>
+                <span>Administrator</span>
+            </div>
+        </div>
+
+        <nav class="server-navigation">
+            <p class="server-navigation-title">ADMINISTRATION</p>
+
+            <a
+                    href="dashboard.html"
+                    class="server-nav-item active"
+                >
+
+                    <span class="server-nav-icon">
+                        📈
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+            <a href="records-viewer.html" class="server-nav-item active">
+                <span class="server-nav-icon" aria-hidden="true">🐾</span>
+                <span>Veterinary Records</span>
+            </a>
+
+            <a
+                    href="staff-accounts.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        👥
+                    </span>
+
+                    <span>
+                        Staff Accounts
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="online-users.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        🟢
+                    </span>
+
+                    <span>
+                        Online Users
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="audit-logs.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📋
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="reports.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        📊
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="server-configuration.html"
+                    class="server-nav-item"
+                >
+
+                    <span class="server-nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Server Configuration
+                    </span>
+
+                </a>
+        </nav>
+
+        <div class="server-sidebar-bottom">
+            <button type="button" class="server-logout-button" id="logoutButton">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="server-main">
+        <header class="server-header">
+            <div>
+                <h1>Veterinary Records Viewer</h1>
+                <p>View registered owners, pets, medical records, and vaccinations.</p>
+            </div>
+
+            <div class="records-viewer-user">
+                <div class="records-viewer-avatar" id="userInitial" aria-hidden="true">A</div>
+                <div class="records-viewer-user-details">
+                    <strong id="userName">Administrator</strong>
+                    <span>Administrator · Read-only access</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="records-viewer-content">
+            <div class="records-viewer-intro">
+                <h2>Veterinary Database Records</h2>
+                <p>
+                    Browse and search existing records. Administrative
+                    accounts cannot create, edit, or delete veterinary records.
+                </p>
+            </div>
+
+            <div class="records-viewer-tabs" role="tablist"
+                 aria-label="Veterinary record categories">
+                <button type="button" class="records-tab active"
+                        data-dataset="owners" role="tab" aria-selected="true">
+                    Owners
+                </button>
+                <button type="button" class="records-tab"
+                        data-dataset="pets" role="tab" aria-selected="false">
+                    Pets
+                </button>
+                <button type="button" class="records-tab"
+                        data-dataset="medicalRecords" role="tab" aria-selected="false">
+                    Medical Records
+                </button>
+                <button type="button" class="records-tab"
+                        data-dataset="vaccinations" role="tab" aria-selected="false">
+                    Vaccinations
+                </button>
+            </div>
+
+            <section class="records-viewer-panel">
+                <div class="records-viewer-toolbar">
+                    <div>
+                        <h2 id="datasetTitle">Owners</h2>
+                        <p id="recordCount">Loading records...</p>
+                    </div>
+
+                    <div class="records-viewer-actions">
+                        <label class="records-search-label" for="recordSearch">
+                            Search records
+                        </label>
+                        <input type="search" id="recordSearch"
+                               placeholder="Search this category...">
+                        <button type="button" id="refreshRecords">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <p id="recordsMessage" role="status" aria-live="polite">
+                    Loading records...
+                </p>
+
+                <div class="records-table-wrapper">
+                    <table class="records-viewer-table">
+                        <thead id="recordsTableHead"></thead>
+                        <tbody id="recordsTableBody"></tbody>
+                    </table>
+                </div>
+
+                <p id="recordsEmpty" hidden>No matching records were found.</p>
+            </section>
+
+            <p class="records-viewer-note">
+                Read-only administrative view. Changes to veterinary records
+                must be performed through an authorized Staff account.
+            </p>
+        </section>
+    </main>
+</div>
+</body>
+</html>

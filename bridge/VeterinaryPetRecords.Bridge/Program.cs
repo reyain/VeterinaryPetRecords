@@ -1,6 +1,7 @@
 
 using System.Reflection;
 using System.Text.Json;
+using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -1983,7 +1984,7 @@ app.MapPost("/api/login", (JsonElement payload) =>
             userType.GetProperty("Status")?.GetValue(user)
         ) ?? "";
 
-        if (!string.Equals(password, storedPassword, StringComparison.Ordinal))
+        if (!VerifyPassword(password, storedPassword))
         {
             return Results.Json(new
             {
@@ -2027,6 +2028,53 @@ app.MapPost("/api/login", (JsonElement payload) =>
     }
 });
 
+static bool VerifyPassword(string submittedPassword, string storedPassword)
+{
+    // Temporary compatibility for existing plaintext passwords.
+    // Reject passwords that are not in the approved hash format.
+    if (!storedPassword.StartsWith("pbkdf2-sha256$", StringComparison.Ordinal))
+    {
+        return false;
+    }
 
+    try
+    {
+        string[] parts = storedPassword.Split('$');
+
+        if (parts.Length != 4 ||
+            parts[0] != "pbkdf2-sha256" ||
+            !int.TryParse(parts[1], out int iterations) ||
+            iterations < 100000 ||
+            iterations > 2000000)
+        {
+            return false;
+        }
+
+        byte[] salt = Convert.FromBase64String(parts[2]);
+        byte[] expectedHash = Convert.FromBase64String(parts[3]);
+
+        if (salt.Length != 16 || expectedHash.Length != 32)
+        {
+            return false;
+        }
+
+        byte[] actualHash = Rfc2898DeriveBytes.Pbkdf2(
+            submittedPassword,
+            salt,
+            iterations,
+            HashAlgorithmName.SHA256,
+            expectedHash.Length
+        );
+
+        return CryptographicOperations.FixedTimeEquals(
+            actualHash,
+            expectedHash
+        );
+    }
+    catch (FormatException)
+    {
+        return false;
+    }
+}
 
 app.Run();

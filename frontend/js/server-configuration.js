@@ -9,24 +9,27 @@ document.addEventListener("DOMContentLoaded", () => {
     /* =====================================================
        ADMIN SESSION
        ===================================================== */
+        const currentUser = (() => {
+            try {
+                return JSON.parse(
+                    sessionStorage.getItem("vetCurrentUser") || "null"
+                );
+            } catch {
+                return null;
+            }
+        })();
 
-    const currentUser = JSON.parse(
-        sessionStorage.getItem(
-            "vetCurrentUser"
-        )
-    );
+        const normalizedRole = String(
+            currentUser?.role || ""
+        ).trim().toLowerCase();
 
-
-    if (
-        !currentUser ||
-        currentUser.role !== "Administrator"
-    ) {
-
-        window.location.href =
-            "../../index.html";
-
-        return;
-    }
+        if (
+            !currentUser ||
+            !["admin", "administrator"].includes(normalizedRole)
+        ) {
+            window.location.replace("/index.html");
+            return;
+        }
 
 
     /* =====================================================
@@ -632,14 +635,27 @@ document.addEventListener("DOMContentLoaded", () => {
         )
         .addEventListener(
             "click",
-            () => {
+            async () => {
 
-                sessionStorage.removeItem(
-                    "vetCurrentUser"
-                );
+                try {
+                    const response = await fetch("/api/auth/logout", {
+                        method: "POST",
+                        credentials: "same-origin"
+                    });
 
-                window.location.href =
-                    "../../index.html";
+                    const result = await response.json().catch(() => null);
+
+                    if (!response.ok || result?.success !== true) {
+                        throw new Error(result?.message || "Logout failed.");
+                    }
+
+                    sessionStorage.clear();
+                    window.location.replace("/index.html");
+
+                } catch (error) {
+                    console.error("Logout error:", error);
+                    alert("Unable to logout. Please try again.");
+                }
 
             }
         );
