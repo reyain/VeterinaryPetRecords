@@ -69,6 +69,274 @@ function requireStaff(req, res, next) {
 
 
 /* =====================================================
+   AUTOMATIC AUDIT LOGGING
+   ===================================================== */
+
+const VALID_AUDIT_ACTIONS = new Set([
+    "LOGIN",
+    "LOGOUT",
+    "CREATE",
+    "UPDATE",
+    "DELETE"
+]);
+
+function getAuditModule(bridgePath) {
+    const path = String(bridgePath || "").toLowerCase();
+
+    if (/^\/api\/owners(?:\/|$)/.test(path)) {
+        return "Owner";
+    }
+
+    if (/^\/api\/pets(?:\/|$)/.test(path)) {
+        return "Pet";
+    }
+
+    if (/^\/api\/medical-records(?:\/|$)/.test(path)) {
+        return "Medical Record";
+    }
+
+    if (/^\/api\/vaccinations(?:\/|$)/.test(path)) {
+        return "Vaccination";
+    }
+
+    return null;
+}
+
+function normalizeAuditRecordId(value) {
+    const id = Number(value);
+
+    if (
+        Number.isSafeInteger(id) &&
+        id > 0 &&
+        id <= 2147483647
+    ) {
+        return id;
+    }
+
+    return null;
+}
+
+function extractAuditRecordId(bridgePath, responseBody) {
+    const pathMatch = String(bridgePath || "").match(
+        /\/(?:owners|pets|medical-records|vaccinations)\/(\d+)(?:\/|$)/i
+    );
+
+    if (pathMatch) {
+        return normalizeAuditRecordId(pathMatch[1]);
+    }
+
+    let data =
+        responseBody?.data ??
+        responseBody?.Data ??
+        responseBody;
+
+    if (Array.isArray(data)) {
+        data = data[0];
+    }
+
+    if (!data || typeof data !== "object") {
+        return null;
+    }
+
+    const possibleIdNames = new Set([
+        "ownerid",
+        "petid",
+        "medicalrecordid",
+        "vaccinationid",
+        "recordid",
+        "id"
+    ]);
+
+    for (const [key, value] of Object.entries(data)) {
+        if (possibleIdNames.has(key.toLowerCase())) {
+            const id = normalizeAuditRecordId(value);
+
+            if (id !== null) {
+                return id;
+            }
+        }
+    }
+
+    return null;
+}
+
+function getAuditClientType(req) {
+    const role = String(
+        req.session?.user?.role || ""
+    ).trim().toLowerCase();
+
+    if (role === "veterinarian" || role === "vet") {
+        return "Veterinarian";
+    }
+
+    if (role === "staff" || role === "front desk") {
+        return "Front Desk";
+    }
+
+    return "Server";
+}
+
+async function recordAuditEvent(req, event) {
+    try {
+        const userId = Number(req.session?.user?.userId);
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0 ||
+            !VALID_AUDIT_ACTIONS.has(event.action)
+        ) {
+            return false;
+        }
+
+        const moduleName = String(
+            event.module || ""
+        ).trim().slice(0, 50);
+
+        if (!moduleName) {
+            return false;
+        }
+
+        const recordId =
+            normalizeAuditRecordId(event.recordId);
+
+        let clientIp =
+            req.ip ||
+            req.socket?.remoteAddress ||
+            null;
+
+        if (clientIp) {
+            clientIp = String(clientIp);
+
+            if (clientIp.startsWith("::ffff:")) {
+                clientIp = clientIp.slice(7);
+            }
+
+            clientIp = clientIp.slice(0, 45);
+        }
+
+        await db.execute(
+            `INSERT INTO audit_logs (
+                user_id,
+                action,
+                module,
+                record_id,
+                description,
+                old_values,
+                new_values,
+                client_type,
+                computer_name,
+                client_ip
+            ) VALUES (?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?)`,
+            [
+                userId,
+                event.action,
+                moduleName,
+                recordId,
+                String(event.description || "System activity")
+                    .slice(0, 255),
+                getAuditClientType(req),
+                "WEB APPLICATION",
+                clientIp
+            ]
+        );
+
+        return true;
+    } catch (error) {
+        // Audit failures should not turn a successful business
+        // operation into a failed login or record update.
+        console.error(
+            "Audit log write failed:",
+            error.message
+        );
+
+        return false;
+    }
+}
+
+async function auditSuccessfulBridgeWrite(
+    req,
+    bridgePath,
+    bridgeResponse,
+    responseBody
+) {
+    if (!bridgeResponse.ok) {
+        return;
+    }
+
+    const method = String(req.method || "").toUpperCase();
+
+    const actionsByMethod = {
+        POST: "CREATE",
+        PUT: "UPDATE",
+        PATCH: "UPDATE",
+        DELETE: "DELETE"
+    };
+
+    const action = actionsByMethod[method];
+
+    if (!action) {
+        return;
+    }
+
+    const moduleName = getAuditModule(bridgePath);
+
+    // Only audit the veterinary record modules supported here.
+    if (!moduleName) {
+        return;
+    }
+
+    let parsedBody = null;
+
+    try {
+        parsedBody = responseBody
+            ? JSON.parse(responseBody)
+            : null;
+    } catch {
+        // An empty or non-JSON success response can still
+        // represent a successful DELETE.
+    }
+
+    if (parsedBody?.success === false) {
+        return;
+    }
+
+    const recordId = extractAuditRecordId(
+        bridgePath,
+        parsedBody
+    );
+
+    const verbs = {
+    CREATE: "Created",
+    UPDATE: "Updated",
+    DELETE: "Deleted"
+};
+
+    const recordNouns = {
+        Owner: "owner",
+        Pet: "pet",
+        "Medical Record": "medical",
+        Vaccination: "vaccination"
+    };
+
+    const recordNoun =
+        recordNouns[moduleName] || moduleName.toLowerCase();
+
+    const idDescription = recordId
+        ? ` #${recordId}`
+        : "";
+
+    await recordAuditEvent(req, {
+        action,
+        module: moduleName,
+        recordId,
+        description:
+            `${verbs[action]} ${recordNoun} record` +
+            `${idDescription} through the web application.`
+    });
+}
+
+
+/* =====================================================
    HELPER TO FORWARD REQUESTS TO THE C# BRIDGE
    ===================================================== */
 /* =====================================================
@@ -89,7 +357,13 @@ const loginRateLimiter = rateLimit({
     }
 });
 
-async function proxyBridgeRequest(req, res, bridgePath, bodyOverride = undefined) {
+
+async function proxyBridgeRequest(
+    req,
+    res,
+    bridgePath,
+    bodyOverride = undefined
+) {
     try {
         const options = {
             method: req.method,
@@ -101,7 +375,9 @@ async function proxyBridgeRequest(req, res, bridgePath, bodyOverride = undefined
 
         if (["POST", "PUT", "PATCH"].includes(req.method)) {
             options.headers["Content-Type"] = "application/json";
-            options.body = JSON.stringify(bodyOverride ?? req.body ?? {});
+            options.body = JSON.stringify(
+                bodyOverride ?? req.body ?? {}
+            );
         }
 
         const bridgeResponse = await fetch(
@@ -110,15 +386,30 @@ async function proxyBridgeRequest(req, res, bridgePath, bodyOverride = undefined
         );
 
         const responseBody = await bridgeResponse.text();
-        const contentType = bridgeResponse.headers.get("content-type");
+        const contentType =
+            bridgeResponse.headers.get("content-type");
+
+        // Best-effort audit logging after a successful write.
+        // Audit failures are handled inside the audit helper.
+        await auditSuccessfulBridgeWrite(
+            req,
+            bridgePath,
+            bridgeResponse,
+            responseBody
+        );
 
         if (contentType) {
             res.setHeader("Content-Type", contentType);
         }
 
-        return res.status(bridgeResponse.status).send(responseBody);
+        return res
+            .status(bridgeResponse.status)
+            .send(responseBody);
     } catch (error) {
-        console.error("C# Bridge request failed:", error.message);
+        console.error(
+            "C# Bridge request failed:",
+            error.message
+        );
 
         return res.status(503).json({
             success: false,
@@ -128,6 +419,7 @@ async function proxyBridgeRequest(req, res, bridgePath, bodyOverride = undefined
         });
     }
 }
+
 
 /* =====================================================
    SECURE RECORD WRITES
@@ -317,11 +609,161 @@ router.post(
     notImplemented("Staff password reset")
 );
 
-router.get(
-    "/online-users",
-    requireAdmin,
-    notImplemented("Online user monitoring")
-);
+
+/* =====================================================
+   ONLINE USERS — ADMINISTRATOR ONLY
+   Reads active Express web sessions.
+   Never exposes session IDs or serialized session data.
+   ===================================================== */
+
+router.get("/online-users", requireAdmin, async (req, res) => {
+    try {
+        // express-mysql-session stores expiration as Unix seconds.
+        const nowSeconds = Math.floor(Date.now() / 1000);
+
+        const [sessionRows] = await db.execute(
+            `SELECT session_id, expires, data
+             FROM sessions
+             WHERE expires > ?
+             ORDER BY expires DESC`,
+            [nowSeconds]
+        );
+
+        // Parse server-side session data privately.
+        // Do not send the raw data or session IDs to the browser.
+        const parsedSessions = [];
+
+        for (const row of sessionRows) {
+            try {
+                const serializedData = Buffer.isBuffer(row.data)
+                    ? row.data.toString("utf8")
+                    : row.data;
+
+                const sessionData =
+                    typeof serializedData === "string"
+                        ? JSON.parse(serializedData)
+                        : serializedData;
+
+                const sessionUser = sessionData?.user;
+                const userId = Number(sessionUser?.userId);
+
+                if (
+                    !Number.isSafeInteger(userId) ||
+                    userId <= 0
+                ) {
+                    continue;
+                }
+
+                parsedSessions.push({
+                    userId,
+                    expires: Number(row.expires),
+                    sessionUsername: String(
+                        sessionUser.username || ""
+                    ),
+                    sessionFullName: String(
+                        sessionUser.fullName || ""
+                    )
+                });
+            } catch {
+                // Ignore malformed session entries without exposing them.
+            }
+        }
+
+        const userIds = [
+            ...new Set(parsedSessions.map(item => item.userId))
+        ];
+
+        let databaseUsers = [];
+
+        if (userIds.length > 0) {
+            const placeholders = userIds.map(() => "?").join(", ");
+
+            const [users] = await db.execute(
+                `SELECT
+                    user_id AS userId,
+                    username,
+                    full_name AS fullName,
+                    role,
+                    status AS accountStatus
+                 FROM users
+                 WHERE user_id IN (${placeholders})`,
+                userIds
+            );
+
+            databaseUsers = users;
+        }
+
+        const userMap = new Map(
+            databaseUsers.map(user => [
+                Number(user.userId),
+                user
+            ])
+        );
+
+        const onlineUsers = parsedSessions
+            .map(session => {
+                const user = userMap.get(session.userId);
+
+                // Do not display orphaned sessions for removed accounts.
+                if (!user) {
+                    return null;
+                }
+
+                return {
+                    userId: user.userId,
+                    username:
+                        user.username ||
+                        session.sessionUsername,
+                    fullName:
+                        user.fullName ||
+                        session.sessionFullName ||
+                        user.username,
+                    role: user.role || "Unknown",
+                    accountStatus: user.accountStatus || "Unknown",
+                    status: "Online",
+                    sessionExpiresAt: new Date(
+                        session.expires * 1000
+                    ).toISOString()
+                };
+            })
+            .filter(Boolean);
+
+        const staffCount = onlineUsers.filter(
+            user => String(user.role).trim().toLowerCase() === "staff"
+        ).length;
+
+        const administratorCount = onlineUsers.filter(
+            user => ["admin", "administrator"].includes(
+                String(user.role).trim().toLowerCase()
+            )
+        ).length;
+
+        const otherRoleCount =
+            onlineUsers.length - staffCount - administratorCount;
+
+        return res.json({
+            success: true,
+            data: onlineUsers,
+            summary: {
+                totalOnline: onlineUsers.length,
+                staffOnline: staffCount,
+                administratorOnline: administratorCount,
+                otherRolesOnline: otherRoleCount
+            }
+        });
+    } catch (error) {
+        console.error(
+            "Online user listing failed:",
+            error.message
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve online users."
+        });
+    }
+});
+
 
 router.post(
     "/online-users/:sessionId/disconnect",
@@ -846,6 +1288,13 @@ async function proxyLogin(req, res) {
             });
         });
 
+        await recordAuditEvent(req, {
+            action: "LOGIN",
+            module: "Authentication",
+            recordId: null,
+            description: "User logged into the web application."
+        });
+
         // Keep the existing response format for frontend compatibility.
         return res.status(200).json(data);
 
@@ -859,7 +1308,7 @@ async function proxyLogin(req, res) {
     }
 }
 
-function logoutSession(req, res) {
+async function logoutSession(req, res) {
     if (!req.session) {
         res.clearCookie("vetpet.sid", { path: "/" });
 
@@ -869,11 +1318,23 @@ function logoutSession(req, res) {
         });
     }
 
+    // Record the event while the authenticated session is
+    // still available. Audit failures are non-blocking.
+    await recordAuditEvent(req, {
+        action: "LOGOUT",
+        module: "Authentication",
+        recordId: null,
+        description: "User logged out of the web application."
+    });
+
     req.session.destroy(error => {
         res.clearCookie("vetpet.sid", { path: "/" });
 
         if (error) {
-            console.error("Logout/session error:", error);
+            console.error(
+                "Logout/session error:",
+                error.message
+            );
 
             return res.status(500).json({
                 success: false,
@@ -887,6 +1348,7 @@ function logoutSession(req, res) {
         });
     });
 }
+
 
 
 

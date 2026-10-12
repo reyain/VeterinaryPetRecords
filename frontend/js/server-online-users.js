@@ -1,682 +1,279 @@
+
 /* =========================================================
    SERVER - ONLINE USERS
-   Temporary frontend prototype
+   Live API integration
+   Administrator read-only monitoring
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+    let currentUser = null;
 
-
-    /* =====================================================
-       ELEMENTS
-       ===================================================== */
-
-    const userName =
-        document.getElementById("userName");
-
-    const userRole =
-        document.getElementById("userRole");
-
-    const userAvatar =
-        document.getElementById("userAvatar");
-
-    const logoutButton =
-        document.getElementById("logoutButton");
-
-
-    const refreshButton =
-        document.getElementById(
-            "refreshOnlineUsersButton"
+    try {
+        currentUser = JSON.parse(
+            sessionStorage.getItem("vetCurrentUser") || "null"
         );
+    } catch {
+        currentUser = null;
+    }
 
-    const searchInput =
-        document.getElementById(
-            "onlineUserSearch"
-        );
+    const role = String(currentUser?.role || "")
+        .trim()
+        .toLowerCase();
 
-    const tableBody =
-        document.getElementById(
-            "onlineUsersTableBody"
-        );
-
-    const emptyState =
-        document.getElementById(
-            "onlineEmptyState"
-        );
-
-
-    const totalOnlineCount =
-        document.getElementById(
-            "totalOnlineCount"
-        );
-
-    const frontDeskOnlineCount =
-        document.getElementById(
-            "frontDeskOnlineCount"
-        );
-
-    const veterinarianOnlineCount =
-        document.getElementById(
-            "veterinarianOnlineCount"
-        );
-
-    const administratorOnlineCount =
-        document.getElementById(
-            "administratorOnlineCount"
-        );
-
-
-    const visibleOnlineCount =
-        document.getElementById(
-            "visibleOnlineCount"
-        );
-
-    const message =
-        document.getElementById(
-            "onlineUserMessage"
-        );
-
-
-    /* =====================================================
-       ADMIN SESSION CHECK
-       ===================================================== */
-
-    const currentUser = JSON.parse(
-        sessionStorage.getItem(
-            "vetCurrentUser"
-        )
-    );
-
-
-    if (
-        !currentUser ||
-        !["admin", "administrator"].includes(String(currentUser.role || "").trim().toLowerCase())
-    ) {
-
-        window.location.href =
-            "../../index.html";
-
+    if (!currentUser || !["admin", "administrator"].includes(role)) {
+        window.location.replace("/index.html");
         return;
     }
 
+    const getElement = id => document.getElementById(id);
 
-    /* =====================================================
-       DISPLAY ADMINISTRATOR
-       ===================================================== */
+    const userName = getElement("userName");
+    const userRole = getElement("userRole");
+    const userAvatar = getElement("userAvatar");
+    const logoutButton = getElement("logoutButton");
+
+    const refreshButton = getElement("refreshOnlineUsersButton");
+    const searchInput = getElement("onlineUserSearch");
+    const tableBody = getElement("onlineUsersTableBody");
+    const emptyState = getElement("onlineEmptyState");
+    const visibleOnlineCount = getElement("visibleOnlineCount");
+    const message = getElement("onlineUserMessage");
+
+    const totalOnlineCount = getElement("totalOnlineCount");
+    const staffOnlineCount = getElement("staffOnlineCount");
+    const adminOnlineCount = getElement("adminOnlineCount");
+    const otherRolesOnlineCount = getElement("otherRolesOnlineCount");
 
     const administratorName =
         currentUser.fullName ||
         currentUser.username ||
         "Administrator";
 
-
-    userName.textContent =
-        administratorName;
-
-    userRole.textContent =
-        "Administrator";
-
+    userName.textContent = administratorName;
+    userRole.textContent = "Administrator";
     userAvatar.textContent =
-        administratorName
-            .charAt(0)
-            .toUpperCase();
+        administratorName.trim().charAt(0).toUpperCase() || "A";
 
+    let onlineUsers = [];
+    let requestNumber = 0;
 
-    /* =====================================================
-       STORAGE
-       ===================================================== */
+    function formatDateTime(value) {
+        if (!value) return "—";
 
-    const STORAGE_KEY =
-        "vetOnlineUsers";
+        const date = new Date(value);
 
-
-    /* =====================================================
-       CREATE DEMO ONLINE USERS
-       ===================================================== */
-
-    function createDemoUsers() {
-
-        const saved =
-            localStorage.getItem(
-                STORAGE_KEY
-            );
-
-
-        if (saved) {
-
-            try {
-
-                return JSON.parse(saved);
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to read online users:",
-                    error
-                );
-            }
-        }
-
-
-        const now =
-            new Date();
-
-
-        const demoUsers = [
-
-            {
-                sessionId:
-                    "SESSION-0001",
-
-                userId:
-                    "USR-0001",
-
-                fullName:
-                    "Front Desk",
-
-                username:
-                    "frontdesk",
-
-                role:
-                    "Front Desk",
-
-                loginTime:
-                    new Date(
-                        now.getTime() - 35 * 60000
-                    ).toISOString(),
-
-                lastActivity:
-                    new Date(
-                        now.getTime() - 2 * 60000
-                    ).toISOString(),
-
-                status:
-                    "Online"
-            },
-
-
-            {
-                sessionId:
-                    "SESSION-0002",
-
-                userId:
-                    "USR-0002",
-
-                fullName:
-                    "Veterinarian",
-
-                username:
-                    "veterinarian",
-
-                role:
-                    "Veterinarian",
-
-                loginTime:
-                    new Date(
-                        now.getTime() - 52 * 60000
-                    ).toISOString(),
-
-                lastActivity:
-                    new Date(
-                        now.getTime() - 5 * 60000
-                    ).toISOString(),
-
-                status:
-                    "Online"
-            }
-
-        ];
-
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(demoUsers)
-        );
-
-
-        return demoUsers;
-    }
-
-
-    /* =====================================================
-       GET ONLINE USERS
-       ===================================================== */
-
-    function getOnlineUsers() {
-
-        return createDemoUsers();
-
-    }
-
-
-    /* =====================================================
-       SAVE ONLINE USERS
-       ===================================================== */
-
-    function saveOnlineUsers(users) {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(users)
-        );
-    }
-
-
-    /* =====================================================
-       FORMAT DATE AND TIME
-       ===================================================== */
-
-    function formatDateTime(
-        dateString
-    ) {
-
-        if (!dateString) {
+        if (Number.isNaN(date.getTime())) {
             return "—";
         }
 
-
-        const date =
-            new Date(dateString);
-
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            return "—";
-        }
-
-
-        return date.toLocaleString(
-            "en-US",
-            {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "numeric",
-                minute: "2-digit"
-            }
-        );
+        return date.toLocaleString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+        });
     }
 
+    function createCell(value) {
+        const cell = document.createElement("td");
+        cell.textContent =
+            value === null || value === undefined || value === ""
+                ? "—"
+                : String(value);
 
-    /* =====================================================
-       UPDATE SUMMARY
-       ===================================================== */
+        return cell;
+    }
 
-    function updateSummary(users) {
-
+    function updateSummary(summary) {
         totalOnlineCount.textContent =
-            users.length;
+            Number(summary.totalOnline ?? onlineUsers.length);
 
+        staffOnlineCount.textContent =
+            Number(summary.staffOnline ?? 0);
 
-        frontDeskOnlineCount.textContent =
-            users.filter(
-                user =>
-                    user.role === "Front Desk"
-            ).length;
+        adminOnlineCount.textContent =
+            Number(summary.administratorOnline ?? 0);
 
-
-        veterinarianOnlineCount.textContent =
-            users.filter(
-                user =>
-                    user.role === "Veterinarian"
-            ).length;
-
-
-        administratorOnlineCount.textContent =
-            users.filter(
-                user =>
-                    user.role === "Administrator"
-            ).length;
+        otherRolesOnlineCount.textContent =
+            Number(summary.otherRolesOnline ?? 0);
     }
-
-
-    /* =====================================================
-       RENDER TABLE
-       ===================================================== */
 
     function renderUsers() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
 
-        const users =
-            getOnlineUsers();
+        const filteredUsers = onlineUsers.filter(user => {
+            const searchableValues = [
+                user.userId,
+                user.fullName,
+                user.username,
+                user.role,
+                user.accountStatus,
+                user.status,
+                user.sessionExpiresAt
+            ];
 
+            return searchableValues.some(value =>
+                String(value ?? "").toLowerCase().includes(searchTerm)
+            );
+        });
 
-        const searchTerm =
-            searchInput.value
-                .trim()
-                .toLowerCase();
+        tableBody.replaceChildren();
 
+        for (const user of filteredUsers) {
+            const row = document.createElement("tr");
 
-        const filteredUsers =
-            users.filter(user => {
+            row.appendChild(createCell(user.userId));
+            row.appendChild(createCell(user.fullName));
+            row.appendChild(createCell(user.username));
+            row.appendChild(createCell(user.role));
+            row.appendChild(createCell(
+                formatDateTime(user.sessionExpiresAt)
+            ));
 
-                return (
+            const statusCell = document.createElement("td");
+            const statusBadge = document.createElement("span");
 
-                    user.userId
-                        .toLowerCase()
-                        .includes(searchTerm) ||
+            statusBadge.className = "online-status active";
+            statusBadge.textContent = user.status || "Online";
 
-                    user.fullName
-                        .toLowerCase()
-                        .includes(searchTerm) ||
+            statusCell.appendChild(statusBadge);
+            row.appendChild(statusCell);
 
-                    user.username
-                        .toLowerCase()
-                        .includes(searchTerm) ||
+            tableBody.appendChild(row);
+        }
 
-                    user.role
-                        .toLowerCase()
-                        .includes(searchTerm)
-                );
+        visibleOnlineCount.textContent = String(filteredUsers.length);
+        emptyState.style.display =
+            filteredUsers.length === 0 ? "block" : "none";
 
+        const emptyTitle = emptyState.querySelector("h3");
+        const emptyDescription = emptyState.querySelector("p");
+
+        if (filteredUsers.length === 0) {
+            if (emptyTitle) {
+                emptyTitle.textContent = searchTerm
+                    ? "No Matching Users"
+                    : "No Online Users";
+            }
+
+            if (emptyDescription) {
+                emptyDescription.textContent = searchTerm
+                    ? "No active sessions match your search."
+                    : "There are currently no active web sessions.";
+            }
+        }
+    }
+
+    async function loadOnlineUsers() {
+        const currentRequest = ++requestNumber;
+
+        refreshButton.disabled = true;
+        message.textContent = "Loading active web sessions...";
+
+        try {
+            const response = await fetch("/api/online-users", {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    Accept: "application/json"
+                }
             });
 
+            const result = await response.json().catch(() => null);
 
-        tableBody.innerHTML = "";
-
-
-        filteredUsers.forEach(
-            user => {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${escapeHtml(
-                            user.userId
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            user.fullName
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            user.username
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            user.role
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatDateTime(
-                            user.loginTime
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatDateTime(
-                            user.lastActivity
-                        )}
-                    </td>
-
-                    <td>
-
-                        <span
-                            class="online-status active"
-                        >
-                            Online
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <button
-                            type="button"
-                            class="online-disconnect-button"
-                            data-session-id="${escapeHtml(
-                                user.sessionId
-                            )}"
-                        >
-                            Disconnect
-                        </button>
-
-                    </td>
-
-                `;
-
-
-                tableBody.appendChild(
-                    row
+            if (!response.ok || result?.success !== true) {
+                throw new Error(
+                    result?.message ||
+                    `Unable to load online users (HTTP ${response.status}).`
                 );
-
             }
-        );
 
-
-        updateSummary(users);
-
-
-        visibleOnlineCount.textContent =
-            filteredUsers.length;
-
-
-        if (
-            filteredUsers.length === 0
-        ) {
-
-            emptyState.style.display =
-                "block";
-
-        } else {
-
-            emptyState.style.display =
-                "none";
-        }
-
-    }
-
-
-    /* =====================================================
-       ESCAPE HTML
-       ===================================================== */
-
-    function escapeHtml(value) {
-
-        return String(value)
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-    }
-
-
-    /* =====================================================
-       DISCONNECT SESSION
-       ===================================================== */
-
-    function disconnectUser(
-        sessionId
-    ) {
-
-        const users =
-            getOnlineUsers();
-
-
-        const user =
-            users.find(
-                item =>
-                    item.sessionId ===
-                    sessionId
-            );
-
-
-        if (!user) {
-            return;
-        }
-
-
-        /*
-            Administrator protection:
-            Do not disconnect the Administrator
-            from this page.
-        */
-
-        if (
-            user.role ===
-            "Administrator"
-        ) {
-
-            alert(
-                "The Administrator session cannot be disconnected from this prototype."
-            );
-
-            return;
-        }
-
-
-        const confirmed =
-            confirm(
-                `Disconnect ${user.fullName} from the current session?`
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
-
-
-        const updatedUsers =
-            users.filter(
-                item =>
-                    item.sessionId !==
-                    sessionId
-            );
-
-
-        saveOnlineUsers(
-            updatedUsers
-        );
-
-
-        message.textContent =
-            `${user.fullName} has been disconnected from the online-user list.`;
-
-
-        renderUsers();
-
-    }
-
-
-    /* =====================================================
-       TABLE ACTION
-       ===================================================== */
-
-    tableBody.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    "[data-session-id]"
-                );
-
-
-            if (!button) {
+            if (currentRequest !== requestNumber) {
                 return;
             }
 
+            onlineUsers = Array.isArray(result.data)
+                ? result.data
+                : [];
 
-            disconnectUser(
-                button.dataset.sessionId
-            );
-
-        }
-    );
-
-
-    /* =====================================================
-       SEARCH
-       ===================================================== */
-
-    searchInput.addEventListener(
-        "input",
-        renderUsers
-    );
-
-
-    /* =====================================================
-       REFRESH
-       ===================================================== */
-
-    refreshButton.addEventListener(
-        "click",
-        () => {
-
-            message.textContent =
-                "Online user list refreshed.";
-
+            updateSummary(result.summary || {});
             renderUsers();
 
+            message.textContent =
+                `Loaded ${onlineUsers.length} active web session(s).`;
+        } catch (error) {
+            if (currentRequest !== requestNumber) {
+                return;
+            }
+
+            console.error("Online users loading failed:", error);
+
+            onlineUsers = [];
+            updateSummary({
+                totalOnline: 0,
+                staffOnline: 0,
+                administratorOnline: 0,
+                otherRolesOnline: 0
+            });
+
+            tableBody.replaceChildren();
+            visibleOnlineCount.textContent = "0";
+            emptyState.style.display = "block";
+
+            const emptyTitle = emptyState.querySelector("h3");
+            const emptyDescription = emptyState.querySelector("p");
+
+            if (emptyTitle) {
+                emptyTitle.textContent = "Unable to Load Online Users";
+            }
+
+            if (emptyDescription) {
+                emptyDescription.textContent =
+                    "Check the connection and refresh the page.";
+            }
+
+            message.textContent =
+                error.message || "Unable to retrieve online users.";
+        } finally {
+            if (currentRequest === requestNumber) {
+                refreshButton.disabled = false;
+            }
         }
-    );
+    }
 
+    searchInput.addEventListener("input", renderUsers);
 
-    /* =====================================================
-       LOGOUT
-       ===================================================== */
+    refreshButton.addEventListener("click", loadOnlineUsers);
 
     logoutButton.addEventListener("click", async () => {
-    const confirmed = confirm("Are you sure you want to logout?");
-    if (!confirmed) return;
-
-    try {
-        const response = await fetch("/api/auth/logout", {
-            method: "POST",
-            credentials: "same-origin"
-        });
-
-        const result = await response.json().catch(() => null);
-
-        if (!response.ok || result?.success !== true) {
-            throw new Error(result?.message || "Logout failed.");
+        if (!confirm("Are you sure you want to logout?")) {
+            return;
         }
 
-        sessionStorage.clear();
-        window.location.replace("/index.html");
+        logoutButton.disabled = true;
 
-    } catch (error) {
-        console.error("Logout error:", error);
-        alert("Unable to logout. Please check your connection and try again.");
-    }
-});
+        try {
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "same-origin"
+            });
 
+            const result = await response.json().catch(() => null);
 
-    /* =====================================================
-       INITIAL LOAD
-       ===================================================== */
+            if (!response.ok || result?.success !== true) {
+                throw new Error(result?.message || "Logout failed.");
+            }
 
-    renderUsers();
+            sessionStorage.clear();
+            window.location.replace("/index.html");
+        } catch (error) {
+            console.error("Logout error:", error);
+            alert("Unable to logout. Please try again.");
+            logoutButton.disabled = false;
+        }
+    });
 
+    loadOnlineUsers();
 });
